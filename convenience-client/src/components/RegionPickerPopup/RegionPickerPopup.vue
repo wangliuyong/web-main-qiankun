@@ -1,14 +1,7 @@
 <template>
   <!-- 省市区弹层：页面根级挂载，钴蓝编辑风 bottom sheet -->
-  <u-popup
-    :show="show"
-    mode="bottom"
-    :round="24"
-    :z-index="10080"
-    :overlay-opacity="0.52"
-    :close-on-click-overlay="true"
-    @close="onClose"
-  >
+  <u-popup :show="show" mode="bottom" :round="24" :z-index="10080" :overlay-opacity="0.52"
+    :close-on-click-overlay="true" @close="onClose">
     <view class="region-picker">
       <!-- 拖拽指示条 -->
       <view class="region-picker__handle-wrap">
@@ -44,37 +37,21 @@
         <view class="region-picker__wheel-highlight" />
         <view class="region-picker__wheel-fade region-picker__wheel-fade--top" />
         <view class="region-picker__wheel-fade region-picker__wheel-fade--bottom" />
-        <picker-view
-          class="region-picker__wheel"
-          :value="pickerIndex"
-          indicator-style="height: 80rpx; background: transparent;"
-          mask-style="background: transparent;"
-          @change="onPickerChange"
-        >
+        <picker-view class="region-picker__wheel" :value="pickerIndex"
+          indicator-style="height: 80rpx; background: transparent;" mask-style="background: transparent;"
+          @change="onPickerChange">
           <picker-view-column>
-            <view
-              v-for="item in provinceList"
-              :key="item.value"
-              class="region-picker__wheel-item"
-            >
+            <view v-for="item in provinceList" :key="item.value" class="region-picker__wheel-item">
               {{ item.text }}
             </view>
           </picker-view-column>
           <picker-view-column>
-            <view
-              v-for="item in cityList"
-              :key="item.value"
-              class="region-picker__wheel-item"
-            >
+            <view v-for="item in cityList" :key="item.value" class="region-picker__wheel-item">
               {{ item.text }}
             </view>
           </picker-view-column>
           <picker-view-column>
-            <view
-              v-for="item in districtList"
-              :key="item.value || item.text"
-              class="region-picker__wheel-item"
-            >
+            <view v-for="item in districtList" :key="item.value || item.text" class="region-picker__wheel-item">
               {{ item.text }}
             </view>
           </picker-view-column>
@@ -305,7 +282,7 @@ $rp-wheel-row: 80rpx;
 .region-picker__col-label {
   flex: 1;
   text-align: center;
-  font-size: $rp-caption;
+  font-size: 1rem;
   font-weight: 600;
   color: $cv-text-secondary;
 }

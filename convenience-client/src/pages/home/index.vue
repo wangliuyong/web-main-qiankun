@@ -4,7 +4,9 @@
     <view class="page-home__hero">
       <view class="page-home__hero-orb page-home__hero-orb--1" />
       <view class="page-home__hero-orb page-home__hero-orb--2" />
-      <view class="page-home__hero-top">
+      <!-- 标题与定位同一行：左标题、右城市 -->
+      <view class="page-home__hero-head">
+        <text class="page-home__greeting">发现身边的便民信息</text>
         <view class="page-home__location" @tap.stop="openRegionPicker" @click.stop="openRegionPicker">
           <view class="page-home__location-icon">
             <u-icon name="map-fill" color="#fff" size="14" />
@@ -13,7 +15,6 @@
           <u-icon name="arrow-down-fill" color="rgba(255,255,255,0.7)" size="10" />
         </view>
       </view>
-      <text class="page-home__greeting">发现身边的便民信息</text>
       <text class="page-home__sub">二手、招聘、上门服务，一站浏览</text>
       <view class="page-home__search" @click="goSearch">
         <u-icon name="search" color="#8b9bb8" size="18" />
@@ -351,13 +352,19 @@ onShow(() => {
   pointer-events: none;
 }
 
-.page-home__hero-top {
+/** 英雄区顶栏：标题左对齐，定位胶囊右对齐 */
+.page-home__hero-head {
   position: relative;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
 }
 
 .page-home__location {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 10rpx;
   padding: 12rpx 20rpx 12rpx 14rpx;
@@ -380,18 +387,22 @@ onShow(() => {
 }
 
 .page-home__city {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: #fff;
   font-weight: 600;
   letter-spacing: -0.01em;
+  max-width: 160rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .page-home__greeting {
   position: relative;
   z-index: 1;
-  display: block;
-  margin-top: 36rpx;
-  font-size: 44rpx;
+  flex: 1;
+  min-width: 0;
+  font-size: 40rpx;
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.04em;
