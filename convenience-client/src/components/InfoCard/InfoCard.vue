@@ -1,13 +1,15 @@
 <template>
   <view class="info-card" @click="onClick">
-    <view v-if="item.images?.length" class="info-card__media">
-      <image class="info-card__cover" :src="item.images[0]" mode="aspectFill" />
-      <view class="info-card__overlay" />
-      <view v-if="item.categoryName" class="info-card__tag">{{ item.categoryName }}</view>
-    </view>
-    <view v-else class="info-card__media info-card__media--placeholder">
-      <u-icon name="photo" color="#cbd5e1" size="36" />
-      <view v-if="item.categoryName" class="info-card__tag">{{ item.categoryName }}</view>
+    <view class="info-card__media">
+      <ArtImageCover
+        class="info-card__cover"
+        :src="item.images?.[0]"
+        :seed="item.id"
+        image-class="info-card__cover-img"
+      >
+        <view class="info-card__overlay" />
+        <view v-if="item.categoryName" class="info-card__tag">{{ item.categoryName }}</view>
+      </ArtImageCover>
     </view>
 
     <view class="info-card__body">
@@ -26,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import type { CityInfoItem } from '@/types/city-info';
 import { formatDistance, formatPrice, formatRelativeTime } from '@/utils/format';
 
@@ -77,13 +80,12 @@ function onClick() {
   overflow: hidden;
 }
 
-.info-card__media--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.info-card__cover {
+  width: 100%;
+  height: 100%;
 }
 
-.info-card__cover {
+:deep(.info-card__cover-img) {
   width: 100%;
   height: 100%;
 }

@@ -2,16 +2,14 @@
   <!-- 首页精选大卡：横向布局，信息密度高 -->
   <view class="home-featured cv-card" @click="emit('click', item)">
     <view class="home-featured__media">
-      <image
-        v-if="item.images?.length"
+      <ArtImageCover
         class="home-featured__cover"
-        :src="item.images[0]"
-        mode="aspectFill"
-      />
-      <view v-else class="home-featured__placeholder">
-        <u-icon name="photo" color="#cbd5e1" size="40" />
-      </view>
-      <view class="home-featured__badge">精选</view>
+        :src="item.images?.[0]"
+        :seed="item.id"
+        image-class="home-featured__cover-img"
+      >
+        <view class="home-featured__badge">精选</view>
+      </ArtImageCover>
     </view>
 
     <view class="home-featured__body">
@@ -35,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import type { CityInfoItem } from '@/types/city-info';
 import { formatDistance, formatPrice, formatRelativeTime } from '@/utils/format';
 
@@ -69,17 +68,16 @@ const emit = defineEmits<{
   background: $cv-surface-muted;
 }
 
-.home-featured__cover,
-.home-featured__placeholder {
+.home-featured__cover {
   width: 100%;
   height: 100%;
   min-height: 260rpx;
 }
 
-.home-featured__placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:deep(.home-featured__cover-img) {
+  width: 100%;
+  height: 100%;
+  min-height: 260rpx;
 }
 
 .home-featured__badge {

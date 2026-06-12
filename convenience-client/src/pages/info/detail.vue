@@ -19,13 +19,22 @@
         <swiper v-if="detail.images.length" class="page-detail__swiper" :current="imageIndex" indicator-dots
           indicator-color="rgba(255,255,255,0.35)" indicator-active-color="#fff" @change="onSwiperChange">
           <swiper-item v-for="(img, idx) in detail.images" :key="idx">
-            <image class="page-detail__img" :src="img" mode="aspectFill" @click="preview(idx)" />
+            <view class="page-detail__img-wrap" @click="preview(idx)">
+              <ArtImageCover
+                class="page-detail__img-cover"
+                :src="img"
+                :seed="`${detail.id}-${idx}`"
+                image-class="page-detail__img"
+              />
+            </view>
           </swiper-item>
         </swiper>
-        <view v-else class="page-detail__placeholder">
-          <u-icon name="photo" color="#cbd5e1" size="56" />
-          <text class="page-detail__placeholder-text">暂无图片</text>
-        </view>
+        <ArtImageCover
+          v-else
+          class="page-detail__placeholder"
+          :src="null"
+          :seed="detail.id"
+        />
 
         <view class="page-detail__hero-fade" />
 
@@ -44,7 +53,12 @@
         <view class="page-detail__thumbs-inner">
           <view v-for="(img, idx) in detail.images" :key="idx" class="page-detail__thumb"
             :class="{ 'page-detail__thumb--active': imageIndex === idx }" @click="imageIndex = idx">
-            <image class="page-detail__thumb-img" :src="img" mode="aspectFill" />
+            <ArtImageCover
+              class="page-detail__thumb-cover"
+              :src="img"
+              :seed="`${detail.id}-thumb-${idx}`"
+              image-class="page-detail__thumb-img"
+            />
           </view>
         </view>
       </scroll-view>
@@ -152,6 +166,7 @@ import { ref, computed, onMounted } from 'vue';
 import { onLoad, onShareAppMessage } from '@dcloudio/uni-app';
 import { queryCityInfoDetail } from '@/api/city-info.api';
 import { postCollect, postUncollect, queryCollectedIds } from '@/api/collect.api';
+import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import AiAssistantFab from '@/components/AiAssistantFab/AiAssistantFab.vue';
 import { useLocationStore } from '@/stores/location';
 import { useUserStore } from '@/stores/user';
@@ -399,25 +414,26 @@ onMounted(async () => {
 }
 
 .page-detail__swiper,
-.page-detail__img {
-  width: 100%;
-  height: 100%;
-}
-
+.page-detail__img-wrap,
+.page-detail__img-cover,
 .page-detail__placeholder {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16rpx;
-  background: $cv-surface-muted;
 }
 
-.page-detail__placeholder-text {
-  font-size: 26rpx;
-  color: $cv-text-muted;
+:deep(.page-detail__img) {
+  width: 100%;
+  height: 100%;
+}
+
+.page-detail__thumb-cover {
+  width: 100%;
+  height: 100%;
+}
+
+:deep(.page-detail__thumb-img) {
+  width: 100%;
+  height: 100%;
 }
 
 .page-detail__hero-fade {

@@ -111,10 +111,12 @@
           </view>
           <view v-for="item in recentCollects" :key="`c-${item.id}`" class="page-mine__recent-item"
             @click="goDetail(item)">
-            <image v-if="item.images?.[0]" class="page-mine__recent-thumb" :src="item.images[0]" mode="aspectFill" />
-            <view v-else class="page-mine__recent-thumb page-mine__recent-thumb--empty">
-              <u-icon name="photo" color="#cbd5e1" size="18" />
-            </view>
+            <ArtImageCover
+              class="page-mine__recent-thumb"
+              :src="item.images?.[0]"
+              :seed="item.id"
+              image-class="page-mine__recent-thumb-img"
+            />
             <view class="page-mine__recent-main">
               <text class="page-mine__recent-name">{{ item.title }}</text>
               <text class="page-mine__recent-sub">
@@ -132,10 +134,12 @@
           </view>
           <view v-for="item in recentPosts" :key="`p-${item.id}`" class="page-mine__recent-item"
             @click="goDetail(item)">
-            <image v-if="item.images?.[0]" class="page-mine__recent-thumb" :src="item.images[0]" mode="aspectFill" />
-            <view v-else class="page-mine__recent-thumb page-mine__recent-thumb--empty">
-              <u-icon name="photo" color="#cbd5e1" size="18" />
-            </view>
+            <ArtImageCover
+              class="page-mine__recent-thumb"
+              :src="item.images?.[0]"
+              :seed="item.id"
+              image-class="page-mine__recent-thumb-img"
+            />
             <view class="page-mine__recent-main">
               <text class="page-mine__recent-name">{{ item.title }}</text>
               <view class="page-mine__recent-sub-row">
@@ -174,6 +178,7 @@ import { queryCollectList } from '@/api/collect.api';
 import { queryMyCityInfoList } from '@/api/city-info.api';
 import { queryMineOverview } from '@/api/mine.api';
 import type { MineOverview } from '@/api/mine.api';
+import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import AppTabBar from '@/components/AppTabBar/AppTabBar.vue';
 import SkeletonBlock from '@/components/SkeletonBlock/SkeletonBlock.vue';
 import SkeletonLine from '@/components/SkeletonLine/SkeletonLine.vue';
@@ -648,13 +653,12 @@ onShow(loadMineData);
   height: 88rpx;
   border-radius: 16rpx;
   flex-shrink: 0;
-  background: $cv-surface-muted;
+  overflow: hidden;
 }
 
-.page-mine__recent-thumb--empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:deep(.page-mine__recent-thumb-img) {
+  width: 100%;
+  height: 100%;
 }
 
 .page-mine__recent-main {

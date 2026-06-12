@@ -2,19 +2,17 @@
   <!-- 列表页横向卡片：一屏扫读标题、价格、距离与互动数据 -->
   <view class="info-list-card cv-card" @click="emit('click', item)">
     <view class="info-list-card__media">
-      <image
-        v-if="item.images?.length"
+      <ArtImageCover
         class="info-list-card__cover"
-        :src="item.images[0]"
-        mode="aspectFill"
-      />
-      <view v-else class="info-list-card__placeholder">
-        <u-icon name="photo" color="#cbd5e1" size="32" />
-      </view>
-      <view v-if="item.collected" class="info-list-card__fav">
-        <u-icon name="star-fill" :color="CV_PRIMARY" size="12" />
-      </view>
-      <view class="info-list-card__media-shade" />
+        :src="item.images?.[0]"
+        :seed="item.id"
+        image-class="info-list-card__cover-img"
+      >
+        <view v-if="item.collected" class="info-list-card__fav">
+          <u-icon name="star-fill" :color="CV_PRIMARY" size="12" />
+        </view>
+        <view class="info-list-card__media-shade" />
+      </ArtImageCover>
     </view>
 
     <view class="info-list-card__body">
@@ -39,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import type { CityInfoItem } from '@/types/city-info';
 import { CV_PRIMARY } from '@/constants/theme';
 import { formatDistance, formatPrice, formatRelativeTime } from '@/utils/format';
@@ -86,17 +85,16 @@ const emit = defineEmits<{
   z-index: 1;
 }
 
-.info-list-card__cover,
-.info-list-card__placeholder {
+.info-list-card__cover {
   width: 100%;
   height: 100%;
   min-height: 208rpx;
 }
 
-.info-list-card__placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:deep(.info-list-card__cover-img) {
+  width: 100%;
+  height: 100%;
+  min-height: 208rpx;
 }
 
 .info-list-card__fav {

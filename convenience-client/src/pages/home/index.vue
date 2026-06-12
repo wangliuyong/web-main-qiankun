@@ -63,15 +63,24 @@
       </view>
       <view v-else-if="banners.length || notices.length" class="page-home__promo">
         <view v-if="banners.length" class="page-home__swiper-wrap cv-card">
-          <u-swiper
-            :list="swiperList"
-            key-name="image"
-            height="280rpx"
-            radius="20"
-            indicator
-            indicator-mode="line"
+          <swiper
+            class="page-home__swiper"
+            circular
+            indicator-dots
+            indicator-color="rgba(255,255,255,0.35)"
             :indicator-active-color="primaryColor"
-          />
+            autoplay
+            :interval="4500"
+          >
+            <swiper-item v-for="banner in banners" :key="banner.id">
+              <ArtImageCover
+                class="page-home__banner-cover"
+                :src="banner.imageUrl"
+                :seed="`banner-${banner.id}`"
+                image-class="page-home__banner-img"
+              />
+            </swiper-item>
+          </swiper>
         </view>
         <view v-if="notices.length" class="page-home__notice cv-card" @click="goNotice(notices[0].id)">
           <view class="page-home__notice-head">
@@ -161,6 +170,7 @@ import { queryCategoryTree } from '@/api/category.api';
 import { queryCityInfoList } from '@/api/city-info.api';
 import { queryCollectedIds } from '@/api/collect.api';
 import { queryNoticeList } from '@/api/notice.api';
+import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import AppTabBar from '@/components/AppTabBar/AppTabBar.vue';
 import CategoryGrid from '@/components/CategoryGrid/CategoryGrid.vue';
 import HomeFeaturedCard from '@/components/HomeFeaturedCard/HomeFeaturedCard.vue';
@@ -187,10 +197,6 @@ const totalInfoCount = ref(0);
 const loading = ref(true);
 /** 省市区选择弹层 */
 const regionPickerShow = ref(false);
-
-const swiperList = computed(() =>
-  banners.value.map((b) => ({ image: b.imageUrl, title: '' })),
-);
 
 /** 首页仅展示前 8 个一级分类 */
 const homeCategories = computed(() => categories.value.slice(0, 8));
@@ -506,6 +512,23 @@ onShow(() => {
 .page-home__swiper-wrap {
   overflow: hidden;
   padding: 10rpx;
+}
+
+.page-home__swiper {
+  width: 100%;
+  height: 280rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.page-home__banner-cover {
+  width: 100%;
+  height: 280rpx;
+}
+
+:deep(.page-home__banner-img) {
+  width: 100%;
+  height: 280rpx;
 }
 
 .page-home__notice {

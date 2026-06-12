@@ -2,16 +2,14 @@
   <!-- 首页双列信息流卡片：紧凑展示 -->
   <view class="home-tile" @click="emit('click', item)">
     <view class="home-tile__media">
-      <image
-        v-if="item.images?.length"
+      <ArtImageCover
         class="home-tile__cover"
-        :src="item.images[0]"
-        mode="aspectFill"
-      />
-      <view v-else class="home-tile__placeholder">
-        <u-icon name="photo" color="#cbd5e1" size="28" />
-      </view>
-      <text v-if="item.categoryName" class="home-tile__tag">{{ item.categoryName }}</text>
+        :src="item.images?.[0]"
+        :seed="item.id"
+        image-class="home-tile__cover-img"
+      >
+        <text v-if="item.categoryName" class="home-tile__tag">{{ item.categoryName }}</text>
+      </ArtImageCover>
     </view>
     <view class="home-tile__body">
       <text class="home-tile__title">{{ item.title }}</text>
@@ -26,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import type { CityInfoItem } from '@/types/city-info';
 import { formatDistance, formatPrice } from '@/utils/format';
 
@@ -60,16 +59,14 @@ const emit = defineEmits<{
   background: $cv-surface-muted;
 }
 
-.home-tile__cover,
-.home-tile__placeholder {
+.home-tile__cover {
   width: 100%;
   height: 100%;
 }
 
-.home-tile__placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:deep(.home-tile__cover-img) {
+  width: 100%;
+  height: 100%;
 }
 
 .home-tile__tag {
