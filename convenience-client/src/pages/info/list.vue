@@ -321,7 +321,7 @@ onMounted(async () => {
   z-index: 1;
   display: flex;
   gap: 12rpx;
-  margin-top: 18rpx;
+  margin: 18rpx 0;
 }
 
 .page-list__sort-item {
