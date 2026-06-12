@@ -43,7 +43,7 @@ export const TAB_BAR_ITEMS: TabBarItemConfig[] = [
   {
     name: 2,
     pagePath: 'pages/publish/index',
-    text: '发布',
+    text: '',
     inactiveIcon: 'plus',
     activeIcon: 'plus',
     midButton: true,
