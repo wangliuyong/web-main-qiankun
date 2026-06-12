@@ -49,6 +49,40 @@ function formatH5GeolocationError(err: GeolocationPositionError): string {
   }
 }
 
+/** 将 uni.getLocation 失败信息转为用户可读文案 */
+function formatMpLocationError(raw: string): string {
+  if (/auth deny|authorize|permission/i.test(raw)) {
+    return '请允许使用位置信息';
+  }
+  if (/timeout/i.test(raw)) {
+    return '定位超时，请使用地图选点或稍后再试';
+  }
+  if (/IP_LOCATE_FAILED|ipLocation/i.test(raw)) {
+    return 'IP 定位失败，请开启 GPS 权限或使用地图选点';
+  }
+  return '定位失败，请检查权限或使用地图选点';
+}
+
+/**
+ * 单次 uni.getLocation 请求
+ * 微信小程序高精度在开发者工具/弱网下易触发原生 Error: timeout，故默认普通精度
+ */
+function requestUniLocation(isHighAccuracy: boolean): Promise<CurrentPosition> {
+  return new Promise((resolve, reject) => {
+    uni.getLocation({
+      type: 'gcj02',
+      isHighAccuracy,
+      /** 高精度最长等待 5s，超时后由上层降级为普通精度 */
+      ...(isHighAccuracy ? { highAccuracyExpireTime: 5000 } : {}),
+      success: (res) => resolve({ latitude: res.latitude, longitude: res.longitude }),
+      fail: (err) => {
+        const msg = String(err?.errMsg || err?.message || '定位失败');
+        reject(new Error(formatMpLocationError(msg)));
+      },
+    });
+  });
+}
+
 /** Promise 化 uni.getLocation（GCJ-02，与高德坐标系一致） */
 export function getCurrentPosition(): Promise<CurrentPosition> {
   // #ifdef H5
@@ -56,20 +90,14 @@ export function getCurrentPosition(): Promise<CurrentPosition> {
   // #endif
 
   // #ifndef H5
-  return new Promise((resolve, reject) => {
-    uni.getLocation({
-      type: 'gcj02',
-      isHighAccuracy: true,
-      success: (res) => resolve({ latitude: res.latitude, longitude: res.longitude }),
-      fail: (err) => {
-        const msg = String(err?.errMsg || err?.message || '定位失败');
-        /** 过滤高德 SDK 原始错误码，给出可操作提示 */
-        if (/IP_LOCATE_FAILED|ipLocation/i.test(msg)) {
-          reject(new Error('IP 定位失败，请开启 GPS 权限或使用地图选点'));
-          return;
-        }
-        reject(new Error(msg.includes('auth deny') ? '请允许使用位置信息' : '定位失败，请检查权限'));
-      },
+  /** 先普通精度（快、模拟器稳定），失败再试一次高精度 */
+  return requestUniLocation(false).catch((firstErr) => {
+    const firstMsg = String(firstErr?.message || firstErr || '');
+    if (/权限|auth deny|authorize/i.test(firstMsg)) {
+      throw firstErr;
+    }
+    return requestUniLocation(true).catch(() => {
+      throw firstErr;
     });
   });
   // #endif

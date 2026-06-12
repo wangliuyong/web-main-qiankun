@@ -10,6 +10,7 @@
       :class="imageClass"
       :src="src"
       :mode="mode"
+      lazy-load
       @error="onImageError"
       @load="onImageLoad"
     />
@@ -31,8 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
 import { resolveArtFallbackPalette } from '@/utils/image-fallback';
+
+/** 图片加载超时：微信小程序慢图/无效域名时 @error 可能迟迟不触发 */
+const IMAGE_LOAD_TIMEOUT_MS = 8000;
 
 const props = withDefaults(
   defineProps<{
@@ -55,8 +59,11 @@ const emit = defineEmits<{
   load: [];
 }>();
 
-/** 是否因加载失败切换为艺术占位 */
+/** 是否因加载失败或超时切换为艺术占位 */
 const loadFailed = ref(false);
+
+/** 加载超时定时器 */
+let loadTimer: ReturnType<typeof setTimeout> | null = null;
 
 /** 有有效 src 且未失败时展示 image */
 const showImage = computed(() => Boolean(props.src) && !loadFailed.value);
@@ -71,22 +78,52 @@ const fallbackStyle = computed(() => ({
   '--art-accent-b': palette.value.accentB,
 }));
 
+/** 清除加载超时计时 */
+function clearLoadTimer() {
+  if (loadTimer) {
+    clearTimeout(loadTimer);
+    loadTimer = null;
+  }
+}
+
+/** 启动加载超时：超时后切艺术占位，避免裂图长时间挂起 */
+function scheduleLoadTimeout() {
+  clearLoadTimer();
+  if (!props.src) return;
+  loadTimer = setTimeout(() => {
+    loadFailed.value = true;
+    emit('error');
+  }, IMAGE_LOAD_TIMEOUT_MS);
+}
+
 /** src 变化时重置失败态，支持列表复用与轮播切换 */
 watch(
   () => props.src,
-  () => {
+  (src) => {
     loadFailed.value = false;
+    if (src) {
+      scheduleLoadTimeout();
+    } else {
+      clearLoadTimer();
+    }
   },
+  { immediate: true },
 );
 
 function onImageError() {
+  clearLoadTimer();
   loadFailed.value = true;
   emit('error');
 }
 
 function onImageLoad() {
+  clearLoadTimer();
   emit('load');
 }
+
+onUnmounted(() => {
+  clearLoadTimer();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -110,15 +147,11 @@ function onImageLoad() {
   overflow: hidden;
 }
 
-/** 插槽层：标签、角标等叠在图片或占位之上 */
+/** 插槽层：标签、角标等叠在图片或占位之上（pointer-events: none 让点击穿透到父级卡片） */
 .art-image-cover__slot {
   position: absolute;
   inset: 0;
   pointer-events: none;
-
-  :deep(*) {
-    pointer-events: auto;
-  }
 }
 
 /** 装饰圆：半透明色块营造海报感 */

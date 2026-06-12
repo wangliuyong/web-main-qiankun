@@ -79,6 +79,8 @@ export function request<T>(path: string, config: RequestConfig = {}): Promise<T>
       method,
       data: requestData,
       header,
+      /** 避免微信小程序弱网下请求无限挂起 */
+      timeout: 15000,
       success: (res) => {
         const status = res.statusCode as number;
         if (status === 401) {
