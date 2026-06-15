@@ -10,10 +10,10 @@
       @touchmove.stop.prevent="onTouchMove"
       @touchend.stop.prevent="onTouchEnd"
       @touchcancel.stop.prevent="onTouchEnd"
-      @mousedown.prevent="onMouseDown"
-      @mousemove.prevent="onMouseMove"
-      @mouseup.prevent="onMouseUp"
-      @mouseleave.prevent="onMouseUp"
+      @mousedown.stop.prevent="onMouseDown"
+      @mousemove.stop.prevent="onMouseMove"
+      @mouseup.stop.prevent="onMouseUp"
+      @mouseleave.stop.prevent="onMouseUp"
     />
   </view>
 </template>
@@ -55,7 +55,6 @@ const emit = defineEmits<{
 const engineState = ref<DrawingEngineState>(createEngineState());
 const canvasCtx = ref<CanvasRenderingContext2D | null>(null);
 
-/** Canvas 2d 节点（H5 为 HTMLCanvasElement，小程序为 OffscreenCanvas 类节点） */
 interface Canvas2dNode {
   width: number;
   height: number;
@@ -65,88 +64,114 @@ interface Canvas2dNode {
 type CanvasTouch = Touch & { x?: number; y?: number };
 
 const canvasEl = ref<Canvas2dNode | null>(null);
-/** 画布逻辑宽高（与 ctx 坐标系一致，不含 DPR） */
+/** 画布逻辑宽高（CSS 像素，与绘制坐标系一致） */
 const canvasWidth = ref(0);
 const canvasHeight = ref(0);
 const isDrawing = ref(false);
-/** H5 触摸后短暂忽略鼠标，避免双触发 */
 const ignoreMouseUntil = ref(0);
 
+/** canvas 未就绪时暂存首点 */
+let pendingStart: { x: number; y: number } | null = null;
 let resizeObserver: ResizeObserver | null = null;
 let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+let bindRetryTimer: ReturnType<typeof setTimeout> | null = null;
 
-/** 窗口尺寸变化回调（需保持引用以便 off） */
 function onWindowResizeHandler(): void {
   scheduleSyncCanvasSize();
 }
 
-/** 将屏幕坐标转换为画布逻辑坐标（按显示区域比例映射，避免 CSS 尺寸与 buffer 不一致） */
-function getCanvasPoint(clientX: number, clientY: number): { x: number; y: number } | null {
-  const canvas = canvasEl.value;
-  if (!canvas || canvasWidth.value <= 0 || canvasHeight.value <= 0) return null;
-
-  const rect = (canvas as unknown as HTMLCanvasElement).getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return null;
-
-  const x = ((clientX - rect.left) / rect.width) * canvasWidth.value;
-  const y = ((clientY - rect.top) / rect.height) * canvasHeight.value;
-
-  return {
-    x: Math.max(0, Math.min(canvasWidth.value, x)),
-    y: Math.max(0, Math.min(canvasHeight.value, y)),
-  };
+function getDomCanvas(): HTMLCanvasElement | null {
+  // #ifdef H5
+  const el = document.getElementById('drawCanvas');
+  return el instanceof HTMLCanvasElement ? el : null;
+  // #endif
+  // #ifndef H5
+  return null;
+  // #endif
 }
 
-/** 初始化 / 同步 Canvas 尺寸（布局变化、横竖屏切换后重新测量） */
-function syncCanvasSize(): void {
+/** 获取 canvas 当前显示区域（优先真实 DOM） */
+function readDisplaySize(): { width: number; height: number } | null {
+  // #ifdef H5
+  const dom = getDomCanvas();
+  if (dom) {
+    const rect = dom.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      return { width: rect.width, height: rect.height };
+    }
+  }
+  // #endif
+  return null;
+}
+
+function applyCanvasSize(canvas: Canvas2dNode, layoutW: number, layoutH: number): void {
+  if (layoutW <= 0 || layoutH <= 0) return;
+
+  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : uni.getSystemInfoSync().pixelRatio || 1;
+
+  canvas.width = Math.round(layoutW * dpr);
+  canvas.height = Math.round(layoutH * dpr);
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+
+  canvasCtx.value = ctx;
+  canvasEl.value = canvas;
+  canvasWidth.value = layoutW;
+  canvasHeight.value = layoutH;
+
+  redrawAll(ctx, engineState.value, layoutW, layoutH, props.bgColor);
+  emit('strokeChange', getStrokeCount(engineState.value));
+
+  if (pendingStart) {
+    const p = pendingStart;
+    pendingStart = null;
+    doStartStroke(p.x, p.y);
+  }
+}
+
+/** 同步 canvas 尺寸（uni 节点 + 显示区域） */
+function syncCanvasSize(onReady?: () => void): void {
   const instance = getCurrentInstance();
+  const display = readDisplaySize();
+
   uni
     .createSelectorQuery()
     .in(instance?.proxy as Parameters<ReturnType<typeof uni.createSelectorQuery>['in']>[0])
-    .select('#drawCanvasWrap')
+    .select('#drawCanvas')
     .boundingClientRect()
     .select('#drawCanvas')
     .fields({ node: true, size: true }, () => {})
     .exec((res: UniNamespace.NodeInfo[]) => {
-      const wrapRect = res?.[0] as UniApp.NodeInfo | undefined;
+      const rect = res?.[0] as UniApp.NodeInfo | undefined;
       const item = res?.[1] as { node?: Canvas2dNode; width?: number; height?: number } | undefined;
-      if (!item?.node) return;
-
-      /** 优先用容器实际布局尺寸，避免 canvas height:100% 尚未撑开时测到 0 */
-      const layoutW = Math.round(wrapRect?.width ?? item.width ?? 0);
-      const layoutH = Math.round(wrapRect?.height ?? item.height ?? 0);
-      if (layoutW <= 0 || layoutH <= 0) return;
-
-      /** 尺寸未变则跳过，避免重复 reset 上下文 */
-      if (
-        canvasEl.value === item.node
-        && canvasWidth.value === layoutW
-        && canvasHeight.value === layoutH
-        && canvasCtx.value
-      ) {
+      if (!item?.node) {
+        onReady?.();
         return;
       }
 
-      const canvas = item.node;
-      const dpr = uni.getSystemInfoSync().pixelRatio || 1;
+      const layoutW = display?.width ?? rect?.width ?? item.width ?? 0;
+      const layoutH = display?.height ?? rect?.height ?? item.height ?? 0;
+      if (layoutW <= 0 || layoutH <= 0) {
+        onReady?.();
+        return;
+      }
 
-      /** 修改 width/height 会重置上下文状态 */
-      canvas.width = layoutW * dpr;
-      canvas.height = layoutH * dpr;
+      if (
+        canvasEl.value === item.node
+        && Math.abs(canvasWidth.value - layoutW) < 1
+        && Math.abs(canvasHeight.value - layoutH) < 1
+        && canvasCtx.value
+      ) {
+        onReady?.();
+        return;
+      }
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-
-      canvasCtx.value = ctx;
-      canvasEl.value = canvas;
-      canvasWidth.value = layoutW;
-      canvasHeight.value = layoutH;
-
-      redrawAll(ctx, engineState.value, layoutW, layoutH, props.bgColor);
-      emit('strokeChange', getStrokeCount(engineState.value));
+      applyCanvasSize(item.node, layoutW, layoutH);
+      onReady?.();
     });
 }
 
@@ -158,17 +183,37 @@ function scheduleSyncCanvasSize(): void {
   }, 80);
 }
 
-/** 获取触摸点坐标 */
+/** 屏幕/client 坐标 → 画布逻辑坐标 */
+function resolvePoint(clientX: number, clientY: number): { x: number; y: number } | null {
+  if (canvasWidth.value <= 0 || canvasHeight.value <= 0) return null;
+
+  // #ifdef H5
+  const dom = getDomCanvas();
+  if (dom) {
+    const rect = dom.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return null;
+    return {
+      x: Math.max(0, Math.min(canvasWidth.value, ((clientX - rect.left) / rect.width) * canvasWidth.value)),
+      y: Math.max(0, Math.min(canvasHeight.value, ((clientY - rect.top) / rect.height) * canvasHeight.value)),
+    };
+  }
+  // #endif
+
+  const canvas = canvasEl.value as unknown as HTMLCanvasElement | null;
+  const rect = canvas?.getBoundingClientRect?.();
+  if (!rect || rect.width <= 0) return null;
+
+  return {
+    x: Math.max(0, Math.min(canvasWidth.value, ((clientX - rect.left) / rect.width) * canvasWidth.value)),
+    y: Math.max(0, Math.min(canvasHeight.value, ((clientY - rect.top) / rect.height) * canvasHeight.value)),
+  };
+}
+
 function getPointFromTouch(e: TouchEvent): { x: number; y: number } | null {
   if (!e.touches?.length) return null;
   const touch = e.touches[0] as CanvasTouch;
 
-  /** 优先 clientX/Y + 比例换算（H5 / iPad 最准确） */
-  if (touch.clientX != null && touch.clientY != null) {
-    return getCanvasPoint(touch.clientX, touch.clientY);
-  }
-
-  /** 小程序 canvas 专用坐标（已是相对 canvas 的逻辑像素） */
+  /** 小程序 canvas：touch.x/y 即逻辑坐标 */
   if (touch.x != null && touch.y != null) {
     return {
       x: Math.max(0, Math.min(canvasWidth.value, touch.x)),
@@ -176,12 +221,16 @@ function getPointFromTouch(e: TouchEvent): { x: number; y: number } | null {
     };
   }
 
+  if (touch.clientX != null && touch.clientY != null) {
+    return resolvePoint(touch.clientX, touch.clientY);
+  }
+
   return null;
 }
 
 function getPointFromMouse(e: MouseEvent): { x: number; y: number } | null {
   if (Date.now() < ignoreMouseUntil.value) return null;
-  return getCanvasPoint(e.clientX, e.clientY);
+  return resolvePoint(e.clientX, e.clientY);
 }
 
 function refreshCanvas(): void {
@@ -191,52 +240,86 @@ function refreshCanvas(): void {
   emit('strokeChange', getStrokeCount(engineState.value));
 }
 
-function onTouchStart(e: TouchEvent): void {
-  ignoreMouseUntil.value = Date.now() + 400;
-  const point = getPointFromTouch(e);
-  if (!point || !canvasCtx.value) return;
+function doStartStroke(x: number, y: number): void {
+  if (!canvasCtx.value) return;
   isDrawing.value = true;
-  beginStroke(engineState.value, point.x, point.y, props.brushColor, props.brushSize, props.isEraser);
+  beginStroke(engineState.value, x, y, props.brushColor, props.brushSize, props.isEraser);
   refreshCanvas();
+}
+
+function startStroke(x: number, y: number): void {
+  if (canvasCtx.value && canvasWidth.value > 0) {
+    doStartStroke(x, y);
+    return;
+  }
+
+  pendingStart = { x, y };
+  syncCanvasSize();
+}
+
+function moveStroke(x: number, y: number): void {
+  if (!isDrawing.value || !canvasCtx.value) return;
+  appendPoint(engineState.value, x, y);
+  refreshCanvas();
+}
+
+function endActiveStroke(): void {
+  if (!isDrawing.value) return;
+  isDrawing.value = false;
+  endStroke(engineState.value);
+  refreshCanvas();
+}
+
+function onTouchStart(e: TouchEvent): void {
+  ignoreMouseUntil.value = Date.now() + 500;
+
+  const tryDraw = (): void => {
+    const point = getPointFromTouch(e);
+    if (point) startStroke(point.x, point.y);
+  };
+
+  if (!canvasCtx.value) {
+    syncCanvasSize(tryDraw);
+    return;
+  }
+  tryDraw();
 }
 
 function onTouchMove(e: TouchEvent): void {
   if (!isDrawing.value) return;
   const point = getPointFromTouch(e);
   if (!point) return;
-  appendPoint(engineState.value, point.x, point.y);
-  refreshCanvas();
+  moveStroke(point.x, point.y);
 }
 
 function onTouchEnd(): void {
-  if (!isDrawing.value) return;
-  isDrawing.value = false;
-  endStroke(engineState.value);
-  refreshCanvas();
+  endActiveStroke();
 }
 
-/** H5 鼠标绘画（App/小程序不触发） */
 function onMouseDown(e: MouseEvent): void {
-  const point = getPointFromMouse(e);
-  if (!point || !canvasCtx.value) return;
-  isDrawing.value = true;
-  beginStroke(engineState.value, point.x, point.y, props.brushColor, props.brushSize, props.isEraser);
-  refreshCanvas();
+  if (Date.now() < ignoreMouseUntil.value) return;
+
+  const tryDraw = (): void => {
+    const point = getPointFromMouse(e);
+    if (point) startStroke(point.x, point.y);
+  };
+
+  if (!canvasCtx.value) {
+    syncCanvasSize(tryDraw);
+    return;
+  }
+  tryDraw();
 }
 
 function onMouseMove(e: MouseEvent): void {
   if (!isDrawing.value) return;
   const point = getPointFromMouse(e);
   if (!point) return;
-  appendPoint(engineState.value, point.x, point.y);
-  refreshCanvas();
+  moveStroke(point.x, point.y);
 }
 
 function onMouseUp(): void {
-  if (!isDrawing.value) return;
-  isDrawing.value = false;
-  endStroke(engineState.value);
-  refreshCanvas();
+  endActiveStroke();
 }
 
 function undo(): boolean {
@@ -268,10 +351,17 @@ function exportImage(): string {
 
 defineExpose({ undo, redo, clear, getCount, exportImage, syncCanvasSize });
 
+/** 多次尝试初始化（等 flex 布局稳定） */
+function initCanvasWithRetry(retry = 0): void {
+  syncCanvasSize(() => {
+    if (canvasCtx.value && canvasWidth.value > 0) return;
+    if (retry >= 8) return;
+    bindRetryTimer = setTimeout(() => initCanvasWithRetry(retry + 1), 120);
+  });
+}
+
 onMounted(() => {
-  /** 等 flex 布局稳定后再测量（多次兜底） */
-  setTimeout(syncCanvasSize, 50);
-  setTimeout(syncCanvasSize, 300);
+  initCanvasWithRetry();
 
   // #ifdef H5
   setTimeout(() => {
@@ -280,13 +370,15 @@ onMounted(() => {
       resizeObserver = new ResizeObserver(() => scheduleSyncCanvasSize());
       resizeObserver.observe(wrap);
     }
-  }, 100);
+  }, 200);
   uni.onWindowResize(onWindowResizeHandler);
   // #endif
 });
 
 onBeforeUnmount(() => {
+  pendingStart = null;
   if (resizeTimer) clearTimeout(resizeTimer);
+  if (bindRetryTimer) clearTimeout(bindRetryTimer);
   resizeObserver?.disconnect();
   resizeObserver = null;
   // #ifdef H5
@@ -301,6 +393,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   min-height: 260px;
+  box-sizing: border-box;
   border-radius: $kd-radius-md;
   border: $kd-border-width solid $kd-border-color;
   overflow: hidden;
@@ -314,9 +407,9 @@ onBeforeUnmount(() => {
 }
 
 .draw-canvas {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
   touch-action: none;
 }
 </style>

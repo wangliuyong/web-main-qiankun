@@ -100,11 +100,22 @@ export function renderStroke(
   const { points } = stroke;
   if (points.length === 0) return;
 
-  ctx.beginPath();
+  const color = stroke.isEraser ? bgColor : stroke.color;
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
   ctx.lineWidth = stroke.lineWidth;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.strokeStyle = stroke.isEraser ? bgColor : stroke.color;
+
+  /** 单点时用圆点，否则 path 长度为 0 看不见 */
+  if (points.length === 1) {
+    ctx.beginPath();
+    ctx.arc(points[0].x, points[0].y, stroke.lineWidth / 2, 0, Math.PI * 2);
+    ctx.fill();
+    return;
+  }
+
+  ctx.beginPath();
   ctx.moveTo(points[0].x, points[0].y);
   for (let i = 1; i < points.length; i++) {
     ctx.lineTo(points[i].x, points[i].y);

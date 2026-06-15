@@ -208,6 +208,10 @@ onLoad((options) => {
 <style lang="scss" scoped>
 .page-studio .page-body {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 .studio-header {
