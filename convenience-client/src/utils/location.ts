@@ -69,13 +69,22 @@ function formatMpLocationError(raw: string): string {
  */
 function requestUniLocation(isHighAccuracy: boolean): Promise<CurrentPosition> {
   return new Promise((resolve, reject) => {
+    /** 外层超时，防止 Android App 上 wx.getLocation 长时间无回调 */
+    const timer = setTimeout(() => {
+      reject(new Error('定位超时，请使用地图选点或稍后再试'));
+    }, isHighAccuracy ? 6000 : 8000);
+
     uni.getLocation({
       type: 'gcj02',
       isHighAccuracy,
       /** 高精度最长等待 5s，超时后由上层降级为普通精度 */
       ...(isHighAccuracy ? { highAccuracyExpireTime: 5000 } : {}),
-      success: (res) => resolve({ latitude: res.latitude, longitude: res.longitude }),
+      success: (res) => {
+        clearTimeout(timer);
+        resolve({ latitude: res.latitude, longitude: res.longitude });
+      },
       fail: (err) => {
+        clearTimeout(timer);
         const msg = String(err?.errMsg || err?.message || '定位失败');
         reject(new Error(formatMpLocationError(msg)));
       },
@@ -138,6 +147,9 @@ export async function ensureLocationPermission(): Promise<boolean> {
 
   // #ifdef APP-PLUS
   const setting = uni.getAppAuthorizeSetting?.();
+  if (setting?.locationAuthorized === 'authorized') {
+    return true;
+  }
   if (setting?.locationAuthorized === 'denied') {
     const go = await new Promise<boolean>((resolve) => {
       uni.showModal({
@@ -152,6 +164,24 @@ export async function ensureLocationPermission(): Promise<boolean> {
     }
     return false;
   }
+
+  /** Android 首次需主动申请运行时定位权限，否则 getLocation 可能无响应 */
+  if (uni.getSystemInfoSync().platform === 'android' && typeof plus !== 'undefined') {
+    const granted = await new Promise<boolean>((resolve) => {
+      plus.android.requestPermissions(
+        [
+          'android.permission.ACCESS_FINE_LOCATION',
+          'android.permission.ACCESS_COARSE_LOCATION',
+        ],
+        (result) => {
+          resolve((result.granted?.length ?? 0) > 0);
+        },
+        () => resolve(false),
+      );
+    });
+    return granted;
+  }
+
   return true;
   // #endif
 

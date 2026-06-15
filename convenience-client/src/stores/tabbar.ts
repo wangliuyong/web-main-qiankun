@@ -5,6 +5,7 @@ import {
   normalizeRoute,
   PUBLISH_PAGE_PATH,
   TAB_BAR_ITEMS,
+  navigateToPublishPage,
 } from '@/constants/tabbar';
 
 /**
@@ -44,16 +45,11 @@ export const useTabBarStore = defineStore('tabbar', {
       const target = TAB_BAR_ITEMS[index];
       if (!target) return;
 
-      // 发布：独立子页，APP 端不走 switchTab 以避免原生 TabBar 残留
+      // 发布：独立子页，APP / 小程序均走 navigateTo（含栈内降级）
       if (target.pagePath === PUBLISH_PAGE_PATH || target.switchTab === false) {
-        // 立即更新路由态，避免 navigateTo 过渡期间 TabBar 露出
+        // 立即更新路由态，避免跳转过渡期间 TabBar 露出
         this.applyRoute(PUBLISH_PAGE_PATH);
-        uni.navigateTo({
-          url: `/${target.pagePath}`,
-          fail: () => {
-            uni.showToast({ title: '无法打开发布页', icon: 'none' });
-          },
-        });
+        navigateToPublishPage();
         return;
       }
 

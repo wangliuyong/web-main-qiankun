@@ -106,10 +106,64 @@ export function isTabSwitchPath(route: string): boolean {
   return (TAB_SWITCH_PATHS as readonly string[]).includes(normalizeRoute(route));
 }
 
+/** 构建发布页 URL */
+function buildPublishPageUrl(query?: { categoryId?: number }): string {
+  const qs = query?.categoryId ? `?categoryId=${query.categoryId}` : '';
+  return `/${PUBLISH_PAGE_PATH}${qs}`;
+}
+
+/**
+ * 跳转发布页（独立子页）
+ * - 已在栈顶：忽略
+ * - 已在页面栈中：redirectTo（Android 上 navigateTo 会失败）
+ * - 否则 navigateTo，失败时降级 redirectTo / reLaunch
+ */
+export function navigateToPublishPage(query?: { categoryId?: number }) {
+  const url = buildPublishPageUrl(query);
+  const pages = getCurrentPages();
+  const topRoute = normalizeRoute(pages[pages.length - 1]?.route ?? '');
+
+  if (topRoute === PUBLISH_PAGE_PATH) {
+    return;
+  }
+
+  const publishInStack = pages.some(
+    (page) => normalizeRoute(page.route ?? '') === PUBLISH_PAGE_PATH,
+  );
+
+  const openWithNavigateTo = () => {
+    uni.navigateTo({
+      url,
+      fail: () => openWithRedirectTo(),
+    });
+  };
+
+  const openWithRedirectTo = () => {
+    uni.redirectTo({
+      url,
+      fail: () => openWithReLaunch(),
+    });
+  };
+
+  const openWithReLaunch = () => {
+    uni.reLaunch({
+      url,
+      fail: () => {
+        uni.showToast({ title: '无法打开发布页', icon: 'none' });
+      },
+    });
+  };
+
+  if (publishInStack) {
+    openWithRedirectTo();
+    return;
+  }
+  openWithNavigateTo();
+}
+
 /** 打开发布页（独立子页） */
 export function openPublishPage(query?: { categoryId?: number }) {
-  const qs = query?.categoryId ? `?categoryId=${query.categoryId}` : '';
-  uni.navigateTo({ url: `/${PUBLISH_PAGE_PATH}${qs}` });
+  navigateToPublishPage(query);
 }
 
 /** @deprecated 使用 AI_PAGE_PATH */

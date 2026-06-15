@@ -22,7 +22,7 @@
     <view class="page-publish__body">
       <!-- 加载骨架：与表单区块同形 -->
       <template v-if="pageLoading">
-        <view v-for="i in 4" :key="i" class="page-publish__section cv-card page-publish__section--sk">
+        <view v-for="skIdx in 4" :key="skIdx" class="page-publish__section cv-card page-publish__section--sk">
           <view class="page-publish__section-head">
             <SkeletonBlock width="48rpx" height="48rpx" radius="50%" :shimmer="true" />
             <view class="page-publish__section-meta">
@@ -31,7 +31,7 @@
             </view>
           </view>
           <SkeletonBlock height="120rpx" radius="16rpx" :shimmer="true" />
-          <SkeletonBlock v-if="i <= 2" height="200rpx" radius="16rpx" :shimmer="true" />
+          <SkeletonBlock v-if="skIdx <= 2" height="200rpx" radius="16rpx" :shimmer="true" />
         </view>
       </template>
 
@@ -495,19 +495,33 @@ onShow(() => {
   tabBarStore.syncFromRoute();
 });
 
-onMounted(async () => {
+/** 初始化发布页：分类优先展示，定位后台刷新（避免 Android 上 getLocation 阻塞页面） */
+async function initPublishPage() {
   pageLoading.value = true;
   try {
-    await locationStore.fetchLocation();
     categories.value = await queryCategoryTree();
     if (form.value.categoryId) {
       syncRootFromCategory(form.value.categoryId);
     } else if (categories.value.length) {
       activeRootId.value = categories.value[0].id;
     }
+    if (!form.value.address) {
+      form.value.address = locationStore.address || locationStore.cityName;
+    }
+    void locationStore.fetchLocation().then((ok) => {
+      if (ok && !form.value.address.trim()) {
+        form.value.address = locationStore.address || locationStore.cityName;
+      }
+    });
+  } catch {
+    uni.showToast({ title: '分类加载失败，请稍后重试', icon: 'none' });
   } finally {
     pageLoading.value = false;
   }
+}
+
+onMounted(() => {
+  void initPublishPage();
 });
 </script>
 
