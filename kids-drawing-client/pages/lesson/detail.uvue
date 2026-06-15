@@ -1,0 +1,188 @@
+<template>
+  <view class="page-root">
+    <view class="safe-top" :style="{ height: statusBarHeight + 'px' }"></view>
+    <view class="nav-bar">
+      <view class="nav-back" @click="goBack">
+        <text class="nav-back-text">← 返回</text>
+      </view>
+      <text class="nav-title">课时详情</text>
+      <view class="nav-placeholder"></view>
+    </view>
+
+    <scroll-view v-if="lesson != null" class="detail-scroll" scroll-y="true">
+      <view class="card">
+        <text class="lesson-title">{{ lesson!.title }}</text>
+        <text class="lesson-desc">{{ lesson!.description }}</text>
+        <!-- 难度星星 -->
+        <view class="difficulty-row">
+          <text class="difficulty-label">难度：</text>
+          <text v-for="i in lesson!.difficulty" :key="i" class="diff-star">⭐</text>
+        </view>
+      </view>
+
+      <!-- 步骤预览 -->
+      <text class="section-title">学习步骤</text>
+      <view
+        v-for="(step, idx) in lesson!.steps"
+        :key="idx"
+        class="step-preview"
+      >
+        <text class="step-num">{{ step.order }}</text>
+        <text class="step-hint">{{ step.hint }}</text>
+        <text v-if="step.required" class="step-required">必做</text>
+      </view>
+
+      <!-- 开始按钮 -->
+      <view class="start-btn" @click="onStart">
+        <text class="start-btn-text">开始画画 🖌️</text>
+      </view>
+    </scroll-view>
+
+    <view v-else class="empty-wrap">
+      <text class="empty-text">课时不存在</text>
+    </view>
+  </view>
+</template>
+
+<script setup lang="uts">
+  import { ref } from 'vue'
+  import { queryLessonById } from '@/utils/lesson-loader.uts'
+  import type { LessonItem } from '@/types/lesson.uts'
+
+  const statusBarHeight = ref(0)
+  const lesson = ref<LessonItem | null>(null)
+  const lessonId = ref('')
+
+  function onStart(): void {
+    if (lessonId.value == '') {
+      return
+    }
+    uni.navigateTo({ url: '/pages/studio/index?lessonId=' + lessonId.value })
+  }
+
+  function goBack(): void {
+    uni.navigateBack({})
+  }
+
+  onLoad((options: OnLoadOptions) => {
+    const info = uni.getWindowInfo()
+    statusBarHeight.value = info.statusBarHeight
+    const id = options['lessonId'] as string | null
+    if (id != null && id != '') {
+      lessonId.value = id
+      lesson.value = queryLessonById(id)
+    }
+  })
+</script>
+
+<style lang="scss">
+  .nav-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background-color: #FFD166;
+    border-bottom-width: 3px;
+    border-bottom-color: #2D3436;
+    border-bottom-style: solid;
+  }
+
+  .nav-back { min-width: 60px; }
+  .nav-back-text { font-size: 16px; color: #2D3436; }
+  .nav-title { font-size: 18px; font-weight: bold; color: #2D3436; }
+  .nav-placeholder { min-width: 60px; }
+
+  .detail-scroll { flex: 1; }
+
+  .lesson-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+
+  .lesson-desc {
+    font-size: 14px;
+    color: #636E72;
+    margin-top: 8px;
+  }
+
+  .difficulty-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .difficulty-label {
+    font-size: 14px;
+    color: #636E72;
+  }
+
+  .diff-star { font-size: 16px; }
+
+  .step-preview {
+    flex-direction: row;
+    align-items: center;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: #2D3436;
+    border-style: solid;
+    padding: 12px 16px;
+    margin: 6px 16px;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    background-color: #4ECDC4;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2D3436;
+    margin-right: 12px;
+    line-height: 28px;
+  }
+
+  .step-hint {
+    flex: 1;
+    font-size: 15px;
+    color: #2D3436;
+  }
+
+  .step-required {
+    font-size: 11px;
+    color: #FF6B6B;
+    background-color: #FFF0F0;
+    padding: 2px 8px;
+    border-radius: 8px;
+  }
+
+  .start-btn {
+    background-color: #7AE582;
+    border-radius: 28px;
+    border-width: 3px;
+    border-color: #2D3436;
+    border-style: solid;
+    padding: 16px;
+    margin: 24px 16px;
+    align-items: center;
+  }
+
+  .start-btn-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+
+  .empty-wrap {
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty-text {
+    font-size: 16px;
+    color: #636E72;
+  }
+</style>

@@ -1,0 +1,52 @@
+/**
+ * 全局状态 — 进度、作品集、档案
+ */
+import { reactive } from 'vue'
+import type { ProgressData, ProfileData } from '@/types/progress.uts'
+import type { GalleryData } from '@/types/gallery.uts'
+import { createDefaultProgress, createDefaultProfile, createDefaultGallery } from '@/utils/storage.uts'
+
+/** 应用全局状态类型 */
+export type AppState = {
+  progress: ProgressData
+  gallery: GalleryData
+  profile: ProfileData
+  /** 是否已从本地存储水合 */
+  hydrated: boolean
+  /** 当前 Tab 索引 0学习 1画板 2作品 3我的 */
+  tabIndex: number
+}
+
+/** 全局响应式状态 */
+export const state = reactive({
+  progress: createDefaultProgress(),
+  gallery: createDefaultGallery(),
+  profile: createDefaultProfile(),
+  hydrated: false,
+  tabIndex: 0
+} as AppState)
+
+/** 替换进度数据 */
+export function setProgress(data: ProgressData): void {
+  state.progress = data
+}
+
+/** 替换作品集数据 */
+export function setGallery(data: GalleryData): void {
+  state.gallery = data
+}
+
+/** 替换档案数据 */
+export function setProfile(data: ProfileData): void {
+  state.profile = data
+}
+
+/** 标记水合完成 */
+export function setHydrated(value: boolean): void {
+  state.hydrated = value
+}
+
+/** 设置 Tab 索引 */
+export function setTabIndex(index: number): void {
+  state.tabIndex = index
+}

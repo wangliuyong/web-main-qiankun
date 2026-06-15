@@ -33,7 +33,9 @@
     "build:api": "pnpm --dir nest-server run build",
     "build:web": "pnpm run build:subapps && pnpm --dir next-host run build",
     "sync:db": "bash docker/sync-db-to-server.sh",
-    "sync:convenience:env": "bash docker/sync-convenience-env.sh"
+    "sync:convenience:env": "bash docker/sync-convenience-env.sh",
+    "install:kids-drawing": "echo 'uni-app-x 使用 HBuilderX 管理依赖，请用 HBuilderX 打开 kids-drawing-client 目录'",
+    "dev:kids-drawing": "echo '请用 HBuilderX 打开 kids-drawing-client/ 并运行到浏览器或 App 基座，详见 kids-drawing-client/README.md'"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

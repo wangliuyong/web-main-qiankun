@@ -1,0 +1,52 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "小画家启蒙",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/course/map",
+      "style": {
+        "navigationBarTitleText": "课程地图",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/lesson/detail",
+      "style": {
+        "navigationBarTitleText": "课时详情",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/studio/index",
+      "style": {
+        "navigationBarTitleText": "绘画工作台",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/gallery/index",
+      "style": {
+        "navigationBarTitleText": "我的作品",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "成长档案",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "小画家启蒙",
+    "navigationBarBackgroundColor": "#FFD166",
+    "backgroundColor": "#FFF9F0"
+  }
+}

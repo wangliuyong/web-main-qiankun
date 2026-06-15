@@ -1,0 +1,64 @@
+<template>
+  <view class="color-palette">
+    <view
+      v-for="(color, index) in colors"
+      :key="index"
+      class="color-item"
+      :class="selectedColor == color ? 'color-item-active' : ''"
+      :style="{ backgroundColor: color }"
+      @click="onSelect(color)"
+    ></view>
+  </view>
+</template>
+
+<script setup lang="uts">
+  import { computed } from 'vue'
+
+  /** 儿童友好色板 */
+  const colors = [
+    '#2D3436', '#FF6B6B', '#FFD166', '#4ECDC4',
+    '#9B5DE5', '#7AE582', '#F15BB5', '#00BBF9',
+    '#FFFFFF', '#FEE440'
+  ]
+
+  const props = defineProps({
+    modelValue: { type: String, default: '#2D3436' }
+  })
+
+  const emit = defineEmits<{
+    (e: 'update:modelValue', color: string): void
+    (e: 'change', color: string): void
+  }>()
+
+  const selectedColor = computed(() => props.modelValue)
+
+  function onSelect(color: string): void {
+    emit('update:modelValue', color)
+    emit('change', color)
+  }
+</script>
+
+<style lang="scss">
+  .color-palette {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    justify-content: center;
+  }
+
+  .color-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: #2D3436;
+    border-style: solid;
+    margin: 6px;
+  }
+
+  .color-item-active {
+    border-width: 4px;
+    border-color: #FF6B6B;
+    transform: scale(1.1);
+  }
+</style>

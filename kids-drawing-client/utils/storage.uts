@@ -1,0 +1,109 @@
+/**
+ * 本地存储读写封装
+ */
+import type { ProgressData } from '@/types/progress.uts'
+import type { GalleryData } from '@/types/gallery.uts'
+import type { ProfileData } from '@/types/progress.uts'
+
+const KEY_PROGRESS = 'kids_progress'
+const KEY_GALLERY = 'kids_gallery'
+const KEY_PROFILE = 'kids_profile'
+
+/** 默认进度数据 */
+export function createDefaultProgress(): ProgressData {
+  return {
+    lessonRecords: [],
+    totalStars: 0,
+    streakDays: 0,
+    lastStudyDate: '',
+    unlockedBadges: []
+  }
+}
+
+/** 默认档案数据 */
+export function createDefaultProfile(): ProfileData {
+  return {
+    nickname: '小画家',
+    avatarEmoji: '🎨'
+  }
+}
+
+/** 默认作品集数据 */
+export function createDefaultGallery(): GalleryData {
+  return {
+    works: []
+  }
+}
+
+/** 读取进度 */
+export function loadProgress(): ProgressData {
+  const raw = uni.getStorageSync(KEY_PROGRESS)
+  if (raw == null || raw == '') {
+    return createDefaultProgress()
+  }
+  try {
+    const parsed = JSON.parse(raw as string) as ProgressData
+    return parsed
+  } catch (e) {
+    return createDefaultProgress()
+  }
+}
+
+/** 保存进度 */
+export function saveProgress(data: ProgressData): void {
+  uni.setStorageSync(KEY_PROGRESS, JSON.stringify(data))
+}
+
+/** 读取作品集 */
+export function loadGallery(): GalleryData {
+  const raw = uni.getStorageSync(KEY_GALLERY)
+  if (raw == null || raw == '') {
+    return createDefaultGallery()
+  }
+  try {
+    const parsed = JSON.parse(raw as string) as GalleryData
+    return parsed
+  } catch (e) {
+    return createDefaultGallery()
+  }
+}
+
+/** 保存作品集 */
+export function saveGallery(data: GalleryData): void {
+  uni.setStorageSync(KEY_GALLERY, JSON.stringify(data))
+}
+
+/** 读取档案 */
+export function loadProfile(): ProfileData {
+  const raw = uni.getStorageSync(KEY_PROFILE)
+  if (raw == null || raw == '') {
+    return createDefaultProfile()
+  }
+  try {
+    const parsed = JSON.parse(raw as string) as ProfileData
+    return parsed
+  } catch (e) {
+    return createDefaultProfile()
+  }
+}
+
+/** 保存档案 */
+export function saveProfile(data: ProfileData): void {
+  uni.setStorageSync(KEY_PROFILE, JSON.stringify(data))
+}
+
+/** 获取今日日期字符串 YYYY-MM-DD */
+export function getTodayDateStr(): string {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = now.getMonth() + 1
+  const d = now.getDate()
+  const ms = m < 10 ? '0' + m.toString() : m.toString()
+  const ds = d < 10 ? '0' + d.toString() : d.toString()
+  return y.toString() + '-' + ms + '-' + ds
+}
+
+/** 生成唯一 id */
+export function generateId(): string {
+  return Date.now().toString() + '_' + Math.floor(Math.random() * 10000).toString()
+}

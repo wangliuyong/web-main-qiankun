@@ -1,0 +1,32 @@
+/**
+ * 进度与档案类型定义
+ */
+
+/** 单课时完成记录 */
+export type LessonProgress = {
+  lessonId: string
+  /** 获得星星 0-3 */
+  stars: number
+  /** 完成时间戳 */
+  completedAt: number
+  /** 笔画数 */
+  strokeCount: number
+}
+
+/** 用户进度数据 */
+export type ProgressData = {
+  lessonRecords: LessonProgress[]
+  totalStars: number
+  /** 连续学习天数 */
+  streakDays: number
+  /** 上次学习日期 YYYY-MM-DD */
+  lastStudyDate: string
+  /** 已解锁徽章 id 列表 */
+  unlockedBadges: string[]
+}
+
+/** 用户档案 */
+export type ProfileData = {
+  nickname: string
+  avatarEmoji: string
+}

@@ -1,0 +1,50 @@
+/**
+ * HTTP 客户端 — 预留 nest-server 对接
+ * 首期使用本地 mock，后续替换 request 实现即可
+ */
+import type { ProgressData } from '@/types/progress.uts'
+import type { GalleryData } from '@/types/gallery.uts'
+
+/** API 基础地址（后续从环境配置读取） */
+export const API_BASE_URL = 'http://localhost:3001/api/kids-drawing'
+
+/** 是否启用远程 API（首期 false） */
+export const API_ENABLED = false
+
+/** 统一响应结构 */
+export type ApiResponse<T> = {
+  code: number
+  data: T
+  message: string
+}
+
+/**
+ * 通用请求封装（预留）
+ * @param url 请求路径
+ * @param method 请求方法
+ * @param data 请求体
+ */
+export function request<T>(url: string, method: string, data: UTSJSONObject | null): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    if (!API_ENABLED) {
+      reject(new Error('API 未启用，请使用本地存储'))
+      return
+    }
+    uni.request({
+      url: API_BASE_URL + url,
+      method: method,
+      data: data,
+      success: (res) => {
+        const body = res.data as ApiResponse<T>
+        if (body.code == 0) {
+          resolve(body.data)
+        } else {
+          reject(new Error(body.message))
+        }
+      },
+      fail: (err) => {
+        reject(err)
+      }
+    })
+  })
+}

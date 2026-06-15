@@ -1,0 +1,284 @@
+{
+  "chapters": [
+    {
+      "id": "ch1",
+      "title": "线条认知",
+      "description": "认识直线、曲线，练习控笔能力",
+      "icon": "✏️",
+      "color": "#FFD166",
+      "lessons": [
+        {
+          "id": "ch1-l1",
+          "chapterId": "ch1",
+          "title": "画直线",
+          "description": "跟着引导画横线和竖线，感受笔的走向",
+          "difficulty": 1,
+          "rewardStars": 3,
+          "minStrokes": 3,
+          "prevLessonId": "",
+          "steps": [
+            { "order": 1, "hint": "画一条横线 →", "shapeType": "line-h", "required": true },
+            { "order": 2, "hint": "画一条竖线 ↓", "shapeType": "line-v", "required": true },
+            { "order": 3, "hint": "自由画几条弯弯的线", "shapeType": "line-free", "required": false }
+          ]
+        },
+        {
+          "id": "ch1-l2",
+          "chapterId": "ch1",
+          "title": "画曲线",
+          "description": "用曲线画出波浪和弯弯的小路",
+          "difficulty": 1,
+          "rewardStars": 3,
+          "minStrokes": 4,
+          "prevLessonId": "ch1-l1",
+          "steps": [
+            { "order": 1, "hint": "画波浪线 ～～～", "shapeType": "line-wave", "required": true },
+            { "order": 2, "hint": "画一条弯弯的路", "shapeType": "line-curve", "required": true }
+          ]
+        },
+        {
+          "id": "ch1-l3",
+          "chapterId": "ch1",
+          "title": "线条组合",
+          "description": "用横竖线搭出简单格子",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 6,
+          "prevLessonId": "ch1-l2",
+          "steps": [
+            { "order": 1, "hint": "画一个方框", "shapeType": "rect", "required": true },
+            { "order": 2, "hint": "在方框里加横线", "shapeType": "grid", "required": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch2",
+      "title": "基础图形",
+      "description": "圆形、方形、三角形，搭建造型基础",
+      "icon": "🔷",
+      "color": "#4ECDC4",
+      "lessons": [
+        {
+          "id": "ch2-l1",
+          "chapterId": "ch2",
+          "title": "画圆形",
+          "description": "练习画圆，像太阳一样圆溜溜",
+          "difficulty": 1,
+          "rewardStars": 3,
+          "minStrokes": 2,
+          "prevLessonId": "ch1-l3",
+          "steps": [
+            { "order": 1, "hint": "画一个大圆圈", "shapeType": "circle", "required": true },
+            { "order": 2, "hint": "再画一个小圆圈", "shapeType": "circle-small", "required": true }
+          ]
+        },
+        {
+          "id": "ch2-l2",
+          "chapterId": "ch2",
+          "title": "画方形",
+          "description": "方形是房子的好材料",
+          "difficulty": 1,
+          "rewardStars": 3,
+          "minStrokes": 4,
+          "prevLessonId": "ch2-l1",
+          "steps": [
+            { "order": 1, "hint": "画一个正方形", "shapeType": "rect", "required": true },
+            { "order": 2, "hint": "画一个长方形", "shapeType": "rect-wide", "required": true }
+          ]
+        },
+        {
+          "id": "ch2-l3",
+          "chapterId": "ch2",
+          "title": "画三角形",
+          "description": "三角形像小山和屋顶",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 3,
+          "prevLessonId": "ch2-l2",
+          "steps": [
+            { "order": 1, "hint": "画一个三角形 △", "shapeType": "triangle", "required": true },
+            { "order": 2, "hint": "画三个三角形排成小山", "shapeType": "mountain", "required": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "title": "色彩游戏",
+      "description": "认识颜色，给图形涂上漂亮色彩",
+      "icon": "🎨",
+      "color": "#FF6B6B",
+      "lessons": [
+        {
+          "id": "ch3-l1",
+          "chapterId": "ch3",
+          "title": "三原色",
+          "description": "红、黄、蓝，色彩的好朋友",
+          "difficulty": 1,
+          "rewardStars": 3,
+          "minStrokes": 3,
+          "prevLessonId": "ch2-l3",
+          "steps": [
+            { "order": 1, "hint": "用红色画一个圆", "shapeType": "circle", "required": true },
+            { "order": 2, "hint": "用黄色画一个圆", "shapeType": "circle", "required": true },
+            { "order": 3, "hint": "用蓝色画一个圆", "shapeType": "circle", "required": true }
+          ]
+        },
+        {
+          "id": "ch3-l2",
+          "chapterId": "ch3",
+          "title": "彩虹涂色",
+          "description": "画出七彩条纹，感受色彩之美",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 5,
+          "prevLessonId": "ch3-l1",
+          "steps": [
+            { "order": 1, "hint": "画七条横线当彩虹", "shapeType": "rainbow", "required": true },
+            { "order": 2, "hint": "每条线换一种颜色", "shapeType": "line-h", "required": true }
+          ]
+        },
+        {
+          "id": "ch3-l3",
+          "chapterId": "ch3",
+          "title": "彩色花园",
+          "description": "用不同颜色画花朵和草地",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 6,
+          "prevLessonId": "ch3-l2",
+          "steps": [
+            { "order": 1, "hint": "画几朵小花", "shapeType": "flower", "required": true },
+            { "order": 2, "hint": "画一片绿草地", "shapeType": "grass", "required": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "title": "简笔画入门",
+      "description": "用简单图形组合出可爱图案",
+      "icon": "🏠",
+      "color": "#9B5DE5",
+      "lessons": [
+        {
+          "id": "ch4-l1",
+          "chapterId": "ch4",
+          "title": "画太阳",
+          "description": "圆圆的太阳，闪闪发光",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 5,
+          "prevLessonId": "ch3-l3",
+          "steps": [
+            { "order": 1, "hint": "画一个圆圆的太阳", "shapeType": "sun", "required": true },
+            { "order": 2, "hint": "画上光芒射线", "shapeType": "sun-rays", "required": true }
+          ]
+        },
+        {
+          "id": "ch4-l2",
+          "chapterId": "ch4",
+          "title": "画小房子",
+          "description": "方形加三角，就是温暖的家",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 6,
+          "prevLessonId": "ch4-l1",
+          "steps": [
+            { "order": 1, "hint": "画方形当房身", "shapeType": "rect", "required": true },
+            { "order": 2, "hint": "画三角形当屋顶", "shapeType": "triangle", "required": true },
+            { "order": 3, "hint": "画门和窗户", "shapeType": "house", "required": true }
+          ]
+        },
+        {
+          "id": "ch4-l3",
+          "chapterId": "ch4",
+          "title": "画小动物",
+          "description": "圆圆的脸蛋，画出可爱小猫",
+          "difficulty": 3,
+          "rewardStars": 3,
+          "minStrokes": 8,
+          "prevLessonId": "ch4-l2",
+          "steps": [
+            { "order": 1, "hint": "画圆圆的脸", "shapeType": "circle", "required": true },
+            { "order": 2, "hint": "画尖尖的耳朵", "shapeType": "triangle", "required": true },
+            { "order": 3, "hint": "画上眼睛和嘴巴", "shapeType": "cat", "required": true }
+          ]
+        },
+        {
+          "id": "ch4-l4",
+          "chapterId": "ch4",
+          "title": "画星星",
+          "description": "一闪一闪亮晶晶",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 4,
+          "prevLessonId": "ch4-l3",
+          "steps": [
+            { "order": 1, "hint": "画一颗大星星", "shapeType": "star", "required": true },
+            { "order": 2, "hint": "再画几颗小星星", "shapeType": "star-small", "required": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch5",
+      "title": "自由创作",
+      "description": "发挥想象力，画出属于自己的画",
+      "icon": "🌈",
+      "color": "#7AE582",
+      "lessons": [
+        {
+          "id": "ch5-l1",
+          "chapterId": "ch5",
+          "title": "我的天空",
+          "description": "自由画一片属于你的天空",
+          "difficulty": 1,
+          "rewardStars": 3,
+          "minStrokes": 5,
+          "prevLessonId": "ch4-l4",
+          "steps": [
+            { "order": 1, "hint": "画出蓝天白云", "shapeType": "sky", "required": false },
+            { "order": 2, "hint": "加上你喜欢的元素", "shapeType": "free", "required": false }
+          ]
+        },
+        {
+          "id": "ch5-l2",
+          "chapterId": "ch5",
+          "title": "我的梦想",
+          "description": "画出你心中的梦想画面",
+          "difficulty": 2,
+          "rewardStars": 3,
+          "minStrokes": 8,
+          "prevLessonId": "ch5-l1",
+          "steps": [
+            { "order": 1, "hint": "先想好要画什么", "shapeType": "free", "required": false },
+            { "order": 2, "hint": "大胆画出来吧！", "shapeType": "free", "required": false }
+          ]
+        },
+        {
+          "id": "ch5-l3",
+          "chapterId": "ch5",
+          "title": "创意大挑战",
+          "description": "用三种图形组合出一幅画",
+          "difficulty": 3,
+          "rewardStars": 3,
+          "minStrokes": 10,
+          "prevLessonId": "ch5-l2",
+          "steps": [
+            { "order": 1, "hint": "选圆、方、三角各一个", "shapeType": "free", "required": false },
+            { "order": 2, "hint": "组合成有趣的图案", "shapeType": "free", "required": false }
+          ]
+        }
+      ]
+    }
+  ],
+  "badges": [
+    { "id": "badge-ch1", "title": "线条小达人", "description": "完成线条认知全部课时", "chapterId": "ch1" },
+    { "id": "badge-ch2", "title": "图形小能手", "description": "完成基础图形全部课时", "chapterId": "ch2" },
+    { "id": "badge-ch3", "title": "色彩小画家", "description": "完成色彩游戏全部课时", "chapterId": "ch3" },
+    { "id": "badge-ch4", "title": "简笔画新星", "description": "完成简笔画入门全部课时", "chapterId": "ch4" },
+    { "id": "badge-ch5", "title": "创意小大师", "description": "完成自由创作全部课时", "chapterId": "ch5" }
+  ]
+}

@@ -1,0 +1,127 @@
+<template>
+  <view class="draw-toolbar">
+    <!-- 画笔 -->
+    <view class="tool-btn" :class="!isEraser ? 'tool-btn-active' : ''" @click="onBrush">
+      <text class="tool-icon">🖌️</text>
+      <text class="tool-label">画笔</text>
+    </view>
+    <!-- 橡皮 -->
+    <view class="tool-btn" :class="isEraser ? 'tool-btn-active' : ''" @click="onEraser">
+      <text class="tool-icon">🧽</text>
+      <text class="tool-label">橡皮</text>
+    </view>
+    <!-- 粗细调节 -->
+    <view class="size-group">
+      <view
+        v-for="(size, idx) in sizes"
+        :key="idx"
+        class="size-dot"
+        :class="brushSize == size ? 'size-dot-active' : ''"
+        :style="{ width: size + 8 + 'px', height: size + 8 + 'px' }"
+        @click="onSizeChange(size)"
+      ></view>
+    </view>
+    <!-- 撤销 -->
+    <view class="tool-btn" @click="onUndo">
+      <text class="tool-icon">↩️</text>
+      <text class="tool-label">撤销</text>
+    </view>
+    <!-- 清空 -->
+    <view class="tool-btn" @click="onClear">
+      <text class="tool-icon">🗑️</text>
+      <text class="tool-label">清空</text>
+    </view>
+  </view>
+</template>
+
+<script setup lang="uts">
+  const props = defineProps({
+    brushSize: { type: Number, default: 6 },
+    isEraser: { type: Boolean, default: false }
+  })
+
+  const emit = defineEmits<{
+    (e: 'update:brushSize', size: number): void
+    (e: 'update:isEraser', value: boolean): void
+    (e: 'undo'): void
+    (e: 'clear'): void
+  }>()
+
+  const sizes = [4, 8, 14]
+
+  function onBrush(): void {
+    emit('update:isEraser', false)
+  }
+
+  function onEraser(): void {
+    emit('update:isEraser', true)
+  }
+
+  function onSizeChange(size: number): void {
+    emit('update:brushSize', size)
+  }
+
+  function onUndo(): void {
+    emit('undo')
+  }
+
+  function onClear(): void {
+    emit('clear')
+  }
+</script>
+
+<style lang="scss">
+  .draw-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 8px;
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: #2D3436;
+    border-style: solid;
+    margin: 8px 12px;
+  }
+
+  .tool-btn {
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 12px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .tool-btn-active {
+    background-color: #FFD166;
+  }
+
+  .tool-icon {
+    font-size: 22px;
+  }
+
+  .tool-label {
+    font-size: 11px;
+    color: #2D3436;
+    margin-top: 2px;
+  }
+
+  .size-group {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .size-dot {
+    background-color: #2D3436;
+    border-radius: 50%;
+    margin: 0 4px;
+    border-width: 2px;
+    border-color: transparent;
+    border-style: solid;
+  }
+
+  .size-dot-active {
+    border-color: #FF6B6B;
+  }
+</style>

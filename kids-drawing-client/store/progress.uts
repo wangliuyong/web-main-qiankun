@@ -1,0 +1,127 @@
+/**
+ * 进度 Store：课时完成、星星、连续学习、徽章
+ */
+import { state, setProgress } from '@/store/index.uts'
+import type { LessonProgress, ProgressData } from '@/types/progress.uts'
+import type { LessonItem } from '@/types/lesson.uts'
+import { saveProgress, getTodayDateStr } from '@/utils/storage.uts'
+import { queryChapters, queryBadges } from '@/utils/lesson-loader.uts'
+
+/** 获取课时记录 */
+export function queryLessonRecord(lessonId: string): LessonProgress | null {
+  const records = state.progress.lessonRecords
+  for (let i = 0; i < records.length; i++) {
+    if (records[i].lessonId == lessonId) {
+      return records[i]
+    }
+  }
+  return null
+}
+
+/** 重新计算总星星 */
+function recalcTotalStars(records: LessonProgress[]): number {
+  let total = 0
+  for (let i = 0; i < records.length; i++) {
+    total += records[i].stars
+  }
+  return total
+}
+
+/** 更新连续学习天数 */
+function updateStreak(progress: ProgressData): void {
+  const today = getTodayDateStr()
+  if (progress.lastStudyDate == today) {
+    return
+  }
+  // 判断是否连续（昨天学过则 +1，否则重置为 1）
+  const yesterday = getYesterdayStr()
+  if (progress.lastStudyDate == yesterday) {
+    progress.streakDays = progress.streakDays + 1
+  } else {
+    progress.streakDays = 1
+  }
+  progress.lastStudyDate = today
+}
+
+/** 获取昨天日期 */
+function getYesterdayStr(): string {
+  const now = new Date()
+  now.setDate(now.getDate() - 1)
+  const y = now.getFullYear()
+  const m = now.getMonth() + 1
+  const d = now.getDate()
+  const ms = m < 10 ? '0' + m.toString() : m.toString()
+  const ds = d < 10 ? '0' + d.toString() : d.toString()
+  return y.toString() + '-' + ms + '-' + ds
+}
+
+/** 检查并解锁徽章 */
+function checkBadges(progress: ProgressData): void {
+  const badges = queryBadges()
+  const chapters = queryChapters()
+  for (let i = 0; i < badges.length; i++) {
+    const badge = badges[i]
+    if (progress.unlockedBadges.indexOf(badge.id) >= 0) {
+      continue
+    }
+    // 查找对应章节
+    for (let j = 0; j < chapters.length; j++) {
+      if (chapters[j].id != badge.chapterId) {
+        continue
+      }
+      const lessons = chapters[j].lessons
+      let allDone = true
+      for (let k = 0; k < lessons.length; k++) {
+        const record = queryLessonRecord(lessons[k].id)
+        if (record == null || record.stars < 1) {
+          allDone = false
+          break
+        }
+      }
+      if (allDone) {
+        progress.unlockedBadges.push(badge.id)
+      }
+    }
+  }
+}
+
+/**
+ * 提交课时完成记录
+ * @param lesson 课时信息
+ * @param stars 获得星星
+ * @param strokeCount 笔画数
+ */
+export function postLessonComplete(lesson: LessonItem, stars: number, strokeCount: number): void {
+  const progress = state.progress
+  const newRecord: LessonProgress = {
+    lessonId: lesson.id,
+    stars: stars,
+    completedAt: Date.now(),
+    strokeCount: strokeCount
+  }
+  // 更新或新增记录（保留更高星星）
+  let found = false
+  const records = progress.lessonRecords
+  for (let i = 0; i < records.length; i++) {
+    if (records[i].lessonId == lesson.id) {
+      if (stars > records[i].stars) {
+        records[i] = newRecord
+      }
+      found = true
+      break
+    }
+  }
+  if (!found) {
+    records.push(newRecord)
+  }
+  progress.totalStars = recalcTotalStars(records)
+  updateStreak(progress)
+  checkBadges(progress)
+  setProgress(progress)
+  saveProgress(progress)
+}
+
+/** 从本地存储水合进度 */
+export function hydrateProgress(data: ProgressData): void {
+  setProgress(data)
+}

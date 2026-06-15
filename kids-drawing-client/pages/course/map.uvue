@@ -1,0 +1,257 @@
+<template>
+  <view class="page-root">
+    <view class="safe-top" :style="{ height: statusBarHeight + 'px' }"></view>
+    <!-- 导航栏 -->
+    <view class="nav-bar">
+      <view class="nav-back" @click="goBack">
+        <text class="nav-back-text">← 返回</text>
+      </view>
+      <text class="nav-title">课程地图</text>
+      <view class="nav-placeholder"></view>
+    </view>
+
+    <scroll-view class="map-scroll" scroll-y="true">
+      <view
+        v-for="(chapter, cIdx) in chapters"
+        :key="cIdx"
+        class="chapter-block"
+      >
+        <!-- 章节标题 -->
+        <view class="chapter-header" :style="{ backgroundColor: chapter.color }">
+          <text class="chapter-header-icon">{{ chapter.icon }}</text>
+          <view class="chapter-header-info">
+            <text class="chapter-header-title">{{ chapter.title }}</text>
+            <text class="chapter-header-desc">{{ chapter.description }}</text>
+          </view>
+        </view>
+        <!-- 课时列表 -->
+        <view
+          v-for="(lesson, lIdx) in chapter.lessons"
+          :key="lIdx"
+          class="lesson-node"
+          :class="getLessonClass(lesson)"
+          @click="onLessonClick(lesson)"
+        >
+          <view class="lesson-dot">
+            <text class="lesson-dot-text">{{ lIdx + 1 }}</text>
+          </view>
+          <view class="lesson-info">
+            <text class="lesson-title">{{ lesson.title }}</text>
+            <text class="lesson-stars">{{ getStarsText(lesson.id) }}</text>
+          </view>
+          <text v-if="!isUnlocked(lesson)" class="lock-icon">🔒</text>
+          <text v-else-if="isDone(lesson.id)" class="done-icon">✅</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</template>
+
+<script setup lang="uts">
+  import { ref } from 'vue'
+  import { state } from '@/store/index.uts'
+  import {
+    queryChapters,
+    isLessonUnlocked,
+    isLessonCompleted,
+    queryLessonStars
+  } from '@/utils/lesson-loader.uts'
+  import type { ChapterItem, LessonItem } from '@/types/lesson.uts'
+
+  const statusBarHeight = ref(0)
+  const chapters = ref<ChapterItem[]>(queryChapters())
+
+  function isUnlocked(lesson: LessonItem): boolean {
+    return isLessonUnlocked(state.progress, lesson)
+  }
+
+  function isDone(lessonId: string): boolean {
+    return isLessonCompleted(state.progress, lessonId)
+  }
+
+  function getStarsText(lessonId: string): string {
+    const stars = queryLessonStars(state.progress, lessonId)
+    if (stars == 0) {
+      return '未完成'
+    }
+    let text = ''
+    for (let i = 0; i < stars; i++) {
+      text += '⭐'
+    }
+    return text
+  }
+
+  function getLessonClass(lesson: LessonItem): string {
+    if (!isUnlocked(lesson)) {
+      return 'lesson-locked'
+    }
+    if (isDone(lesson.id)) {
+      return 'lesson-done'
+    }
+    return 'lesson-active'
+  }
+
+  function onLessonClick(lesson: LessonItem): void {
+    if (!isUnlocked(lesson)) {
+      uni.showToast({ title: '请先完成上一课时', icon: 'none' })
+      return
+    }
+    uni.navigateTo({ url: '/pages/lesson/detail?lessonId=' + lesson.id })
+  }
+
+  function goBack(): void {
+    uni.navigateBack({})
+  }
+
+  onLoad(() => {
+    const info = uni.getWindowInfo()
+    statusBarHeight.value = info.statusBarHeight
+  })
+</script>
+
+<style lang="scss">
+  .nav-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background-color: #FFD166;
+    border-bottom-width: 3px;
+    border-bottom-color: #2D3436;
+    border-bottom-style: solid;
+  }
+
+  .nav-back {
+    min-width: 60px;
+  }
+
+  .nav-back-text {
+    font-size: 16px;
+    color: #2D3436;
+  }
+
+  .nav-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+
+  .nav-placeholder {
+    min-width: 60px;
+  }
+
+  .map-scroll {
+    flex: 1;
+    padding: 12px 0;
+  }
+
+  .chapter-block {
+    margin-bottom: 16px;
+  }
+
+  .chapter-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 16px;
+    margin: 0 16px;
+    border-radius: 16px 16px 0 0;
+    border-width: 3px;
+    border-color: #2D3436;
+    border-style: solid;
+    border-bottom-width: 0;
+  }
+
+  .chapter-header-icon {
+    font-size: 32px;
+    margin-right: 12px;
+  }
+
+  .chapter-header-info {
+    flex: 1;
+  }
+
+  .chapter-header-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+
+  .chapter-header-desc {
+    font-size: 12px;
+    color: #636E72;
+    margin-top: 2px;
+  }
+
+  .lesson-node {
+    flex-direction: row;
+    align-items: center;
+    padding: 14px 16px;
+    margin: 0 16px;
+    background-color: #FFFFFF;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-color: #2D3436;
+    border-style: solid;
+  }
+
+  .lesson-node:last-child {
+    border-bottom-width: 3px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .lesson-locked {
+    opacity: 0.5;
+    background-color: #F0F0F0;
+  }
+
+  .lesson-done {
+    background-color: #FFF9E6;
+  }
+
+  .lesson-active {
+    background-color: #FFFFFF;
+  }
+
+  .lesson-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    background-color: #FFD166;
+    border-width: 2px;
+    border-color: #2D3436;
+    border-style: solid;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+  }
+
+  .lesson-dot-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+
+  .lesson-info {
+    flex: 1;
+  }
+
+  .lesson-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+
+  .lesson-stars {
+    font-size: 12px;
+    color: #636E72;
+    margin-top: 2px;
+  }
+
+  .lock-icon {
+    font-size: 20px;
+  }
+
+  .done-icon {
+    font-size: 20px;
+  }
+</style>

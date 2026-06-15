@@ -1,0 +1,251 @@
+<template>
+  <view class="draw-canvas-wrap">
+    <canvas
+      id="draw-canvas"
+      class="draw-canvas"
+      :disable-scroll="true"
+      @touchstart="onTouchStart"
+      @touchmove="onTouchMove"
+      @touchend="onTouchEnd"
+      @touchcancel="onTouchEnd"
+      @mousedown="onMouseDown"
+      @mousemove="onMouseMove"
+      @mouseup="onMouseUp"
+      @mouseleave="onMouseUp"
+    ></canvas>
+  </view>
+</template>
+
+<script setup lang="uts">
+  import { ref, getCurrentInstance } from 'vue'
+  import {
+    createEngineState,
+    beginStroke,
+    appendPoint,
+    endStroke,
+    undoStroke,
+    redoStroke,
+    clearStrokes,
+    redrawAll,
+    getStrokeCount,
+    type DrawingEngineState
+  } from '@/utils/drawing-engine.uts'
+
+  const props = defineProps({
+    /** 画笔颜色 */
+    brushColor: { type: String, default: '#2D3436' },
+    /** 画笔粗细 */
+    brushSize: { type: Number, default: 6 },
+    /** 是否为橡皮擦模式 */
+    isEraser: { type: Boolean, default: false },
+    /** 画布背景色 */
+    bgColor: { type: String, default: '#FFFFFF' }
+  })
+
+  const emit = defineEmits<{
+    (e: 'strokeChange', count: number): void
+  }>()
+
+  const instance = getCurrentInstance()!.proxy
+  const engineState = ref<DrawingEngineState>(createEngineState())
+  const canvasCtx = ref<CanvasRenderingContext2D | null>(null)
+  const canvasEl = ref<UniCanvasElement | null>(null)
+  const canvasWidth = ref(0)
+  const canvasHeight = ref(0)
+  const isDrawing = ref(false)
+
+  /** 初始化 Canvas 上下文（跨平台异步方式） */
+  function initCanvas(): void {
+    uni.createCanvasContextAsync({
+      id: 'draw-canvas',
+      component: instance,
+      success: (context: CanvasContext) => {
+        const ctx = context.getContext('2d')!
+        const canvas = ctx.canvas
+        const dpr = uni.getWindowInfo().pixelRatio
+        canvas.width = canvas.offsetWidth * dpr
+        canvas.height = canvas.offsetHeight * dpr
+        ctx.scale(dpr, dpr)
+        canvasCtx.value = ctx
+        canvasEl.value = canvas
+        canvasWidth.value = canvas.offsetWidth
+        canvasHeight.value = canvas.offsetHeight
+        // 填充背景
+        ctx.fillStyle = props.bgColor
+        ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
+      }
+    })
+  }
+
+  /** 获取相对画布的坐标（触摸事件） */
+  function getTouchPoint(e: UniTouchEvent): { x: number, y: number } | null {
+    const canvas = canvasEl.value
+    if (canvas == null) {
+      return null
+    }
+    const touches = e.touches
+    if (touches.length == 0) {
+      return null
+    }
+    const touch = touches[0]
+    const rect = canvas.getBoundingClientRect()
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    }
+  }
+
+  /** 获取相对画布的坐标（鼠标事件） */
+  function getMousePoint(e: UniMouseEvent): { x: number, y: number } | null {
+    const canvas = canvasEl.value
+    if (canvas == null) {
+      return null
+    }
+    const rect = canvas.getBoundingClientRect()
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    }
+  }
+
+  /** 重绘并通知笔画变化 */
+  function refreshCanvas(): void {
+    const ctx = canvasCtx.value
+    if (ctx == null) {
+      return
+    }
+    redrawAll(ctx, engineState.value, canvasWidth.value, canvasHeight.value, props.bgColor)
+    emit('strokeChange', getStrokeCount(engineState.value))
+  }
+
+  function onTouchStart(e: UniTouchEvent): void {
+    const point = getTouchPoint(e)
+    if (point == null || canvasCtx.value == null) {
+      return
+    }
+    isDrawing.value = true
+    beginStroke(engineState.value, point.x, point.y, props.brushColor, props.brushSize, props.isEraser)
+    refreshCanvas()
+  }
+
+  function onTouchMove(e: UniTouchEvent): void {
+    if (!isDrawing.value) {
+      return
+    }
+    const point = getTouchPoint(e)
+    if (point == null) {
+      return
+    }
+    appendPoint(engineState.value, point.x, point.y)
+    refreshCanvas()
+  }
+
+  function onTouchEnd(_e: UniTouchEvent): void {
+    if (!isDrawing.value) {
+      return
+    }
+    isDrawing.value = false
+    endStroke(engineState.value)
+    refreshCanvas()
+  }
+
+  /** Web 端鼠标绘画支持（App 端不触发） */
+  function onMouseDown(e: UniMouseEvent): void {
+    const point = getMousePoint(e)
+    if (point == null || canvasCtx.value == null) {
+      return
+    }
+    isDrawing.value = true
+    beginStroke(engineState.value, point.x, point.y, props.brushColor, props.brushSize, props.isEraser)
+    refreshCanvas()
+  }
+
+  function onMouseMove(e: UniMouseEvent): void {
+    if (!isDrawing.value) {
+      return
+    }
+    const point = getMousePoint(e)
+    if (point == null) {
+      return
+    }
+    appendPoint(engineState.value, point.x, point.y)
+    refreshCanvas()
+  }
+
+  function onMouseUp(_e: UniMouseEvent): void {
+    if (!isDrawing.value) {
+      return
+    }
+    isDrawing.value = false
+    endStroke(engineState.value)
+    refreshCanvas()
+  }
+
+  /** 对外暴露：撤销 */
+  function undo(): boolean {
+    const ok = undoStroke(engineState.value)
+    if (ok) {
+      refreshCanvas()
+    }
+    return ok
+  }
+
+  /** 对外暴露：重做 */
+  function redo(): boolean {
+    const ok = redoStroke(engineState.value)
+    if (ok) {
+      refreshCanvas()
+    }
+    return ok
+  }
+
+  /** 对外暴露：清空 */
+  function clear(): void {
+    clearStrokes(engineState.value)
+    refreshCanvas()
+  }
+
+  /** 对外暴露：获取笔画数 */
+  function getCount(): number {
+    return getStrokeCount(engineState.value)
+  }
+
+  /** 对外暴露：导出 base64 图片 */
+  function exportImage(): string {
+    const canvas = canvasEl.value
+    if (canvas == null) {
+      return ''
+    }
+    return canvas.toDataURL('image/png')
+  }
+
+  defineExpose({
+    undo,
+    redo,
+    clear,
+    getCount,
+    exportImage
+  })
+
+  onReady(() => {
+    initCanvas()
+  })
+</script>
+
+<style lang="scss">
+  .draw-canvas-wrap {
+    flex: 1;
+    width: 100%;
+    border-radius: 12px;
+    border-width: 3px;
+    border-color: #2D3436;
+    border-style: solid;
+    overflow: hidden;
+    background-color: #FFFFFF;
+  }
+
+  .draw-canvas {
+    width: 100%;
+    height: 100%;
+  }
+</style>

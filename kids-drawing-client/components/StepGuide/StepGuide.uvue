@@ -1,0 +1,181 @@
+<template>
+  <view class="step-guide">
+    <!-- 步骤指示 -->
+    <view class="step-header">
+      <text class="step-title">第 {{ currentStep + 1 }} / {{ totalSteps }} 步</text>
+      <view class="toggle-btn" @click="onToggleGuide">
+        <text class="toggle-text">{{ showGuide ? '隐藏参考' : '显示参考' }}</text>
+      </view>
+    </view>
+    <!-- 提示文案 -->
+    <text class="step-hint">{{ hintText }}</text>
+    <!-- 参考图形叠加层 -->
+    <view v-if="showGuide" class="guide-overlay">
+      <view class="guide-shape-wrap">
+        <text class="guide-emoji">{{ shapeEmoji }}</text>
+        <text class="guide-shape-label">{{ shapeLabel }}</text>
+      </view>
+    </view>
+    <!-- 步骤圆点 -->
+    <view class="step-dots">
+      <view
+        v-for="(_, idx) in totalSteps"
+        :key="idx"
+        class="step-dot"
+        :class="idx <= currentStep ? 'step-dot-done' : ''"
+      ></view>
+    </view>
+    <!-- 下一步按钮 -->
+    <view v-if="currentStep < totalSteps - 1" class="next-btn" @click="onNext">
+      <text class="next-btn-text">下一步 →</text>
+    </view>
+  </view>
+</template>
+
+<script setup lang="uts">
+  import { computed } from 'vue'
+
+  const props = defineProps({
+    currentStep: { type: Number, default: 0 },
+    totalSteps: { type: Number, default: 1 },
+    hintText: { type: String, default: '' },
+    shapeType: { type: String, default: 'free' },
+    showGuide: { type: Boolean, default: true }
+  })
+
+  const emit = defineEmits<{
+    (e: 'update:currentStep', step: number): void
+    (e: 'update:showGuide', value: boolean): void
+    (e: 'next'): void
+  }>()
+
+  /** 根据 shapeType 返回参考 emoji */
+  const shapeEmoji = computed((): string => {
+    const map: UTSJSONObject = {
+      'line-h': '➡️', 'line-v': '⬇️', 'line-wave': '〰️', 'line-curve': '🛤️',
+      'line-free': '✏️', 'rect': '⬜', 'rect-wide': '▬', 'circle': '⭕',
+      'circle-small': '🔵', 'triangle': '🔺', 'mountain': '⛰️', 'rainbow': '🌈',
+      'flower': '🌸', 'grass': '🌿', 'sun': '☀️', 'sun-rays': '🌞',
+      'house': '🏠', 'cat': '🐱', 'star': '⭐', 'star-small': '✨',
+      'sky': '🌤️', 'free': '🎨', 'grid': '🔲'
+    }
+    const val = map[props.shapeType]
+    if (val != null) {
+      return val as string
+    }
+    return '🎨'
+  })
+
+  const shapeLabel = computed((): string => {
+    return '跟着画：' + props.hintText
+  })
+
+  function onToggleGuide(): void {
+    emit('update:showGuide', !props.showGuide)
+  }
+
+  function onNext(): void {
+    const next = props.currentStep + 1
+    emit('update:currentStep', next)
+    emit('next')
+  }
+</script>
+
+<style lang="scss">
+  .step-guide {
+    padding: 12px 16px;
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: #2D3436;
+    border-style: solid;
+    margin: 8px 12px;
+  }
+
+  .step-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+
+  .toggle-btn {
+    background-color: #4ECDC4;
+    border-radius: 12px;
+    padding: 4px 10px;
+  }
+
+  .toggle-text {
+    font-size: 12px;
+    color: #2D3436;
+  }
+
+  .step-hint {
+    font-size: 18px;
+    color: #FF6B6B;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .guide-overlay {
+    background-color: rgba(255, 209, 102, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .guide-shape-wrap {
+    align-items: center;
+  }
+
+  .guide-emoji {
+    font-size: 48px;
+  }
+
+  .guide-shape-label {
+    font-size: 14px;
+    color: #636E72;
+    margin-top: 4px;
+  }
+
+  .step-dots {
+    flex-direction: row;
+    justify-content: center;
+    margin: 8px 0;
+  }
+
+  .step-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background-color: #DFE6E9;
+    margin: 0 4px;
+  }
+
+  .step-dot-done {
+    background-color: #FFD166;
+  }
+
+  .next-btn {
+    background-color: #7AE582;
+    border-radius: 20px;
+    padding: 10px;
+    align-items: center;
+    border-width: 2px;
+    border-color: #2D3436;
+    border-style: solid;
+  }
+
+  .next-btn-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2D3436;
+  }
+</style>

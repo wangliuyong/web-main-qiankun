@@ -1,0 +1,39 @@
+/**
+ * 作品集 API — 首期读本地，预留云上传
+ */
+import { state } from '@/store/index.uts'
+import type { GalleryData, GalleryWork } from '@/types/gallery.uts'
+import { loadGallery, saveGallery } from '@/utils/storage.uts'
+import { API_ENABLED, request } from '@/api/client.uts'
+
+/** 查询作品集 */
+export function queryGallery(): Promise<GalleryData> {
+  if (!API_ENABLED) {
+    return new Promise<GalleryData>((resolve) => {
+      resolve(loadGallery())
+    })
+  }
+  return request<GalleryData>('/gallery', 'GET', null)
+}
+
+/**
+ * 上传作品到云端
+ * @param work 作品数据
+ */
+export function postUploadWork(work: GalleryWork): Promise<void> {
+  if (!API_ENABLED) {
+    return new Promise<void>((resolve) => {
+      const gallery = loadGallery()
+      gallery.works.unshift(work)
+      saveGallery(gallery)
+      resolve()
+    })
+  }
+  const data = JSON.parse(JSON.stringify(work)) as UTSJSONObject
+  return request<void>('/gallery/upload', 'POST', data)
+}
+
+/** 获取当前内存中的作品集 */
+export function queryCurrentGallery(): GalleryData {
+  return state.gallery
+}
