@@ -11,7 +11,7 @@ Next.js 主基座 + Qiankun 微前端子应用 + NestJS 后端。
 │   ├── app-web/         # 前台统一子应用（首页 / 关于 / 博客 / 项目 / 联系 / 友链，端口 4001）
 │   └── app-admin/       # 管理后台（端口 4007）
 ├── convenience-client/  # 同城便民 uni-app（微信小程序 / H5 / APP，端口 5175）
-├── kids-drawing-client/ # 儿童绘画启蒙 uni-app-x（Android / iOS / 鸿蒙 / Web）
+├── kids-drawing-client/ # 儿童绘画启蒙 uni-app Vue3（H5 / 微信小程序 / APP，端口 5176）
 └── doc/                 # PRD 与技术方案
 ```
 
@@ -113,34 +113,41 @@ pnpm run dev:convenience:app
 
 C 端测试账号：手机号 `13800138000`，密码 `123456`。
 
-## 儿童绘画启蒙 uni-app-x（kids-drawing-client）
+## 儿童绘画启蒙 uni-app（kids-drawing-client）
 
-面向 3–8 岁儿童的绘画启蒙应用，技术栈：**uni-app-x（uvue + UTS）**，本地存储进度与作品，`api/` 层预留 nest-server 云同步。
+面向 3–8 岁儿童的绘画启蒙应用，技术栈：**uni-app Vue3 + TypeScript + Pinia + Vite CLI**，本地存储进度与作品，`api/` 层预留 nest-server 云同步。
 
-> **注意**：uni-app-x 需使用 **HBuilderX** 打开并运行，无法通过根目录 pnpm 脚本直接编译。
+### 一键启动（推荐）
 
-### 打开与运行
-
-1. 安装 [HBuilderX](https://www.dcloud.io/hbuilderx.html)（建议 4.25+）
-2. 文件 → 打开目录 → 选择 `kids-drawing-client/`
-3. 运行到目标平台：
-   - **Web**：运行 → 运行到浏览器（推荐开发调试）
-   - **Android / iOS / 鸿蒙**：运行 → 运行到手机或模拟器
-
-### 根目录快捷提示
+在项目根目录：
 
 ```bash
-pnpm run dev:kids-drawing    # 输出 HBuilderX 运行指引
+pnpm run install:kids-drawing
+pnpm run dev:kids-drawing:h5
+```
+
+浏览器访问 **http://localhost:5176**。
+
+### 分端启动
+
+```bash
+cd kids-drawing-client && pnpm install
+
+# H5
+pnpm run dev:kids-drawing:h5
+
+# 微信小程序（需微信开发者工具导入 dist/dev/mp-weixin）
+pnpm run dev:kids-drawing:mp
 ```
 
 ### 与 convenience-client 对比
 
 | 维度 | convenience-client | kids-drawing-client |
 |------|-------------------|---------------------|
-| 引擎 | uni-app Vue3 + Vite CLI | uni-app-x + HBuilderX |
-| 文件 | `.vue` / `.ts` | `.uvue` / `.uts` |
-| UI | uview-plus | 内置组件自建 |
-| 状态 | Pinia | `store/*.uts` reactive |
+| 引擎 | uni-app Vue3 + Vite CLI | uni-app Vue3 + Vite CLI |
+| UI | uview-plus | 内置组件自建（儿童友好） |
+| 状态 | Pinia | Pinia |
+| H5 端口 | 5175 | 5176 |
 
 详见 [kids-drawing-client/README.md](kids-drawing-client/README.md)。
 

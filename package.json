@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm run dev:all",
     "dev:all": "concurrently -k -n api,web,subweb,admin -c blue,green,cyan,bgBlue \"pnpm run dev:api\" \"pnpm run dev:web\" \"pnpm run dev:sub:web\" \"pnpm run dev:sub:admin\"",
-    "install:all": "pnpm install --dir nest-server && pnpm install --dir next-host && pnpm run install:subapps && pnpm run install:convenience",
+    "install:all": "pnpm install --dir nest-server && pnpm install --dir next-host && pnpm run install:subapps && pnpm run install:convenience && pnpm run install:kids-drawing",
     "install:subapps": "pnpm install --dir qiankun-subapps/_shared && pnpm install --dir qiankun-subapps/app-web && pnpm install --dir qiankun-subapps/app-admin",
     "install:convenience": "pnpm install --dir convenience-client",
     "db:migrate": "pnpm --dir nest-server exec prisma migrate dev --name init",
@@ -34,8 +34,12 @@
     "build:web": "pnpm run build:subapps && pnpm --dir next-host run build",
     "sync:db": "bash docker/sync-db-to-server.sh",
     "sync:convenience:env": "bash docker/sync-convenience-env.sh",
-    "install:kids-drawing": "echo 'uni-app-x 使用 HBuilderX 管理依赖，请用 HBuilderX 打开 kids-drawing-client 目录'",
-    "dev:kids-drawing": "echo '请用 HBuilderX 打开 kids-drawing-client/ 并运行到浏览器或 App 基座，详见 kids-drawing-client/README.md'"
+    "install:kids-drawing": "pnpm install --dir kids-drawing-client",
+    "dev:kids-drawing": "pnpm --dir kids-drawing-client run dev:h5",
+    "dev:kids-drawing:h5": "pnpm --dir kids-drawing-client run dev:h5",
+    "dev:kids-drawing:mp": "pnpm --dir kids-drawing-client run dev:mp-weixin",
+    "build:kids-drawing:h5": "pnpm --dir kids-drawing-client run build:h5",
+    "build:kids-drawing:mp": "pnpm --dir kids-drawing-client run build:mp-weixin"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

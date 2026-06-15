@@ -1,0 +1,48 @@
+/** 儿童绘画应用全局样式 */
+page {
+  background-color: #fff9f0;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+}
+
+.page-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff9f0;
+}
+
+.safe-top {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 3px solid #2d3436;
+  padding: 16px;
+  margin: 8px 16px;
+}
+
+.btn-primary {
+  background-color: #ffd166;
+  border-radius: 24px;
+  border: 3px solid #2d3436;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary-text {
+  color: #2d3436;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #2d3436;
+  margin: 16px 16px 8px;
+}
