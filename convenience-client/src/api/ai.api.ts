@@ -1,6 +1,18 @@
 import { request, uploadFile } from './client';
-import { resolveMediaUrl } from '@/utils/media';
+import { resolveMediaUrl, resolveMediaUrls } from '@/utils/media';
 import type { AiChatPayload, AiChatResult, AiMessageItem, AiSessionItem } from '@/types/city-info';
+
+/** 规范化 AI 聊天响应中的信息卡片图片 URL */
+function enrichChatResult(result: AiChatResult): AiChatResult {
+  if (!result.relatedInfos?.length) return result;
+  return {
+    ...result,
+    relatedInfos: result.relatedInfos.map((item) => ({
+      ...item,
+      images: resolveMediaUrls(item.images || []),
+    })),
+  };
+}
 
 /** 查询 AI 会话列表 */
 export function queryAiSessions(): Promise<AiSessionItem[]> {
@@ -22,7 +34,7 @@ export function postAiChat(payload: AiChatPayload): Promise<AiChatResult> {
  * 后端为非流式 JSON，获取完整回答后逐字展示
  */
 export async function* streamAiChat(payload: AiChatPayload): AsyncGenerator<string, AiChatResult> {
-  const result = await postAiChat(payload);
+  const result = enrichChatResult(await postAiChat(payload));
   for (const ch of result.answer) {
     yield ch;
     await new Promise((resolve) => setTimeout(resolve, 20));

@@ -11,7 +11,7 @@
         </view>
         <view class="ai-header__brand-text">
           <text class="ai-header__title">便民 AI</text>
-          <text class="ai-header__desc">办事指南 · 发布流程 · 常见问题</text>
+          <text class="ai-header__desc">搜索同城信息 · 办事指南 · 常见问题</text>
         </view>
       </view>
       <view class="ai-header__history-btn" @click="emit('history')">

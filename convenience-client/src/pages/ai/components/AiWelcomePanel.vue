@@ -4,7 +4,7 @@
       <u-icon name="chat" color="#1d4ed8" size="36" />
     </view>
     <text class="ai-welcome__title">有什么可以帮你？</text>
-    <text class="ai-welcome__sub">选择快捷问题，或直接输入</text>
+    <text class="ai-welcome__sub">输入关键词搜索同城信息，或选择快捷问题</text>
     <view class="ai-welcome__chips">
       <view v-for="chip in chips" :key="chip" class="ai-welcome__chip" @click="emit('chip', chip)">
         <text>{{ chip }}</text>

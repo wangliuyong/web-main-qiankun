@@ -5,16 +5,25 @@
       <u-icon name="chat-fill" color="#1d4ed8" size="16" />
     </view>
 
-    <view class="msg__bubble" :class="role === 'user' ? 'msg__bubble--user' : 'msg__bubble--assistant'">
+    <view
+      class="msg__bubble"
+      :class="[
+        role === 'user' ? 'msg__bubble--user' : 'msg__bubble--assistant',
+        { 'msg__bubble--with-cards': role === 'assistant' && relatedInfos?.length },
+      ]"
+    >
       <!-- 用户消息：纯文本 -->
       <text v-if="role === 'user'" class="msg__text msg__text--user">{{ content }}</text>
 
       <!-- 助手消息：结构化友好展示 -->
-      <AiMessageContent
-        v-else
-        :content="content"
-        :streaming="streaming"
-      />
+      <template v-else>
+        <AiMessageContent :content="content" :streaming="streaming" />
+        <AiInfoCards
+          v-if="!streaming && relatedInfos?.length"
+          :items="relatedInfos"
+          @select="emit('infoSelect', $event)"
+        />
+      </template>
     </view>
 
     <!-- 用户头像 -->
@@ -25,14 +34,20 @@
 </template>
 
 <script setup lang="ts">
-import type { AiMessageRole } from '@/types/city-info';
+import AiInfoCards from '@/components/AiInfoCards/AiInfoCards.vue';
 import AiMessageContent from '@/components/AiMessageContent/AiMessageContent.vue';
+import type { AiMessageRole, CityInfoItem } from '@/types/city-info';
 
 defineProps<{
   role: AiMessageRole;
   content: string;
+  relatedInfos?: CityInfoItem[];
   /** 助手消息是否正在流式输出 */
   streaming?: boolean;
+}>();
+
+const emit = defineEmits<{
+  infoSelect: [item: CityInfoItem];
 }>();
 </script>
 
@@ -87,6 +102,11 @@ defineProps<{
 .msg__bubble--assistant {
   @include cv-ai-bubble-assistant;
   min-width: 120rpx;
+}
+
+.msg__bubble--with-cards {
+  max-width: calc(100% - 100rpx);
+  width: calc(100% - 100rpx);
 }
 
 .msg__text--user {

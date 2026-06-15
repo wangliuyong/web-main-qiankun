@@ -8,6 +8,7 @@ import type {
   ConvNotice,
   ConvUser,
 } from '@prisma/client';
+import { parseAssistantContent } from '../ai/conv-ai-message.util';
 
 /** ISO 8601 时间字符串 */
 function toIso(date: Date): string {
@@ -144,6 +145,18 @@ export function serializeAiSession(item: ConvAiSession) {
 
 /** ConvAiMessage → AiMessageItem */
 export function serializeAiMessage(item: ConvAiMessage) {
+  if (item.role === 'assistant') {
+    const { text, relatedInfos } = parseAssistantContent(item.content);
+    return {
+      id: item.id,
+      sessionId: item.sessionId,
+      role: 'assistant' as const,
+      content: text,
+      relatedInfos,
+      createdAt: toIso(item.createdAt),
+    };
+  }
+
   return {
     id: item.id,
     sessionId: item.sessionId,

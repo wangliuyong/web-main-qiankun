@@ -34,7 +34,9 @@
         :key="msg.id"
         :role="msg.role"
         :content="msg.content"
+        :related-infos="msg.relatedInfos"
         :streaming="streaming && msg.role === 'assistant' && msg.id === streamingMsgId"
+        @info-select="emit('infoSelect', $event)"
       />
     </view>
 
@@ -45,7 +47,7 @@
 <script setup lang="ts">
 import AiMessageBubble from '@/components/AiMessageBubble/AiMessageBubble.vue';
 import SkeletonBlock from '@/components/SkeletonBlock/SkeletonBlock.vue';
-import type { AiMessageItem } from '@/types/city-info';
+import type { AiMessageItem, CityInfoItem } from '@/types/city-info';
 import AiWelcomePanel from './AiWelcomePanel.vue';
 
 defineProps<{
@@ -59,6 +61,7 @@ defineProps<{
 
 const emit = defineEmits<{
   chip: [text: string];
+  infoSelect: [item: CityInfoItem];
 }>();
 </script>
 

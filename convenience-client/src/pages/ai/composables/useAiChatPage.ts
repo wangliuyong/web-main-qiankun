@@ -5,7 +5,8 @@ import { isTabBarPath } from '@/constants/tabbar';
 import { useTabBarStore } from '@/stores/tabbar';
 import { useAiStore } from '@/stores/ai';
 import { useUserStore } from '@/stores/user';
-import type { AiMessageItem } from '@/types/city-info';
+import type { AiMessageItem, CityInfoItem } from '@/types/city-info';
+import { resolveAiMessageCards } from '@/utils/ai-message-cards';
 
 /** u-input 内联样式，避免与外层 flex 冲突 */
 export const AI_INPUT_STYLE = {
@@ -14,7 +15,7 @@ export const AI_INPUT_STYLE = {
   padding: '0',
 };
 
-export const AI_QUICK_CHIPS = ['如何发布信息？', '审核要多久？', '怎么举报违规？'];
+export const AI_QUICK_CHIPS = ['帮我找二手物品', '附近有什么招聘', '如何发布信息？'];
 
 /**
  * AI 聊天页：会话历史、流式回复与导航
@@ -77,6 +78,17 @@ export function useAiChatPage() {
     onSend();
   }
 
+  function goInfoDetail(item: CityInfoItem) {
+    uni.navigateTo({ url: `/pages/info/detail?id=${item.id}` });
+  }
+
+  /** 规范化历史/API 消息：剥离内嵌卡片标记 */
+  function normalizeMessage(msg: AiMessageItem): AiMessageItem {
+    if (msg.role !== 'assistant') return msg;
+    const { text, relatedInfos } = resolveAiMessageCards(msg.content, msg.relatedInfos);
+    return { ...msg, content: text, relatedInfos };
+  }
+
   async function scrollToBottom() {
     await nextTick();
     scrollTop.value = scrollTop.value === 99999 ? 100000 : 99999;
@@ -124,6 +136,9 @@ export function useAiChatPage() {
       if (step.value?.sessionId) {
         sessionId.value = step.value.sessionId;
       }
+      if (step.value?.relatedInfos?.length) {
+        assistantMsg.relatedInfos = step.value.relatedInfos;
+      }
     } catch (e) {
       assistantMsg.content = (e as Error).message || '回答失败，请重试';
     } finally {
@@ -140,7 +155,7 @@ export function useAiChatPage() {
     historyLoading.value = true;
     try {
       const history = await queryAiMessages(id);
-      messages.value = history;
+      messages.value = history.map(normalizeMessage);
       msgId = history.length + 1;
       await scrollToBottom();
     } finally {
@@ -177,5 +192,6 @@ export function useAiChatPage() {
     goBack,
     useChip,
     onSend,
+    goInfoDetail,
   };
 }

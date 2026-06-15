@@ -112,6 +112,8 @@ export interface AiMessageItem {
   role: AiMessageRole;
   content: string;
   createdAt: string;
+  /** 助手消息附带的同城信息卡片（搜索已发布信息） */
+  relatedInfos?: CityInfoItem[];
 }
 
 /** AI 问答请求 */
@@ -124,4 +126,6 @@ export interface AiChatPayload {
 export interface AiChatResult {
   sessionId: number;
   answer: string;
+  /** 与问题相关的已发布同城信息 */
+  relatedInfos?: CityInfoItem[];
 }

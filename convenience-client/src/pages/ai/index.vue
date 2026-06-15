@@ -10,6 +10,7 @@
       :scroll-top="scrollTop"
       :chips="AI_QUICK_CHIPS"
       @chip="useChip"
+      @info-select="goInfoDetail"
     />
 
     <AiComposerBar
@@ -42,6 +43,7 @@ const {
   goBack,
   useChip,
   onSend,
+  goInfoDetail,
 } = useAiChatPage();
 </script>
 
