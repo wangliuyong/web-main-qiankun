@@ -40,6 +40,24 @@ function whenReady(): Promise<void> {
   return mapReadyPromise;
 }
 
+/** 多次触发 resize，避免 Android 浏览器 flex 布局下容器高度未就绪导致空白 */
+function scheduleMapResize() {
+  [0, 100, 300, 600].forEach((delay) => {
+    window.setTimeout(() => mapInstance?.resize?.(), delay);
+  });
+}
+
+/** 监听视口变化（横竖屏切换、地址栏显隐） */
+function bindViewportResize() {
+  window.addEventListener('resize', scheduleMapResize);
+  window.addEventListener('orientationchange', scheduleMapResize);
+}
+
+function unbindViewportResize() {
+  window.removeEventListener('resize', scheduleMapResize);
+  window.removeEventListener('orientationchange', scheduleMapResize);
+}
+
 /** 初始化高德地图：拖动结束后抛出中心点坐标 */
 async function initMap() {
   try {
@@ -57,10 +75,8 @@ async function initMap() {
       emit('moveend', center.lat, center.lng);
     });
 
-    /** 容器尺寸就绪后刷新地图，避免 flex 布局下出现空白 */
-    window.setTimeout(() => {
-      mapInstance?.resize?.();
-    }, 100);
+    scheduleMapResize();
+    bindViewportResize();
 
     resolveMapReady?.();
     resolveMapReady = null;
@@ -102,6 +118,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  unbindViewportResize();
   mapInstance?.destroy?.();
   mapInstance = null;
 });

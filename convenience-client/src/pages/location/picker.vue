@@ -23,6 +23,21 @@
       />
       <!-- #endif -->
       <!-- #ifndef H5 -->
+      <!-- #ifdef APP-PLUS -->
+      <map
+        id="locationMap"
+        class="page-loc-picker__map"
+        provider="amap"
+        :latitude="latitude"
+        :longitude="longitude"
+        :scale="16"
+        show-location
+        enable-zoom
+        enable-scroll
+        @regionchange="onRegionChange"
+      />
+      <!-- #endif -->
+      <!-- #ifndef APP-PLUS -->
       <map
         id="locationMap"
         class="page-loc-picker__map"
@@ -30,11 +45,11 @@
         :longitude="longitude"
         :scale="16"
         show-location
-        enable-3D
         enable-zoom
         enable-scroll
         @regionchange="onRegionChange"
       />
+      <!-- #endif -->
       <!-- #endif -->
       <!-- 中心固定图钉 -->
       <view class="page-loc-picker__pin">
