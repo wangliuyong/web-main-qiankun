@@ -166,9 +166,7 @@
       </template>
     </view>
 
-    <!-- #ifndef MP-WEIXIN -->
     <AppTabBar page-path="pages/mine/index" />
-    <!-- #endif -->
   </view>
 </template>
 
@@ -181,9 +179,7 @@ import { queryMyCityInfoList } from '@/api/city-info.api';
 import { queryMineOverview } from '@/api/mine.api';
 import type { MineOverview } from '@/api/mine.api';
 import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
-// #ifndef MP-WEIXIN
 import AppTabBar from '@/components/AppTabBar/AppTabBar.vue';
-// #endif
 import SkeletonBlock from '@/components/SkeletonBlock/SkeletonBlock.vue';
 import SkeletonLine from '@/components/SkeletonLine/SkeletonLine.vue';
 import SkeletonList from '@/components/SkeletonList/SkeletonList.vue';

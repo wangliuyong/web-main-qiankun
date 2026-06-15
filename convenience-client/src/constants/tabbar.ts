@@ -1,6 +1,6 @@
 /**
  * 底部 Tab 配置
- * 图标使用 /static/tab/*.png，微信 custom-tab-bar 与 H5/App AppTabBar 共用
+ * 图标使用 /static/tab/*.png
  */
 export interface TabBarItemConfig {
   /** 与 u-tabbar value 匹配的标识 */

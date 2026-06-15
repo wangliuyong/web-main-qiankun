@@ -6,7 +6,6 @@ import {
   PUBLISH_PAGE_PATH,
   TAB_BAR_ITEMS,
 } from '@/constants/tabbar';
-import { resolveMpCustomTabBarPayload, syncMpCustomTabBar } from '@/utils/mp-custom-tab-bar';
 
 /**
  * 自定义 TabBar 选中态
@@ -31,7 +30,6 @@ export const useTabBarStore = defineStore('tabbar', {
       if (index >= 0 && normalized !== PUBLISH_PAGE_PATH) {
         this.activeIndex = index;
       }
-      syncMpCustomTabBar(resolveMpCustomTabBarPayload(normalized, this.activeIndex));
     },
 
     /** 根据当前页面路由同步高亮项与 TabBar 显隐 */

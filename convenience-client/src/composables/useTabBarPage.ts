@@ -1,11 +1,9 @@
 import { onShow } from '@dcloudio/uni-app';
 import { useTabBarStore } from '@/stores/tabbar';
 
-/**
- * 隐藏原生 TabBar（H5 / App 仍需手动隐藏；微信 custom:true 已由框架接管）
- */
+/** 隐藏原生 TabBar，避免与 AppTabBar 叠层闪烁 */
 function hideNativeTabBar() {
-  // #ifdef H5 || APP-PLUS
+  // #ifdef MP-WEIXIN || APP-PLUS || H5
   uni.hideTabBar({ animation: false, fail: () => {} });
   // #endif
 }

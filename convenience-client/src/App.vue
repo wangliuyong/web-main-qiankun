@@ -3,9 +3,9 @@ import { onLaunch, onShow } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
 import { useLocationStore } from '@/stores/location';
 
-/** 隐藏 H5 / App 原生 TabBar（微信小程序 tabBar.custom 已由框架隐藏原生栏） */
+/** 隐藏原生 TabBar，各 Tab 页内挂载 AppTabBar */
 function hideNativeTabBar() {
-  // #ifdef H5 || APP-PLUS
+  // #ifdef MP-WEIXIN || APP-PLUS || H5
   uni.hideTabBar({ animation: false, fail: () => {} });
   // #endif
 }
