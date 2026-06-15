@@ -48,121 +48,113 @@
       </template>
 
       <template v-else>
-      <!-- 未登录引导 -->
-      <view v-if="!userStore.isLoggedIn" class="page-mine__login cv-card--elevated">
-        <view class="page-mine__login-icon">
-          <u-icon name="account-fill" color="#1d4ed8" size="28" />
-        </view>
-        <view class="page-mine__login-text">
-          <text class="page-mine__login-title">登录同城便民</text>
-          <text class="page-mine__login-desc">发布信息、收藏关注、AI 问答</text>
-        </view>
-        <u-button type="primary" text="去登录" size="small" shape="circle" @click="goLogin" />
-      </view>
-
-      <!-- 数据概览：真实数字一眼可读 -->
-      <view class="page-mine__stats cv-card--elevated">
-        <view class="page-mine__stat" @click="goPage('/pages/mine/collect')">
-          <text class="page-mine__stat-value">{{ statText(overview.collectCount) }}</text>
-          <text class="page-mine__stat-label">收藏</text>
-        </view>
-        <view class="page-mine__stat-divider" />
-        <view class="page-mine__stat" @click="openPublishPage()">
-          <view class="page-mine__stat-value-row">
-            <text class="page-mine__stat-value">{{ statText(overview.publishCount) }}</text>
-            <text v-if="overview.pendingCount > 0" class="page-mine__stat-badge">
-              {{ overview.pendingCount }}待审
-            </text>
+        <!-- 未登录引导 -->
+        <view v-if="!userStore.isLoggedIn" class="page-mine__login cv-card--elevated">
+          <view class="page-mine__login-icon">
+            <u-icon name="account-fill" color="#1d4ed8" size="28" />
           </view>
-          <text class="page-mine__stat-label">发布</text>
-        </view>
-        <view class="page-mine__stat-divider" />
-        <view class="page-mine__stat" @click="goPage('/pages/ai/history')">
-          <text class="page-mine__stat-value">{{ statText(overview.aiSessionCount) }}</text>
-          <text class="page-mine__stat-label">AI 会话</text>
-        </view>
-      </view>
-
-      <!-- 快捷入口 Bento -->
-      <view class="page-mine__actions">
-        <view v-for="action in quickActions" :key="action.key" class="page-mine__action cv-card"
-          :class="[`page-mine__action--${action.tone}`]" @click="action.onTap">
-          <view class="page-mine__action-icon">
-            <u-icon :name="action.icon" color="#fff" size="20" />
+          <view class="page-mine__login-text">
+            <text class="page-mine__login-title">登录同城便民</text>
+            <text class="page-mine__login-desc">发布信息、收藏关注、AI 问答</text>
           </view>
-          <view class="page-mine__action-text">
-            <text class="page-mine__action-title">{{ action.title }}</text>
-            <text class="page-mine__action-desc">{{ action.desc }}</text>
-          </view>
-          <u-icon name="arrow-right" color="#cbd5e1" size="14" />
-        </view>
-      </view>
-
-      <!-- 最近动态 -->
-      <view v-if="userStore.isLoggedIn && hasRecent" class="page-mine__recent">
-        <view class="page-mine__recent-head">
-          <text class="page-mine__recent-title">最近动态</text>
+          <u-button type="primary" text="去登录" size="small" shape="circle" @click="goLogin" />
         </view>
 
-        <view v-if="recentCollects.length" class="page-mine__recent-block cv-card">
-          <view class="page-mine__recent-label">
-            <u-icon name="star-fill" color="#1d4ed8" size="14" />
-            <text>最近收藏</text>
+        <!-- 数据概览：真实数字一眼可读 -->
+        <view class="page-mine__stats cv-card--elevated">
+          <view class="page-mine__stat" @click="goPage('/pages/mine/collect')">
+            <text class="page-mine__stat-value">{{ statText(overview.collectCount) }}</text>
+            <text class="page-mine__stat-label">收藏</text>
           </view>
-          <view v-for="item in recentCollects" :key="`c-${item.id}`" class="page-mine__recent-item"
-            @click="goDetail(item)">
-            <ArtImageCover
-              class="page-mine__recent-thumb"
-              :src="item.images?.[0]"
-              :seed="item.id"
-              image-class="page-mine__recent-thumb-img"
-            />
-            <view class="page-mine__recent-main">
-              <text class="page-mine__recent-name">{{ item.title }}</text>
-              <text class="page-mine__recent-sub">
-                {{ formatPrice(item.price) }} · {{ formatRelativeTime(item.createdAt) }}
+          <view class="page-mine__stat-divider" />
+          <view class="page-mine__stat" @click="openPublishPage()">
+            <view class="page-mine__stat-value-row">
+              <text class="page-mine__stat-value">{{ statText(overview.publishCount) }}</text>
+              <text v-if="overview.pendingCount > 0" class="page-mine__stat-badge">
+                {{ overview.pendingCount }}待审
               </text>
             </view>
-            <u-icon name="arrow-right" color="#cbd5e1" size="12" />
+            <text class="page-mine__stat-label">发布</text>
+          </view>
+          <view class="page-mine__stat-divider" />
+          <view class="page-mine__stat" @click="goPage('/pages/ai/history')">
+            <text class="page-mine__stat-value">{{ statText(overview.aiSessionCount) }}</text>
+            <text class="page-mine__stat-label">AI 会话</text>
           </view>
         </view>
 
-        <view v-if="recentPosts.length" class="page-mine__recent-block cv-card">
-          <view class="page-mine__recent-label">
-            <u-icon name="file-text-fill" color="#1d4ed8" size="14" />
-            <text>最近发布</text>
+        <!-- 快捷入口 Bento -->
+        <view class="page-mine__actions">
+          <view v-for="action in quickActions" :key="action.key" class="page-mine__action cv-card"
+            :class="[`page-mine__action--${action.tone}`]" @click="action.onTap">
+            <view class="page-mine__action-icon">
+              <u-icon :name="action.icon" color="#fff" size="20" />
+            </view>
+            <view class="page-mine__action-text">
+              <text class="page-mine__action-title">{{ action.title }}</text>
+              <text class="page-mine__action-desc">{{ action.desc }}</text>
+            </view>
+            <u-icon name="arrow-right" color="#cbd5e1" size="14" />
           </view>
-          <view v-for="item in recentPosts" :key="`p-${item.id}`" class="page-mine__recent-item"
-            @click="goDetail(item)">
-            <ArtImageCover
-              class="page-mine__recent-thumb"
-              :src="item.images?.[0]"
-              :seed="item.id"
-              image-class="page-mine__recent-thumb-img"
-            />
-            <view class="page-mine__recent-main">
-              <text class="page-mine__recent-name">{{ item.title }}</text>
-              <view class="page-mine__recent-sub-row">
-                <text class="page-mine__recent-sub">{{ formatRelativeTime(item.createdAt) }}</text>
-                <text class="page-mine__audit-tag" :class="`page-mine__audit-tag--${item.auditStatus.toLowerCase()}`">
-                  {{ AUDIT_STATUS_LABEL[item.auditStatus] }}
+        </view>
+
+        <!-- 最近动态 -->
+        <view v-if="userStore.isLoggedIn && hasRecent" class="page-mine__recent">
+          <view class="page-mine__recent-head">
+            <text class="page-mine__recent-title">最近动态</text>
+          </view>
+
+          <view v-if="recentCollects.length" class="page-mine__recent-block cv-card">
+            <view class="page-mine__recent-label">
+              <u-icon name="star-fill" color="#1d4ed8" size="14" />
+              <text>最近收藏</text>
+            </view>
+            <view v-for="item in recentCollects" :key="`c-${item.id}`" class="page-mine__recent-item"
+              @click="goDetail(item)">
+              <ArtImageCover class="page-mine__recent-thumb" :src="item.images?.[0]" :seed="item.id"
+                image-class="page-mine__recent-thumb-img" />
+              <view class="page-mine__recent-main">
+                <text class="page-mine__recent-name">{{ item.title }}</text>
+                <text class="page-mine__recent-sub">
+                  {{ formatPrice(item.price) }} · {{ formatRelativeTime(item.createdAt) }}
                 </text>
               </view>
+              <u-icon name="arrow-right" color="#cbd5e1" size="12" />
             </view>
-            <u-icon name="arrow-right" color="#cbd5e1" size="12" />
+          </view>
+
+          <view v-if="recentPosts.length" class="page-mine__recent-block cv-card">
+            <view class="page-mine__recent-label">
+              <u-icon name="file-text-fill" color="#1d4ed8" size="14" />
+              <text>最近发布</text>
+            </view>
+            <view v-for="item in recentPosts" :key="`p-${item.id}`" class="page-mine__recent-item"
+              @click="goDetail(item)">
+              <ArtImageCover class="page-mine__recent-thumb" :src="item.images?.[0]" :seed="item.id"
+                image-class="page-mine__recent-thumb-img" />
+              <view class="page-mine__recent-main">
+                <text class="page-mine__recent-name">{{ item.title }}</text>
+                <view class="page-mine__recent-sub-row">
+                  <text class="page-mine__recent-sub">{{ formatRelativeTime(item.createdAt) }}</text>
+                  <text class="page-mine__audit-tag" :class="`page-mine__audit-tag--${item.auditStatus.toLowerCase()}`">
+                    {{ AUDIT_STATUS_LABEL[item.auditStatus] }}
+                  </text>
+                </view>
+              </view>
+              <u-icon name="arrow-right" color="#cbd5e1" size="12" />
+            </view>
           </view>
         </view>
-      </view>
 
-      <!-- 底部信息 -->
-      <view class="page-mine__about cv-card">
-        <text class="page-mine__about-title">同城便民</text>
-        <text class="page-mine__about-ver">{{ appVersion }}</text>
-      </view>
+        <!-- 底部信息 -->
+        <view class="page-mine__about cv-card">
+          <text class="page-mine__about-title">同城便民</text>
+          <text class="page-mine__about-ver">{{ appVersion }}</text>
+        </view>
 
-      <view v-if="userStore.isLoggedIn" class="page-mine__logout">
-        <u-button type="error" plain text="退出登录" shape="circle" @click="onLogout" />
-      </view>
+        <view v-if="userStore.isLoggedIn" class="page-mine__logout">
+          <u-button type="error" plain text="退出登录" shape="circle" @click="onLogout" />
+        </view>
       </template>
     </view>
 
@@ -458,6 +450,13 @@ onShow(loadMineData);
   gap: 20rpx;
   padding: 28rpx 28rpx;
   margin-bottom: 20rpx;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .page-mine__login-title {
+    text-align: center;
+  }
 }
 
 .page-mine__login-icon {
