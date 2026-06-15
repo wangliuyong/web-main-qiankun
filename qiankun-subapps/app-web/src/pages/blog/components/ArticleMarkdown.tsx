@@ -4,15 +4,6 @@ import rehypePrism from 'rehype-prism-plus';
 import { cn } from '../../../../../_shared/utils/cn';
 import { articleMarkdownComponents } from './ArticleMarkdownComponents';
 
-// rehype-prism-plus 依赖 Prism 语言包，按需注册常用语法
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-css';
-import 'prismjs/components/prism-markdown';
-import 'prismjs/components/prism-yaml';
-
 export interface ArticleMarkdownProps {
   /** Markdown 源文本 */
   content: string;
