@@ -1,42 +1,50 @@
 <template>
-  <view class="page-root">
-    <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
-    <view class="nav-bar">
-      <view class="nav-back" @click="goBack">
-        <text class="nav-back-text">← 返回</text>
+  <view class="page-root page-sub">
+    <view class="page-body">
+      <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
+      <view class="kd-nav-bar">
+        <view class="kd-nav-back" @click="goBack">
+          <text class="kd-nav-back-text">← 返回</text>
+        </view>
+        <text class="kd-nav-title">🗺️ 课程地图</text>
+        <view class="kd-nav-placeholder" />
       </view>
-      <text class="nav-title">课程地图</text>
-      <view class="nav-placeholder" />
-    </view>
 
-    <scroll-view class="map-scroll" scroll-y>
-      <view v-for="chapter in chapters" :key="chapter.id" class="chapter-block">
-        <view class="chapter-header" :style="{ backgroundColor: chapter.color }">
-          <text class="chapter-header-icon">{{ chapter.icon }}</text>
-          <view class="chapter-header-info">
-            <text class="chapter-header-title">{{ chapter.title }}</text>
-            <text class="chapter-header-desc">{{ chapter.description }}</text>
+      <scroll-view class="map-scroll" scroll-y>
+        <view class="page-content map-inner">
+          <view
+            v-for="chapter in chapters"
+            :key="chapter.id"
+            class="chapter-block"
+          >
+            <view class="chapter-header" :style="{ backgroundColor: chapter.color }">
+              <text class="chapter-header-icon">{{ chapter.icon }}</text>
+              <view class="chapter-header-info">
+                <text class="chapter-header-title">{{ chapter.title }}</text>
+                <text class="chapter-header-desc">{{ chapter.description }}</text>
+              </view>
+            </view>
+            <view
+              v-for="(lesson, lIdx) in chapter.lessons"
+              :key="lesson.id"
+              class="lesson-node"
+              :class="getLessonClass(lesson)"
+              @click="onLessonClick(lesson)"
+            >
+              <view class="lesson-dot">
+                <text class="lesson-dot-text">{{ lIdx + 1 }}</text>
+              </view>
+              <view class="lesson-info">
+                <text class="lesson-title">{{ lesson.title }}</text>
+                <text class="lesson-stars">{{ getStarsText(lesson.id) }}</text>
+              </view>
+              <text v-if="!isUnlocked(lesson)" class="status-icon">🔒</text>
+              <text v-else-if="isDone(lesson.id)" class="status-icon">✅</text>
+            </view>
           </view>
         </view>
-        <view
-          v-for="(lesson, lIdx) in chapter.lessons"
-          :key="lesson.id"
-          class="lesson-node"
-          :class="getLessonClass(lesson)"
-          @click="onLessonClick(lesson)"
-        >
-          <view class="lesson-dot">
-            <text class="lesson-dot-text">{{ lIdx + 1 }}</text>
-          </view>
-          <view class="lesson-info">
-            <text class="lesson-title">{{ lesson.title }}</text>
-            <text class="lesson-stars">{{ getStarsText(lesson.id) }}</text>
-          </view>
-          <text v-if="!isUnlocked(lesson)" class="lock-icon">🔒</text>
-          <text v-else-if="isDone(lesson.id)" class="done-icon">✅</text>
-        </view>
-      </view>
-    </scroll-view>
+      </scroll-view>
+    </view>
   </view>
 </template>
 
@@ -94,45 +102,44 @@ onLoad(() => {
 </script>
 
 <style lang="scss" scoped>
-.nav-bar {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  background-color: #ffd166;
-  border-bottom: 3px solid #2d3436;
-}
-
-.nav-back { min-width: 60px; }
-.nav-back-text { font-size: 16px; color: #2d3436; }
-.nav-title { font-size: 18px; font-weight: bold; color: #2d3436; }
-.nav-placeholder { min-width: 60px; }
-
 .map-scroll {
   flex: 1;
   height: 0;
-  padding: 12px 0;
+}
+
+.map-inner {
+  padding-top: $kd-space-sm;
+  padding-bottom: $kd-space-xl;
+
+  @include kd-landscape {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $kd-space-lg;
+    align-items: start;
+  }
 }
 
 .chapter-block {
-  margin-bottom: 16px;
+  margin-bottom: $kd-space-md;
+
+  @include kd-landscape {
+    margin-bottom: 0;
+  }
 }
 
 .chapter-header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 12px 16px;
-  margin: 0 16px;
-  border-radius: 16px 16px 0 0;
-  border: 3px solid #2d3436;
+  padding: $kd-space-sm $kd-space-md;
+  border-radius: $kd-radius-md $kd-radius-md 0 0;
+  border: $kd-border-width solid $kd-border-color;
   border-bottom: none;
 }
 
 .chapter-header-icon {
   font-size: 32px;
-  margin-right: 12px;
+  margin-right: $kd-space-sm;
 }
 
 .chapter-header-info {
@@ -142,14 +149,14 @@ onLoad(() => {
 }
 
 .chapter-header-title {
-  font-size: 18px;
+  font-size: $kd-text-lg;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 
 .chapter-header-desc {
-  font-size: 12px;
-  color: #636e72;
+  font-size: $kd-text-xs;
+  color: $kd-ink-muted;
   margin-top: 2px;
 }
 
@@ -157,43 +164,47 @@ onLoad(() => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 14px 16px;
-  margin: 0 16px;
-  background-color: #ffffff;
-  border-left: 3px solid #2d3436;
-  border-right: 3px solid #2d3436;
-}
+  padding: 14px $kd-space-md;
+  background-color: $kd-surface;
+  border-left: $kd-border-width solid $kd-border-color;
+  border-right: $kd-border-width solid $kd-border-color;
+  @include kd-touch-target;
 
-.lesson-node:last-child {
-  border-bottom: 3px solid #2d3436;
-  border-radius: 0 0 16px 16px;
+  &:active {
+    opacity: 0.9;
+  }
+
+  &:last-child {
+    border-bottom: $kd-border-width solid $kd-border-color;
+    border-radius: 0 0 $kd-radius-md $kd-radius-md;
+  }
 }
 
 .lesson-locked {
-  opacity: 0.5;
-  background-color: #f0f0f0;
+  opacity: 0.55;
+  background-color: $kd-border-light;
 }
 
 .lesson-done {
-  background-color: #fff9e6;
+  background-color: $kd-gold-soft;
 }
 
 .lesson-dot {
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  background-color: #ffd166;
-  border: 2px solid #2d3436;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, $kd-yellow 0%, $kd-peach 100%);
+  border: 2px solid $kd-border-color;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 12px;
+  margin-right: $kd-space-sm;
 }
 
 .lesson-dot-text {
-  font-size: 16px;
+  font-size: $kd-text-base;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 
 .lesson-info {
@@ -203,18 +214,18 @@ onLoad(() => {
 }
 
 .lesson-title {
-  font-size: 16px;
+  font-size: $kd-text-base;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 
 .lesson-stars {
-  font-size: 12px;
-  color: #636e72;
+  font-size: $kd-text-xs;
+  color: $kd-ink-muted;
   margin-top: 2px;
 }
 
-.lock-icon, .done-icon {
+.status-icon {
   font-size: 20px;
 }
 </style>

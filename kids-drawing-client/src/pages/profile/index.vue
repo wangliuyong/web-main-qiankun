@@ -1,64 +1,70 @@
 <template>
   <view class="page-root">
-    <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
+    <view class="page-body">
+      <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
 
-    <view class="profile-card">
-      <text class="avatar">{{ kidsStore.profile.avatarEmoji }}</text>
-      <view class="profile-info">
-        <text class="nickname">{{ kidsStore.profile.nickname }}</text>
-        <text class="profile-sub">小画家成长中 🌱</text>
+      <view class="profile-header">
+        <text class="avatar">{{ kidsStore.profile.avatarEmoji }}</text>
+        <view class="profile-info">
+          <text class="nickname">{{ kidsStore.profile.nickname }}</text>
+          <text class="profile-sub">小画家成长中</text>
+        </view>
       </view>
+
+      <scroll-view class="profile-scroll" scroll-y>
+        <view class="page-content profile-inner">
+          <view class="stats-row">
+            <view class="stat-item">
+              <text class="stat-num">{{ kidsStore.totalStars }}</text>
+              <text class="stat-label">总星星</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-num">{{ kidsStore.streakDays }}</text>
+              <text class="stat-label">连续天数</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-num">{{ completedCount }}</text>
+              <text class="stat-label">完成课时</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-num">{{ kidsStore.workCount }}</text>
+              <text class="stat-label">作品数</text>
+            </view>
+          </view>
+
+          <text class="section-title">我的徽章</text>
+          <view class="badge-grid">
+            <view
+              v-for="badge in allBadges"
+              :key="badge.id"
+              class="badge-item"
+              :class="isUnlocked(badge.id) ? 'badge-unlocked' : 'badge-locked'"
+            >
+              <text class="badge-icon">{{ isUnlocked(badge.id) ? '🏆' : '🔒' }}</text>
+              <text class="badge-title">{{ badge.title }}</text>
+              <text class="badge-desc">{{ badge.description }}</text>
+            </view>
+          </view>
+
+          <view class="records-panel">
+            <text class="section-title records-title">最近完成</text>
+            <view v-if="recentRecords.length > 0" class="records-list">
+              <view v-for="record in recentRecords" :key="record.lessonId" class="record-item">
+                <text class="record-title">{{ getLessonTitle(record.lessonId) }}</text>
+                <text class="record-stars">{{ '⭐'.repeat(record.stars) }}</text>
+              </view>
+            </view>
+            <view v-else class="no-record">
+              <text class="no-record-text">还没有完成记录，快去画画吧</text>
+            </view>
+          </view>
+
+          <view class="nickname-edit" @click="onEditNickname">
+            <text class="edit-text">修改昵称</text>
+          </view>
+        </view>
+      </scroll-view>
     </view>
-
-    <scroll-view class="profile-scroll" scroll-y>
-      <view class="stats-row">
-        <view class="stat-item">
-          <text class="stat-num">{{ kidsStore.totalStars }}</text>
-          <text class="stat-label">总星星</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-num">{{ kidsStore.streakDays }}</text>
-          <text class="stat-label">连续天数</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-num">{{ completedCount }}</text>
-          <text class="stat-label">完成课时</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-num">{{ kidsStore.workCount }}</text>
-          <text class="stat-label">作品数</text>
-        </view>
-      </view>
-
-      <text class="section-title">我的徽章 🏅</text>
-      <view class="badge-grid">
-        <view
-          v-for="badge in allBadges"
-          :key="badge.id"
-          class="badge-item"
-          :class="isUnlocked(badge.id) ? 'badge-unlocked' : 'badge-locked'"
-        >
-          <text class="badge-icon">{{ isUnlocked(badge.id) ? '🏆' : '🔒' }}</text>
-          <text class="badge-title">{{ badge.title }}</text>
-          <text class="badge-desc">{{ badge.description }}</text>
-        </view>
-      </view>
-
-      <text class="section-title">最近完成</text>
-      <view v-if="recentRecords.length > 0">
-        <view v-for="record in recentRecords" :key="record.lessonId" class="record-item">
-          <text class="record-title">{{ getLessonTitle(record.lessonId) }}</text>
-          <text class="record-stars">{{ '⭐'.repeat(record.stars) }}</text>
-        </view>
-      </view>
-      <view v-else class="no-record">
-        <text class="no-record-text">还没有完成记录，快去画画吧！</text>
-      </view>
-
-      <view class="nickname-edit" @click="onEditNickname">
-        <text class="edit-text">✏️ 修改昵称</text>
-      </view>
-    </scroll-view>
 
     <KidTabBar :current="3" />
   </view>
@@ -78,7 +84,6 @@ const allBadges = ref<BadgeDef[]>(queryBadges());
 
 const completedCount = computed(() => kidsStore.progress.lessonRecords.length);
 
-/** 最近 5 条完成记录（按时间倒序） */
 const recentRecords = computed(() =>
   [...kidsStore.progress.lessonRecords]
     .sort((a, b) => b.completedAt - a.completedAt)
@@ -113,18 +118,17 @@ onLoad(() => {
 </script>
 
 <style lang="scss" scoped>
-.profile-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 20px 16px;
-  background-color: #ffd166;
-  border-bottom: 3px solid #2d3436;
+.profile-header {
+  @include kd-top-bar;
 }
 
 .avatar {
   font-size: 56px;
-  margin-right: 16px;
+  margin-right: $kd-space-md;
+
+  @include kd-landscape {
+    font-size: 64px;
+  }
 }
 
 .profile-info {
@@ -134,14 +138,14 @@ onLoad(() => {
 }
 
 .nickname {
-  font-size: 24px;
+  font-size: $kd-text-2xl;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 
 .profile-sub {
-  font-size: 14px;
-  color: #636e72;
+  font-size: $kd-text-sm;
+  color: $kd-ink-muted;
   margin-top: 4px;
 }
 
@@ -150,15 +154,22 @@ onLoad(() => {
   height: 0;
 }
 
+.profile-inner {
+  padding-bottom: $kd-space-lg;
+}
+
 .stats-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  padding: 16px;
-  background-color: #ffffff;
-  margin: 12px 16px;
-  border-radius: 16px;
-  border: 3px solid #2d3436;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $kd-space-xs;
+  padding: $kd-space-md;
+  @include kd-card;
+  margin-top: $kd-space-sm;
+
+  @include kd-landscape {
+    gap: $kd-space-md;
+    padding: $kd-space-lg;
+  }
 }
 
 .stat-item {
@@ -168,53 +179,83 @@ onLoad(() => {
 }
 
 .stat-num {
-  font-size: 24px;
+  font-size: $kd-text-2xl;
   font-weight: bold;
-  color: #ff6b6b;
+  color: $kd-accent;
+
+  @include kd-landscape {
+    font-size: 32px;
+  }
 }
 
 .stat-label {
-  font-size: 12px;
-  color: #636e72;
+  font-size: $kd-text-xs;
+  color: $kd-ink-muted;
   margin-top: 4px;
+  text-align: center;
 }
 
 .badge-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  padding: 0 12px;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $kd-space-sm;
+
+  @include kd-landscape {
+    grid-template-columns: repeat(4, 1fr);
+    gap: $kd-space-md;
+  }
 }
 
 .badge-item {
-  width: 46%;
-  background-color: #ffffff;
-  border-radius: 12px;
-  border: 2px solid #2d3436;
-  padding: 12px;
+  @include kd-card;
+  border-width: 2px;
+  padding: $kd-space-sm;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 10px;
-  box-sizing: border-box;
 }
 
-.badge-locked { opacity: 0.4; }
-.badge-unlocked { background-color: #fff9e6; }
+.badge-locked {
+  opacity: 0.45;
+}
 
-.badge-icon { font-size: 32px; }
+.badge-unlocked {
+  background-color: $kd-gold-soft;
+}
+
+.badge-icon {
+  font-size: 32px;
+}
+
 .badge-title {
-  font-size: 14px;
+  font-size: $kd-text-sm;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
   margin-top: 4px;
+  text-align: center;
 }
+
 .badge-desc {
-  font-size: 11px;
-  color: #636e72;
+  font-size: $kd-text-xs;
+  color: $kd-ink-muted;
   margin-top: 2px;
   text-align: center;
+}
+
+.records-panel {
+  @include kd-landscape {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $kd-space-lg;
+    align-items: start;
+  }
+}
+
+.records-title {
+  @include kd-landscape {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
 }
 
 .record-item {
@@ -222,39 +263,53 @@ onLoad(() => {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
-  margin: 4px 16px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #dfe6e9;
+  padding: 10px $kd-space-md;
+  margin: 4px 0;
+  background-color: $kd-surface;
+  border-radius: $kd-radius-sm;
+  border: 1px solid $kd-border-light;
 }
 
-.record-title { font-size: 14px; color: #2d3436; }
-.record-stars { font-size: 14px; }
+.record-title {
+  font-size: $kd-text-sm;
+  color: $kd-ink;
+}
+
+.record-stars {
+  font-size: $kd-text-sm;
+}
 
 .no-record {
-  padding: 20px;
+  padding: $kd-space-lg;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.no-record-text { font-size: 14px; color: #636e72; }
+.no-record-text {
+  font-size: $kd-text-sm;
+  color: $kd-ink-muted;
+}
 
 .nickname-edit {
-  margin: 20px 16px;
-  padding: 12px;
-  background-color: #4ecdc4;
-  border-radius: 16px;
+  margin-top: $kd-space-lg;
+  padding: $kd-space-sm;
+  background-color: $kd-teal;
+  border-radius: $kd-radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #2d3436;
+  border: 2px solid $kd-border-color;
+  @include kd-touch-target;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .edit-text {
-  font-size: 16px;
+  font-size: $kd-text-base;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 </style>

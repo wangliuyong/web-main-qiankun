@@ -67,10 +67,19 @@ function onSizeChange(size: number): void {
   align-items: center;
   justify-content: space-around;
   padding: 10px 8px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  border: 3px solid #2d3436;
-  margin: 8px 12px;
+  background-color: $kd-surface;
+  border-radius: $kd-radius-md;
+  border: $kd-border-width solid $kd-border-color;
+  margin: $kd-space-xs $kd-space-sm;
+  box-shadow: $kd-shadow-card;
+
+  @include kd-landscape {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: $kd-space-xs;
+    padding: $kd-space-sm;
+    margin: $kd-space-xs 0;
+  }
 }
 
 .tool-btn {
@@ -85,7 +94,7 @@ function onSizeChange(size: number): void {
 }
 
 .tool-btn-active {
-  background-color: #ffd166;
+  background: linear-gradient(135deg, $kd-pink 0%, $kd-lavender 100%);
 }
 
 .tool-icon {
@@ -94,7 +103,7 @@ function onSizeChange(size: number): void {
 
 .tool-label {
   font-size: 11px;
-  color: #2d3436;
+  color: $kd-ink;
   margin-top: 2px;
 }
 
@@ -105,13 +114,13 @@ function onSizeChange(size: number): void {
 }
 
 .size-dot {
-  background-color: #2d3436;
+  background-color: $kd-ink;
   border-radius: 50%;
   margin: 0 4px;
   border: 2px solid transparent;
 }
 
 .size-dot-active {
-  border-color: #ff6b6b;
+  border-color: $kd-pink-deep;
 }
 </style>

@@ -1,14 +1,48 @@
 /** 儿童绘画应用全局样式 */
+@import '@/styles/tokens.scss';
+@import '@/styles/animations.scss';
+
 page {
-  background-color: #fff9f0;
+  background-color: $kd-cream;
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  color: $kd-ink;
+  font-size: $kd-text-base;
+  -webkit-font-smoothing: antialiased;
 }
 
 .page-root {
-  display: flex;
-  flex-direction: column;
+  @include kd-tab-page-shell;
+}
+
+/** Tab 页内容区（KidTabBar 横屏时在右侧） */
+.page-body {
+  @include kd-tab-page-body;
+}
+
+.page-content {
+  @include kd-page-container;
+  padding-left: $kd-space-md;
+  padding-right: $kd-space-md;
+  box-sizing: border-box;
+
+  @include kd-landscape {
+    padding-left: $kd-space-lg;
+    padding-right: $kd-space-lg;
+  }
+}
+
+/** 无 TabBar 的子页面（课程地图、课时详情）横屏占满宽度 */
+.page-sub {
+  @include kd-cute-page-bg;
   min-height: 100vh;
-  background-color: #fff9f0;
+  min-height: 100dvh;
+
+  @include kd-landscape {
+    .page-body {
+      flex: 1;
+      width: 100%;
+    }
+  }
 }
 
 .safe-top {
@@ -17,32 +51,83 @@ page {
 }
 
 .card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  border: 3px solid #2d3436;
-  padding: 16px;
-  margin: 8px 16px;
+  @include kd-card;
+  padding: $kd-space-md;
+  margin: $kd-space-xs $kd-space-md;
 }
 
 .btn-primary {
-  background-color: #ffd166;
-  border-radius: 24px;
-  border: 3px solid #2d3436;
+  background: linear-gradient(135deg, $kd-pink-deep 0%, $kd-lavender-deep 100%);
+  border-radius: $kd-radius-pill;
+  border: $kd-border-width solid $kd-border-strong;
   padding: 14px 28px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: $kd-shadow-btn;
+  @include kd-touch-target;
+
+  &:active {
+    transform: scale(0.97) translateY(2px);
+    box-shadow: 0 2px 0 #c9b8d9;
+  }
 }
 
 .btn-primary-text {
-  color: #2d3436;
-  font-size: 18px;
+  color: $kd-surface;
+  font-size: $kd-text-lg;
   font-weight: bold;
 }
 
 .section-title {
-  font-size: 22px;
+  font-size: $kd-text-xl;
   font-weight: bold;
-  color: #2d3436;
-  margin: 16px 16px 8px;
+  color: $kd-ink;
+  margin: $kd-space-md $kd-space-md $kd-space-xs;
+}
+
+/** 通用顶栏（课程地图、课时详情等） */
+.kd-nav-bar {
+  @include kd-top-bar;
+  justify-content: space-between;
+}
+
+.kd-nav-back {
+  min-width: 72px;
+  @include kd-touch-target;
+  display: flex;
+  align-items: center;
+}
+
+.kd-nav-back-text {
+  font-size: $kd-text-base;
+  color: $kd-ink;
+  font-weight: 600;
+}
+
+.kd-nav-title {
+  font-size: $kd-text-lg;
+  font-weight: bold;
+  color: $kd-ink;
+}
+
+.kd-nav-placeholder {
+  min-width: 72px;
+}
+
+/** 横屏双栏网格 */
+.kd-grid-2-landscape {
+  @include kd-landscape {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $kd-space-md;
+  }
+}
+
+.kd-grid-4-landscape {
+  @include kd-landscape {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $kd-space-md;
+  }
 }

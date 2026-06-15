@@ -1,42 +1,44 @@
 <template>
   <view class="page-root">
-    <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
-    <view class="gallery-header">
-      <text class="header-title">我的作品 🖼️</text>
-      <text class="work-count">共 {{ kidsStore.workCount }} 幅</text>
-    </view>
+    <view class="page-body">
+      <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
+      <view class="gallery-header">
+        <text class="header-title">我的作品</text>
+        <text class="work-count">共 {{ kidsStore.workCount }} 幅</text>
+      </view>
 
-    <scroll-view v-if="works.length > 0" class="gallery-scroll" scroll-y>
-      <view class="gallery-grid">
-        <view
-          v-for="work in works"
-          :key="work.id"
-          class="work-card"
-          @click="onPreview(work)"
-          @longpress="onDelete(work)"
-        >
-          <image class="work-thumb" :src="work.thumbnail" mode="aspectFill" />
-          <text class="work-title">{{ work.lessonTitle }}</text>
-          <text class="work-date">{{ formatDate(work.createdAt) }}</text>
+      <scroll-view v-if="works.length > 0" class="gallery-scroll" scroll-y>
+        <view class="page-content gallery-grid">
+          <view
+            v-for="work in works"
+            :key="work.id"
+            class="work-card"
+            @click="onPreview(work)"
+            @longpress="onDelete(work)"
+          >
+            <image class="work-thumb" :src="work.thumbnail" mode="aspectFill" />
+            <text class="work-title">{{ work.lessonTitle }}</text>
+            <text class="work-date">{{ formatDate(work.createdAt) }}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view v-else class="empty-wrap">
+        <text class="empty-icon">🎨</text>
+        <text class="empty-text">还没有作品哦</text>
+        <text class="empty-hint">完成课时或自由创作后保存吧</text>
+        <view class="empty-btn" @click="goStudio">
+          <text class="empty-btn-text">去画画</text>
         </view>
       </view>
-    </scroll-view>
 
-    <view v-else class="empty-wrap">
-      <text class="empty-icon">🎨</text>
-      <text class="empty-text">还没有作品哦</text>
-      <text class="empty-hint">完成课时或自由创作后保存吧！</text>
-      <view class="empty-btn" @click="goStudio">
-        <text class="empty-btn-text">去画画 →</text>
-      </view>
-    </view>
-
-    <view v-if="previewWork" class="preview-mask" @click="closePreview">
-      <view class="preview-card" @click.stop>
-        <image class="preview-image" :src="previewWork.thumbnail" mode="aspectFit" />
-        <text class="preview-title">{{ previewWork.lessonTitle }}</text>
-        <view class="preview-close" @click="closePreview">
-          <text class="preview-close-text">关闭</text>
+      <view v-if="previewWork" class="preview-mask" @click="closePreview">
+        <view class="preview-card" @click.stop>
+          <image class="preview-image" :src="previewWork.thumbnail" mode="aspectFit" />
+          <text class="preview-title">{{ previewWork.lessonTitle }}</text>
+          <view class="preview-close" @click="closePreview">
+            <text class="preview-close-text">关闭</text>
+          </view>
         </view>
       </view>
     </view>
@@ -96,23 +98,21 @@ onLoad(() => {
 
 <style lang="scss" scoped>
 .gallery-header {
-  padding: 12px 16px;
-  background-color: #ffd166;
-  border-bottom: 3px solid #2d3436;
+  @include kd-top-bar;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .header-title {
-  font-size: 20px;
+  font-size: $kd-text-xl;
   font-weight: bold;
-  color: #2d3436;
-  display: block;
+  color: $kd-ink;
 }
 
 .work-count {
-  font-size: 14px;
-  color: #636e72;
+  font-size: $kd-text-sm;
+  color: $kd-ink-muted;
   margin-top: 4px;
-  display: block;
 }
 
 .gallery-scroll {
@@ -121,40 +121,54 @@ onLoad(() => {
 }
 
 .gallery-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  padding: 12px;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $kd-space-sm;
+  padding-top: $kd-space-sm;
+  padding-bottom: $kd-space-lg;
+
+  @include kd-tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include kd-landscape {
+    grid-template-columns: repeat(4, 1fr);
+    gap: $kd-space-md;
+  }
 }
 
 .work-card {
-  width: 46%;
-  background-color: #ffffff;
-  border-radius: 12px;
-  border: 2px solid #2d3436;
-  margin-bottom: 12px;
+  @include kd-card;
+  border-width: 2px;
   overflow: hidden;
-  box-sizing: border-box;
+  padding: 0;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .work-thumb {
   width: 100%;
   height: 140px;
   background-color: #f0f0f0;
+
+  @include kd-landscape {
+    height: 180px;
+  }
 }
 
 .work-title {
-  font-size: 13px;
+  font-size: $kd-text-sm;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
   padding: 6px 8px 0;
   display: block;
 }
 
 .work-date {
-  font-size: 11px;
-  color: #636e72;
+  font-size: $kd-text-xs;
+  color: $kd-ink-muted;
   padding: 2px 8px 8px;
   display: block;
 }
@@ -168,31 +182,40 @@ onLoad(() => {
   padding: 40px;
 }
 
-.empty-icon { font-size: 64px; }
-.empty-text {
-  font-size: 18px;
-  font-weight: bold;
-  color: #2d3436;
-  margin-top: 12px;
+.empty-icon {
+  font-size: 64px;
 }
+
+.empty-text {
+  font-size: $kd-text-lg;
+  font-weight: bold;
+  color: $kd-ink;
+  margin-top: $kd-space-sm;
+}
+
 .empty-hint {
-  font-size: 14px;
-  color: #636e72;
-  margin-top: 8px;
+  font-size: $kd-text-sm;
+  color: $kd-ink-muted;
+  margin-top: $kd-space-xs;
 }
 
 .empty-btn {
-  background-color: #7ae582;
-  border-radius: 20px;
-  padding: 12px 24px;
-  margin-top: 20px;
-  border: 2px solid #2d3436;
+  background-color: $kd-green;
+  border-radius: $kd-radius-lg;
+  padding: $kd-space-sm $kd-space-lg;
+  margin-top: $kd-space-lg;
+  border: 2px solid $kd-border-color;
+  @include kd-touch-target;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .empty-btn-text {
-  font-size: 16px;
+  font-size: $kd-text-base;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 
 .preview-mask {
@@ -209,37 +232,46 @@ onLoad(() => {
 }
 
 .preview-card {
-  width: 300px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 16px;
+  width: min(90vw, 480px);
+  background-color: $kd-surface;
+  border-radius: $kd-radius-md;
+  padding: $kd-space-md;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: $kd-border-width solid $kd-border-color;
 }
 
 .preview-image {
-  width: 260px;
-  height: 260px;
-  border-radius: 8px;
+  width: 100%;
+  max-width: 420px;
+  height: min(60vh, 420px);
+  border-radius: $kd-radius-sm;
 }
 
 .preview-title {
-  font-size: 16px;
+  font-size: $kd-text-base;
   font-weight: bold;
-  color: #2d3436;
-  margin-top: 12px;
+  color: $kd-ink;
+  margin-top: $kd-space-sm;
 }
 
 .preview-close {
-  background-color: #ffd166;
-  border-radius: 16px;
+  background: linear-gradient(135deg, $kd-pink 0%, $kd-lavender 100%);
+  border-radius: $kd-radius-md;
   padding: 8px 24px;
-  margin-top: 12px;
+  margin-top: $kd-space-sm;
+  border: 2px solid $kd-border-color;
+  @include kd-touch-target;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .preview-close-text {
-  font-size: 14px;
-  color: #2d3436;
+  font-size: $kd-text-sm;
+  color: $kd-ink;
+  font-weight: 600;
 }
 </style>

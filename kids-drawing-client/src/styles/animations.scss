@@ -1,0 +1,116 @@
+/**
+ * 萌萌主题 - CSS 动画关键帧
+ * 教程引导、步骤切换、小动物反馈
+ */
+
+/** 小动物蹦一下（步骤切换） */
+@keyframes kd-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(12px);
+  }
+  60% {
+    transform: scale(1.08) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/** 轻轻摇摆（引导图标） */
+@keyframes kd-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+/** 上下漂浮（小兔子伙伴） */
+@keyframes kd-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/** 步骤圆点脉冲 */
+@keyframes kd-dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 143, 171, 0.5);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(255, 143, 171, 0);
+  }
+}
+
+/** 提示文字淡入上滑 */
+@keyframes kd-hint-slide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/** 星星闪烁 */
+@keyframes kd-sparkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/** 按钮呼吸光晕 */
+@keyframes kd-btn-glow {
+  0%,
+  100% {
+    box-shadow: 0 4px 0 #c9b8d9, 0 0 0 0 rgba(255, 143, 171, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 0 #c9b8d9, 0 0 12px 4px rgba(255, 143, 171, 0.35);
+  }
+}
+
+/** 背景云朵缓慢漂移 */
+@keyframes kd-cloud-drift {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(20px);
+  }
+}
+
+/** 应用动画的 mixin（尊重减少动效偏好） */
+@mixin kd-animate($name, $duration: 0.5s, $timing: ease, $iteration: 1) {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: $name $duration $timing $iteration;
+  }
+}
+
+@mixin kd-animate-infinite($name, $duration: 2s) {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: $name $duration ease-in-out infinite;
+  }
+}

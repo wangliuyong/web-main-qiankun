@@ -11,6 +11,8 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        additionalData:
+          '@import "@/styles/tokens.scss"; @import "@/styles/animations.scss"; @import "@/styles/mixins.scss";',
         api: 'modern-compiler',
         silenceDeprecations: true,
       },

@@ -1,48 +1,58 @@
 <template>
-  <view class="page-root">
-    <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
-    <view class="studio-header">
-      <view class="header-left" @click="goBack">
-        <text class="back-text">←</text>
+  <view class="page-root page-studio">
+    <view class="page-body">
+      <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
+      <view class="studio-header">
+        <view class="header-left" @click="goBack">
+          <text class="back-text">←</text>
+        </view>
+        <text class="header-title">{{ pageTitle }}</text>
+        <view class="header-right" @click="onComplete">
+          <text class="complete-text">完成</text>
+        </view>
       </view>
-      <text class="header-title">{{ pageTitle }}</text>
-      <view class="header-right" @click="onComplete">
-        <text class="complete-text">完成 ✓</text>
-      </view>
-    </view>
 
-    <StepGuide
-      v-if="lesson"
-      v-model:current-step="currentStep"
-      v-model:show-guide="showGuide"
-      :total-steps="totalSteps"
-      :hint-text="currentHint"
-      :shape-type="currentShapeType"
-      @next="onStepNext"
-    />
+      <view class="studio-layout">
+        <!-- 左侧：引导 + 工具（横屏固定宽度，竖屏在上） -->
+        <view class="studio-side">
+          <StepGuide
+            v-if="lesson"
+            v-model:current-step="currentStep"
+            v-model:show-guide="showGuide"
+            :total-steps="totalSteps"
+            :hint-text="currentHint"
+            :shape-type="currentShapeType"
+            @next="onStepNext"
+          />
 
-    <DrawToolbar
-      v-model:brush-size="brushSize"
-      v-model:is-eraser="isEraser"
-      @undo="onUndo"
-      @clear="onClear"
-    />
+          <DrawToolbar
+            v-model:brush-size="brushSize"
+            v-model:is-eraser="isEraser"
+            @undo="onUndo"
+            @clear="onClear"
+          />
 
-    <ColorPalette v-model="brushColor" />
+          <ColorPalette v-model="brushColor" />
 
-    <view class="canvas-area">
-      <DrawCanvas
-        ref="canvasRef"
-        :brush-color="brushColor"
-        :brush-size="brushSize"
-        :is-eraser="isEraser"
-        @stroke-change="onStrokeChange"
-      />
-    </view>
+          <view class="side-actions">
+            <view class="action-btn save-btn" @click="onSave">
+              <text class="action-text">保存作品</text>
+            </view>
+          </view>
+        </view>
 
-    <view class="bottom-actions">
-      <view class="action-btn save-btn" @click="onSave">
-        <text class="action-text">💾 保存作品</text>
+        <!-- 右侧：画布主区域 -->
+        <view class="studio-main">
+          <view class="canvas-area">
+            <DrawCanvas
+              ref="canvasRef"
+              :brush-color="brushColor"
+              :brush-size="brushSize"
+              :is-eraser="isEraser"
+              @stroke-change="onStrokeChange"
+            />
+          </view>
+        </view>
       </view>
     </view>
 
@@ -70,7 +80,6 @@ import { useKidsStore } from '@/stores/kids';
 import { queryLessonById, calcRewardStars } from '@/utils/lesson-loader';
 import type { LessonItem } from '@/types/lesson';
 
-/** DrawCanvas 暴露的方法 */
 interface DrawCanvasExpose {
   undo: () => boolean;
   clear: () => void;
@@ -197,65 +206,131 @@ onLoad((options) => {
 </script>
 
 <style lang="scss" scoped>
-.studio-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  background-color: #ffd166;
-  border-bottom: 3px solid #2d3436;
+.page-studio .page-body {
+  overflow: hidden;
 }
 
-.header-left, .header-right {
-  min-width: 60px;
+.studio-header {
+  @include kd-top-bar;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.header-left,
+.header-right {
+  min-width: 72px;
+  @include kd-touch-target;
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  justify-content: flex-end;
 }
 
 .back-text {
-  font-size: 22px;
-  color: #2d3436;
+  font-size: $kd-text-xl;
+  color: $kd-ink;
+  font-weight: bold;
 }
 
 .header-title {
-  font-size: 18px;
+  font-size: $kd-text-lg;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 
 .complete-text {
-  font-size: 16px;
+  font-size: $kd-text-base;
   font-weight: bold;
-  color: #ff6b6b;
-  text-align: right;
+  color: $kd-accent;
+}
+
+/** 竖屏：上下堆叠；横屏：左工具 + 右画布 */
+.studio-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+
+  @include kd-landscape {
+    flex-direction: row;
+    max-width: $kd-page-max;
+    width: 100%;
+    margin: 0 auto;
+    padding: $kd-space-sm $kd-space-lg;
+    box-sizing: border-box;
+  }
+}
+
+.studio-side {
+  flex-shrink: 0;
+  overflow-y: auto;
+
+  @include kd-landscape {
+    width: $kd-studio-side-width;
+    max-height: 100%;
+    padding-right: $kd-space-sm;
+    box-sizing: border-box;
+  }
+}
+
+.studio-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  padding: $kd-space-xs $kd-space-sm;
+
+  @include kd-landscape {
+    padding: 0;
+  }
 }
 
 .canvas-area {
   flex: 1;
-  margin: 8px 12px;
-  min-height: 300px;
+  min-height: 280px;
+  min-width: 0;
   display: flex;
+  flex-direction: column;
+
+  @include kd-landscape {
+    min-height: 0;
+    height: 100%;
+  }
 }
 
-.bottom-actions {
-  padding: 8px 16px 4px;
+.side-actions {
+  padding: $kd-space-xs $kd-space-sm $kd-space-sm;
+
+  @include kd-landscape {
+    padding: $kd-space-sm 0;
+  }
 }
 
 .action-btn {
-  border-radius: 20px;
-  padding: 12px;
+  border-radius: $kd-radius-lg;
+  padding: $kd-space-sm;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #2d3436;
+  border: 2px solid $kd-border-color;
+  @include kd-touch-target;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .save-btn {
-  background-color: #4ecdc4;
+  background-color: $kd-teal;
 }
 
 .action-text {
-  font-size: 16px;
+  font-size: $kd-text-base;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 </style>

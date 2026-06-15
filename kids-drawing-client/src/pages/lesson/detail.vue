@@ -1,38 +1,46 @@
 <template>
-  <view class="page-root">
-    <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
-    <view class="nav-bar">
-      <view class="nav-back" @click="goBack">
-        <text class="nav-back-text">← 返回</text>
-      </view>
-      <text class="nav-title">课时详情</text>
-      <view class="nav-placeholder" />
-    </view>
-
-    <scroll-view v-if="lesson" class="detail-scroll" scroll-y>
-      <view class="card">
-        <text class="lesson-title">{{ lesson.title }}</text>
-        <text class="lesson-desc">{{ lesson.description }}</text>
-        <view class="difficulty-row">
-          <text class="difficulty-label">难度：</text>
-          <text v-for="i in lesson.difficulty" :key="i" class="diff-star">⭐</text>
+  <view class="page-root page-sub">
+    <view class="page-body">
+      <view class="safe-top" :style="{ height: statusBarHeight + 'px' }" />
+      <view class="kd-nav-bar">
+        <view class="kd-nav-back" @click="goBack">
+          <text class="kd-nav-back-text">← 返回</text>
         </view>
+        <text class="kd-nav-title">课时详情</text>
+        <view class="kd-nav-placeholder" />
       </view>
 
-      <text class="section-title">学习步骤</text>
-      <view v-for="step in lesson.steps" :key="step.order" class="step-preview">
-        <text class="step-num">{{ step.order }}</text>
-        <text class="step-hint">{{ step.hint }}</text>
-        <text v-if="step.required" class="step-required">必做</text>
-      </view>
+      <scroll-view v-if="lesson" class="detail-scroll" scroll-y>
+        <view class="page-content detail-inner">
+          <view class="detail-layout">
+            <view class="card intro-card">
+              <text class="lesson-title">{{ lesson.title }}</text>
+              <text class="lesson-desc">{{ lesson.description }}</text>
+              <view class="difficulty-row">
+                <text class="difficulty-label">难度</text>
+                <text v-for="i in lesson.difficulty" :key="i" class="diff-star">⭐</text>
+              </view>
+            </view>
 
-      <view class="start-btn" @click="onStart">
-        <text class="start-btn-text">开始画画 🖌️</text>
-      </view>
-    </scroll-view>
+            <view class="steps-panel">
+              <text class="section-title steps-title">学习步骤</text>
+              <view v-for="step in lesson.steps" :key="step.order" class="step-preview">
+                <text class="step-num">{{ step.order }}</text>
+                <text class="step-hint">{{ step.hint }}</text>
+                <text v-if="step.required" class="step-required">必做</text>
+              </view>
+            </view>
+          </view>
 
-    <view v-else class="empty-wrap">
-      <text class="empty-text">课时不存在</text>
+          <view class="start-btn" @click="onStart">
+            <text class="start-btn-text">开始画画</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view v-else class="empty-wrap">
+        <text class="empty-text">课时不存在</text>
+      </view>
     </view>
   </view>
 </template>
@@ -67,104 +75,131 @@ onLoad((options) => {
 </script>
 
 <style lang="scss" scoped>
-.nav-bar {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  background-color: #ffd166;
-  border-bottom: 3px solid #2d3436;
+.detail-scroll {
+  flex: 1;
+  height: 0;
 }
 
-.nav-back { min-width: 60px; }
-.nav-back-text { font-size: 16px; color: #2d3436; }
-.nav-title { font-size: 18px; font-weight: bold; color: #2d3436; }
-.nav-placeholder { min-width: 60px; }
+.detail-inner {
+  padding-bottom: $kd-space-xl;
+}
 
-.detail-scroll { flex: 1; height: 0; }
+.detail-layout {
+  @include kd-landscape {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: $kd-space-lg;
+    align-items: start;
+  }
+}
+
+.intro-card {
+  margin-top: $kd-space-sm;
+}
 
 .lesson-title {
-  font-size: 24px;
+  font-size: $kd-text-2xl;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
   display: block;
 }
 
 .lesson-desc {
-  font-size: 14px;
-  color: #636e72;
-  margin-top: 8px;
+  font-size: $kd-text-sm;
+  color: $kd-ink-muted;
+  margin-top: $kd-space-xs;
   display: block;
+  line-height: 1.5;
 }
 
 .difficulty-row {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 12px;
+  margin-top: $kd-space-sm;
+  gap: 4px;
 }
 
 .difficulty-label {
-  font-size: 14px;
-  color: #636e72;
+  font-size: $kd-text-sm;
+  color: $kd-ink-muted;
+  margin-right: 4px;
 }
 
-.diff-star { font-size: 16px; }
+.steps-title {
+  margin-left: 0;
+  margin-top: $kd-space-md;
+
+  @include kd-landscape {
+    margin-top: 0;
+  }
+}
 
 .step-preview {
   display: flex;
   flex-direction: row;
   align-items: center;
-  background-color: #ffffff;
-  border-radius: 12px;
-  border: 2px solid #2d3436;
-  padding: 12px 16px;
-  margin: 6px 16px;
+  @include kd-card;
+  border-width: 2px;
+  padding: $kd-space-sm $kd-space-md;
+  margin: $kd-space-xs 0;
 }
 
 .step-num {
-  width: 28px;
-  height: 28px;
-  border-radius: 14px;
-  background-color: #4ecdc4;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background-color: $kd-teal;
   text-align: center;
-  font-size: 14px;
+  font-size: $kd-text-sm;
   font-weight: bold;
-  color: #2d3436;
-  margin-right: 12px;
-  line-height: 28px;
+  color: $kd-ink;
+  margin-right: $kd-space-sm;
+  line-height: 32px;
+  flex-shrink: 0;
 }
 
 .step-hint {
   flex: 1;
-  font-size: 15px;
-  color: #2d3436;
+  font-size: $kd-text-base;
+  color: $kd-ink;
 }
 
 .step-required {
-  font-size: 11px;
-  color: #ff6b6b;
-  background-color: #fff0f0;
+  font-size: $kd-text-xs;
+  color: $kd-accent;
+  background-color: $kd-peach;
   padding: 2px 8px;
-  border-radius: 8px;
+  border-radius: $kd-radius-sm;
+  flex-shrink: 0;
 }
 
 .start-btn {
-  background-color: #7ae582;
-  border-radius: 28px;
-  border: 3px solid #2d3436;
-  padding: 16px;
-  margin: 24px 16px;
+  background-color: $kd-green;
+  border-radius: $kd-radius-lg;
+  border: $kd-border-width solid $kd-border-color;
+  padding: $kd-space-md;
+  margin-top: $kd-space-lg;
   display: flex;
   align-items: center;
   justify-content: center;
+  @include kd-touch-target;
+  max-width: 400px;
+
+  @include kd-landscape {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .start-btn-text {
-  font-size: 20px;
+  font-size: $kd-text-xl;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 
 .empty-wrap {
@@ -175,7 +210,7 @@ onLoad((options) => {
 }
 
 .empty-text {
-  font-size: 16px;
-  color: #636e72;
+  font-size: $kd-text-base;
+  color: $kd-ink-muted;
 }
 </style>

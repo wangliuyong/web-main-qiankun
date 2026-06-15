@@ -39,20 +39,37 @@ function onSelect(color: string): void {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  padding: 8px 12px;
+  padding: $kd-space-xs $kd-space-sm;
   justify-content: center;
+
+  @include kd-landscape {
+    justify-content: flex-start;
+    padding: $kd-space-xs 0;
+  }
 }
 
 .color-item {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  border: 3px solid #2d3436;
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  border: $kd-border-width solid $kd-border-color;
   margin: 6px;
+  @include kd-touch-target;
+
+  @include kd-landscape {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin: 4px;
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
 }
 
 .color-item-active {
-  border: 4px solid #ff6b6b;
-  transform: scale(1.1);
+  border: 4px solid $kd-accent;
+  transform: scale(1.08);
 }
 </style>

@@ -1,0 +1,100 @@
+/**
+ * 响应式 mixins - 平板 / iPad 横屏适配
+ */
+
+/** 平板及以上（iPad 竖屏 768px+） */
+@mixin kd-tablet {
+  @media screen and (min-width: 768px) {
+    @content;
+  }
+}
+
+/** iPad 横屏及宽屏平板（1024px+ 且 landscape） */
+@mixin kd-landscape {
+  @media screen and (min-width: 1024px) and (orientation: landscape) {
+    @content;
+  }
+}
+
+/** 宽屏兜底（部分 WebView 不报告 orientation） */
+@mixin kd-wide {
+  @media screen and (min-width: 1024px) {
+    @content;
+  }
+}
+
+/** 页面内容区居中 + 最大宽度 */
+@mixin kd-page-container {
+  width: 100%;
+  max-width: $kd-page-max;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/** 儿童友好触控按钮 */
+@mixin kd-touch-target {
+  min-height: $kd-touch-min;
+  min-width: $kd-touch-min;
+}
+
+/** 卡片基础样式 */
+@mixin kd-card {
+  background-color: $kd-surface;
+  border-radius: $kd-radius-md;
+  border: $kd-border-width solid $kd-border-color;
+  box-shadow: $kd-shadow-card;
+}
+
+/** 萌萌页面背景（云朵 + 爪印装饰） */
+@mixin kd-cute-page-bg {
+  position: relative;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255, 181, 197, 0.35) 0%, transparent 42%),
+    radial-gradient(circle at 92% 8%, rgba(205, 180, 219, 0.3) 0%, transparent 38%),
+    radial-gradient(circle at 85% 88%, rgba(149, 225, 211, 0.25) 0%, transparent 40%),
+    $kd-cream;
+}
+
+/** 顶栏样式（粉紫渐变） */
+@mixin kd-top-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: linear-gradient(135deg, #{$kd-pink} 0%, #{$kd-lavender} 100%);
+  border-bottom: $kd-border-width solid $kd-border-color;
+  min-height: 56px;
+  padding: $kd-space-sm $kd-space-md;
+  box-sizing: border-box;
+
+  @include kd-landscape {
+    min-height: 64px;
+    padding: $kd-space-sm $kd-space-lg;
+  }
+}
+
+/** 带 TabBar 的页面：横屏时左侧栏 + 右侧内容 */
+@mixin kd-tab-page-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  @include kd-cute-page-bg;
+
+  @include kd-landscape {
+    flex-direction: row;
+  }
+}
+
+/** TabBar 页面主体滚动区 */
+@mixin kd-tab-page-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+
+  @include kd-landscape {
+    padding-left: var(--kd-safe-left);
+  }
+}

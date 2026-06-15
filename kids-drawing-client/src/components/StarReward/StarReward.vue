@@ -1,14 +1,18 @@
 <template>
   <view v-if="visible" class="star-reward-mask" @click="onClose">
-    <view class="star-reward-card" @click.stop>
-      <text class="reward-title">太棒了！🎉</text>
+    <view class="star-reward-card card-pop" @click.stop>
+      <text class="reward-mascot mascot-float">🐰</text>
+      <text class="reward-title">太棒了！</text>
       <text class="reward-sub">{{ subtitle }}</text>
       <view class="stars-row">
         <text
           v-for="i in 3"
           :key="i"
           class="star-icon"
-          :class="i <= starCount ? 'star-active' : 'star-inactive'"
+          :class="[
+            i <= starCount ? 'star-active' : 'star-inactive',
+            i <= starCount ? `star-delay-${i}` : '',
+          ]"
         >⭐</text>
       </view>
       <text class="reward-desc">获得 {{ starCount }} 颗星星</text>
@@ -51,7 +55,7 @@ function onClose(): void {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(93, 78, 96, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,42 +63,72 @@ function onClose(): void {
 }
 
 .star-reward-card {
-  width: 280px;
-  background-color: #ffffff;
-  border-radius: 24px;
-  border: 4px solid #ffd166;
-  padding: 32px 24px;
+  width: 300px;
+  max-width: 90vw;
+  background: linear-gradient(180deg, $kd-surface 0%, $kd-surface-soft 100%);
+  border-radius: $kd-radius-lg;
+  border: $kd-border-width solid $kd-yellow;
+  padding: $kd-space-xl $kd-space-lg;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: $kd-shadow-float;
+}
+
+.card-pop {
+  @include kd-animate(kd-bounce-in, 0.55s, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.reward-mascot {
+  font-size: 56px;
+  margin-bottom: $kd-space-xs;
+}
+
+.mascot-float {
+  @include kd-animate-infinite(kd-float, 2s);
 }
 
 .reward-title {
-  font-size: 28px;
+  font-size: $kd-text-2xl;
   font-weight: bold;
-  color: #2d3436;
-  margin-bottom: 8px;
+  color: $kd-ink;
+  margin-bottom: $kd-space-xs;
 }
 
 .reward-sub {
-  font-size: 16px;
-  color: #636e72;
-  margin-bottom: 16px;
+  font-size: $kd-text-base;
+  color: $kd-ink-muted;
+  margin-bottom: $kd-space-md;
+  text-align: center;
 }
 
 .stars-row {
   display: flex;
   flex-direction: row;
-  margin-bottom: 12px;
+  margin-bottom: $kd-space-sm;
+  gap: 4px;
 }
 
 .star-icon {
   font-size: 40px;
-  margin: 0 4px;
 }
 
 .star-active {
   opacity: 1;
+
+  @include kd-animate-infinite(kd-sparkle, 1.2s);
+}
+
+.star-delay-1 {
+  animation-delay: 0s;
+}
+
+.star-delay-2 {
+  animation-delay: 0.15s;
+}
+
+.star-delay-3 {
+  animation-delay: 0.3s;
 }
 
 .star-inactive {
@@ -102,22 +136,27 @@ function onClose(): void {
 }
 
 .reward-desc {
-  font-size: 18px;
-  color: #ff6b6b;
+  font-size: $kd-text-lg;
+  color: $kd-pink-deep;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: $kd-space-lg;
 }
 
 .reward-btn {
-  background-color: #ffd166;
-  border-radius: 24px;
+  background: linear-gradient(135deg, $kd-yellow 0%, $kd-peach 100%);
+  border-radius: $kd-radius-pill;
   padding: 12px 32px;
-  border: 3px solid #2d3436;
+  border: $kd-border-width solid $kd-border-strong;
+  box-shadow: $kd-shadow-btn;
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
 .reward-btn-text {
-  font-size: 18px;
+  font-size: $kd-text-lg;
   font-weight: bold;
-  color: #2d3436;
+  color: $kd-ink;
 }
 </style>

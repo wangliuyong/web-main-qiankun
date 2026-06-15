@@ -1,0 +1,107 @@
+/**
+ * 萌萌小动物主题 - 设计令牌
+ * 粉紫 + 薄荷 + 奶黄，软圆角，适合 3-8 岁儿童
+ */
+
+/** 文字色（柔和深紫灰，非纯黑） */
+$kd-ink: #5d4e60;
+$kd-ink-muted: #9b8aa5;
+
+/** 背景与表面 */
+$kd-cream: #fff5fa;
+$kd-cream-alt: #fff0f8;
+$kd-surface: #ffffff;
+$kd-surface-soft: #fef8fc;
+
+/** 主色：粉彩系 */
+$kd-pink: #ffb5c5;
+$kd-pink-deep: #ff8fab;
+$kd-lavender: #cdb4db;
+$kd-lavender-deep: #a78bba;
+$kd-mint: #95e1d3;
+$kd-mint-deep: #6bcbb8;
+$kd-peach: #ffd6a5;
+$kd-yellow: #ffe066;
+$kd-sky: #bde0fe;
+
+/** 语义色（映射旧变量名，便于页面迁移） */
+$kd-header: linear-gradient(135deg, #{$kd-pink} 0%, #{$kd-lavender} 100%);
+$kd-header-solid: #ffc8dd;
+$kd-accent: $kd-pink-deep;
+$kd-teal: $kd-mint-deep;
+$kd-green: #a8e6cf;
+$kd-cobalt: $kd-lavender-deep;
+$kd-cobalt-soft: rgba(205, 180, 219, 0.35);
+$kd-gold-soft: #fff8e7;
+
+/** 边框（软紫，比纯黑更萌） */
+$kd-border-width: 3px;
+$kd-border-color: #c9b8d9;
+$kd-border-strong: #9b8aa5;
+$kd-border-light: #f0e6f6;
+
+/** 圆角（更圆润） */
+$kd-radius-sm: 12px;
+$kd-radius-md: 20px;
+$kd-radius-lg: 28px;
+$kd-radius-pill: 999px;
+
+/** 间距 */
+$kd-space-xs: 6px;
+$kd-space-sm: 12px;
+$kd-space-md: 16px;
+$kd-space-lg: 24px;
+$kd-space-xl: 32px;
+
+/** 触控 */
+$kd-touch-min: 48px;
+$kd-touch-lg: 56px;
+
+/** 阴影（粉紫 tint） */
+$kd-shadow-card: 0 4px 20px rgba(205, 180, 219, 0.25);
+$kd-shadow-float: 0 8px 32px rgba(255, 143, 171, 0.2);
+$kd-shadow-btn: 0 4px 0 #c9b8d9;
+
+/** 布局 */
+$kd-page-max: 1200px;
+$kd-sidebar-width: 100px;
+$kd-studio-side-width: 340px;
+
+/** 字号 */
+$kd-text-xs: 11px;
+$kd-text-sm: 13px;
+$kd-text-base: 15px;
+$kd-text-lg: 18px;
+$kd-text-xl: 22px;
+$kd-text-2xl: 28px;
+
+/** 小动物伙伴 */
+$kd-mascot-bunny: '🐰';
+$kd-mascot-bear: '🐻';
+$kd-mascot-fox: '🦊';
+$kd-mascot-panda: '🐼';
+$kd-mascot-cat: '🐱';
+
+:root {
+  --kd-ink: #{$kd-ink};
+  --kd-ink-muted: #{$kd-ink-muted};
+  --kd-cream: #{$kd-cream};
+  --kd-surface: #{$kd-surface};
+  --kd-pink: #{$kd-pink};
+  --kd-pink-deep: #{$kd-pink-deep};
+  --kd-lavender: #{$kd-lavender};
+  --kd-mint: #{$kd-mint};
+  --kd-yellow: #{$kd-yellow};
+  --kd-header-solid: #{$kd-header-solid};
+  --kd-accent: #{$kd-accent};
+  --kd-teal: #{$kd-teal};
+  --kd-green: #{$kd-green};
+  --kd-radius-md: #{$kd-radius-md};
+  --kd-border-width: #{$kd-border-width};
+  --kd-border-color: #{$kd-border-color};
+  --kd-page-max: #{$kd-page-max};
+  --kd-sidebar-width: #{$kd-sidebar-width};
+  --kd-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --kd-safe-left: env(safe-area-inset-left, 0px);
+  --kd-safe-right: env(safe-area-inset-right, 0px);
+}
