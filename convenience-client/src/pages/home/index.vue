@@ -1,5 +1,5 @@
 <template>
-  <view class="page-home">
+  <view class="page-home" :style="pageStyle">
     <!-- 顶部英雄区 -->
     <view class="page-home__hero">
       <view class="page-home__hero-orb page-home__hero-orb--1" />
@@ -140,10 +140,12 @@ import HomeQuickActions from '@/components/HomeQuickActions/HomeQuickActions.vue
 import SectionHead from '@/components/SectionHead/SectionHead.vue';
 import { openPublishPage } from '@/constants/tabbar';
 import { useTabBarPage } from '@/composables/useTabBarPage';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import { useLocationStore } from '@/stores/location';
 import type { BannerItem, CategoryItem, CityInfoItem, NoticeItem } from '@/types/city-info';
 
 useTabBarPage();
+const { pageStyle } = useSafeAreaInsets();
 
 const primaryColor = '#1d4ed8';
 const locationStore = useLocationStore();
@@ -297,7 +299,7 @@ onShow(() => {
   @include cv-hero-bg;
   @include cv-hero-fade-bottom;
   padding: 28rpx $cv-space-page 44rpx;
-  padding-top: calc(28rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(28rpx);
 }
 
 .page-home__hero-orb--1 {

@@ -1,5 +1,5 @@
 <template>
-  <view class="page-detail">
+  <view class="page-detail" :style="pageStyle">
     <!-- 加载骨架：与最终布局同形，避免空白闪烁 -->
     <view v-if="loading" class="page-detail__skeleton">
       <view class="page-detail__sk-hero" />
@@ -38,7 +38,7 @@
 
         <view class="page-detail__hero-fade" />
 
-        <view class="page-detail__nav" :style="{ paddingTop: statusBarPadding }">
+        <view class="page-detail__nav" :style="{ paddingTop: navPaddingTop }">
           <view class="page-detail__nav-btn" hover-class="page-detail__nav-btn--pressed" @click="goBack">
             <u-icon name="arrow-left" color="#fff" size="20" />
           </view>
@@ -169,6 +169,7 @@ import { postCollect, postUncollect, queryCollectedIds } from '@/api/collect.api
 import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
 import AiAssistantFab from '@/components/AiAssistantFab/AiAssistantFab.vue';
 import { useLocationStore } from '@/stores/location';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import { useUserStore } from '@/stores/user';
 import type { CityInfoItem } from '@/types/city-info';
 import {
@@ -181,6 +182,7 @@ import {
 
 const userStore = useUserStore();
 const locationStore = useLocationStore();
+const { pageStyle, navPaddingTop } = useSafeAreaInsets();
 
 /** 详情数据 */
 const detail = ref<CityInfoItem>();
@@ -192,12 +194,6 @@ const collected = ref(false);
 const imageIndex = ref(0);
 /** 信息 ID */
 let infoId = 0;
-
-/** 状态栏安全区内边距 */
-const statusBarPadding = computed(() => {
-  const sys = uni.getSystemInfoSync();
-  return `${(sys.statusBarHeight || 0) + 8}px`;
-});
 
 /** 发布日期短格式 */
 const publishShort = computed(() => {

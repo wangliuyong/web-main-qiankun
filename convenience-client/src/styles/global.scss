@@ -1,6 +1,17 @@
 @import './tokens.scss';
 @import './mixins.scss';
 
+/**
+ * 安全区 CSS 变量默认值（页面根节点由 useSafeAreaInsets 注入精确 px 值）
+ * max(var, env()) 兼容 H5 iOS 刘海与 App/安卓状态栏
+ */
+page {
+  --cv-safe-top: 0px;
+  --cv-safe-bottom: 0px;
+  --cv-safe-left: 0px;
+  --cv-safe-right: 0px;
+}
+
 /** 页面容器 */
 .cv-page {
   min-height: 100vh;

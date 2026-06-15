@@ -1,5 +1,5 @@
 <template>
-  <view class="page-collect">
+  <view class="page-collect" :style="pageStyle">
     <!-- 顶部英雄区：标题 + 收藏概览 -->
     <view class="page-collect__hero">
       <view class="page-collect__hero-glow" />
@@ -72,6 +72,7 @@ import AiAssistantFab from '@/components/AiAssistantFab/AiAssistantFab.vue';
 import InfoListCard from '@/components/InfoListCard/InfoListCard.vue';
 import SkeletonList from '@/components/SkeletonList/SkeletonList.vue';
 import { useLocationStore } from '@/stores/location';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import type { CityInfoItem } from '@/types/city-info';
 import { calcDistanceKm } from '@/utils/format';
 
@@ -81,6 +82,7 @@ interface CollectRow extends CityInfoItem {
 }
 
 const locationStore = useLocationStore();
+const { pageStyle } = useSafeAreaInsets();
 const list = ref<CollectRow[]>([]);
 const loading = ref(true);
 const sortIndex = ref(0);
@@ -193,7 +195,7 @@ onMounted(loadCollects);
   overflow: hidden;
   @include cv-hero-bg;
   padding: 20rpx $cv-space-page 24rpx;
-  padding-top: calc(20rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(20rpx);
 }
 
 .page-collect__hero-glow {

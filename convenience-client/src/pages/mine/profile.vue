@@ -1,5 +1,5 @@
 <template>
-  <view class="page-profile">
+  <view class="page-profile" :style="pageStyle">
     <!-- 加载骨架：与账号设置页同形 -->
     <template v-if="loading">
       <view class="page-profile__hero">
@@ -158,10 +158,12 @@ import AiAssistantFab from '@/components/AiAssistantFab/AiAssistantFab.vue';
 import SkeletonBlock from '@/components/SkeletonBlock/SkeletonBlock.vue';
 import SkeletonLine from '@/components/SkeletonLine/SkeletonLine.vue';
 import { useUserStore } from '@/stores/user';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import type { UserProfile, UserType } from '@/types/user';
 import { formatDateTime, formatPhoneMask } from '@/utils/format';
 
 const userStore = useUserStore();
+const { pageStyle } = useSafeAreaInsets();
 const saving = ref(false);
 const loading = ref(true);
 const form = ref({ nickname: '', phone: '', avatar: '' });
@@ -286,7 +288,7 @@ onMounted(async () => {
   overflow: hidden;
   @include cv-hero-bg;
   padding: 20rpx $cv-space-page 28rpx;
-  padding-top: calc(20rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(20rpx);
 }
 
 .page-profile__hero-glow {

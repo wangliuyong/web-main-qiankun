@@ -1,5 +1,5 @@
 <template>
-  <view class="page-publish cv-page">
+  <view class="page-publish cv-page" :style="pageStyle">
     <!-- 顶部英雄区：标题 + 填写进度 -->
     <view class="page-publish__hero">
       <view class="page-publish__hero-orb page-publish__hero-orb--1" />
@@ -206,6 +206,7 @@ import CategoryRootStrip from '@/components/CategoryRootStrip/CategoryRootStrip.
 import SkeletonBlock from '@/components/SkeletonBlock/SkeletonBlock.vue';
 import SkeletonLine from '@/components/SkeletonLine/SkeletonLine.vue';
 import { useLocationStore } from '@/stores/location';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import { useTabBarStore } from '@/stores/tabbar';
 import { useUserStore } from '@/stores/user';
 import type { CategoryItem } from '@/types/city-info';
@@ -213,6 +214,7 @@ import type { CategoryItem } from '@/types/city-info';
 const tabBarStore = useTabBarStore();
 const userStore = useUserStore();
 const locationStore = useLocationStore();
+const { pageStyle } = useSafeAreaInsets();
 
 const submitting = ref(false);
 const pageLoading = ref(true);
@@ -518,7 +520,7 @@ onMounted(async () => {
   overflow: hidden;
   @include cv-hero-bg;
   padding: 28rpx $cv-space-page 48rpx;
-  padding-top: calc(28rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(28rpx);
 }
 
 .page-publish__nav {

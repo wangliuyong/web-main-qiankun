@@ -204,16 +204,34 @@
   overflow: hidden;
 }
 
+/**
+ * 顶部安全区 + 额外间距
+ * JS 注入 --cv-safe-top（App/安卓小程序），与 env(safe-area-inset-top) 取较大值
+ */
+@mixin cv-safe-area-top($extra: 28rpx) {
+  padding-top: calc(
+    #{$extra} + max(var(--cv-safe-top, 0px), env(safe-area-inset-top, 0px))
+  );
+}
+
+/** 底部安全区 + 额外间距 */
+@mixin cv-safe-area-bottom($extra: 0rpx) {
+  padding-bottom: calc(
+    #{$extra} + max(var(--cv-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))
+  );
+}
+
 /** Tab 页顶部介绍区 */
 @mixin cv-page-intro {
   padding: 24rpx $cv-space-page 16rpx;
-  padding-top: calc(24rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(24rpx);
 }
 
 /** 次级页面内容区 */
 @mixin cv-subpage-body {
   padding: $cv-space-page;
-  padding-bottom: calc(#{$cv-space-page} + env(safe-area-inset-bottom));
+  @include cv-safe-area-top($cv-space-page);
+  @include cv-safe-area-bottom($cv-space-page);
   min-height: 100vh;
   background:
     radial-gradient(ellipse 100% 60% at 50% -10%, rgba(191, 219, 254, 0.35) 0%, transparent 55%),

@@ -1,5 +1,5 @@
 <template>
-  <view class="page-login">
+  <view class="page-login" :style="pageStyle">
     <!-- 顶部英雄区 -->
     <view class="page-login__hero">
       <view class="page-login__orb page-login__orb--1" />
@@ -116,8 +116,10 @@ import { ref } from 'vue';
 import AiAssistantFab from '@/components/AiAssistantFab/AiAssistantFab.vue';
 import { postPhoneLogin, postWechatLogin } from '@/api/auth.api';
 import { useUserStore } from '@/stores/user';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 
 const userStore = useUserStore();
+const { pageStyle } = useSafeAreaInsets();
 const loading = ref(false);
 const form = ref({ phone: '13800138000', password: '123456' });
 
@@ -213,7 +215,7 @@ async function onPhoneLogin() {
   overflow: hidden;
   @include cv-hero-bg;
   padding: 20rpx $cv-space-page 32rpx;
-  padding-top: calc(20rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(20rpx);
 }
 
 .page-login__orb {

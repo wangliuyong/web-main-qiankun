@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onLaunch, onShow } from '@dcloudio/uni-app';
+import { useSafeAreaStore } from '@/stores/safe-area';
 import { useUserStore } from '@/stores/user';
 import { useLocationStore } from '@/stores/location';
 
@@ -10,11 +11,12 @@ function hideNativeTabBar() {
   // #endif
 }
 
-/** 应用启动时恢复登录态 */
+/** 应用启动时恢复登录态，并初始化顶部安全区 */
 onLaunch(() => {
   const userStore = useUserStore();
   userStore.restoreFromStorage();
   useLocationStore().restoreFromStorage();
+  useSafeAreaStore().init();
   hideNativeTabBar();
 });
 

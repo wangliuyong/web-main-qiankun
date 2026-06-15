@@ -1,5 +1,5 @@
 <template>
-  <view class="page-list">
+  <view class="page-list" :style="pageStyle">
     <!-- 顶部英雄区：标题 + 结果统计 -->
     <view class="page-list__hero">
       <view class="page-list__hero-glow" />
@@ -66,9 +66,11 @@ import AiAssistantFab from '@/components/AiAssistantFab/AiAssistantFab.vue';
 import InfoListCard from '@/components/InfoListCard/InfoListCard.vue';
 import SkeletonList from '@/components/SkeletonList/SkeletonList.vue';
 import { useLocationStore } from '@/stores/location';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import type { CityInfoItem } from '@/types/city-info';
 
 const locationStore = useLocationStore();
+const { pageStyle } = useSafeAreaInsets();
 const list = ref<CityInfoItem[]>([]);
 const keyword = ref('');
 const categoryId = ref<number>();
@@ -211,7 +213,7 @@ onMounted(async () => {
   @include cv-hero-bg;
   @include cv-hero-fade-bottom;
   padding: 20rpx $cv-space-page 36rpx;
-  padding-top: calc(20rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(20rpx);
 }
 
 .page-list__hero-glow {

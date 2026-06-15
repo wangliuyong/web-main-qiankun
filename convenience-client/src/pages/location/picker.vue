@@ -1,7 +1,7 @@
 <template>
-  <view class="page-loc-picker">
+  <view class="page-loc-picker" :style="pageStyle">
     <!-- 顶部导航 -->
-    <view class="page-loc-picker__nav" :style="{ paddingTop: statusBarHeight + 'px' }">
+    <view class="page-loc-picker__nav" :style="{ paddingTop: navPaddingTop }">
       <view class="page-loc-picker__nav-inner">
         <view class="page-loc-picker__back" @click="onCancel">
           <u-icon name="arrow-left" color="#1e293b" size="20" />
@@ -79,18 +79,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted, getCurrentInstance } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
 import { queryReverseGeocode } from '@/utils/geocode';
 import { ensureLocationPermission, getCurrentPosition } from '@/utils/location';
 import { isApp, isMpWeixin } from '@/utils/platform';
 import { useLocationStore } from '@/stores/location';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 // #ifdef H5
 import LocationMapAmapH5 from '@/components/LocationMapAmap/LocationMapAmapH5.vue';
 // #endif
 
 const locationStore = useLocationStore();
+const { pageStyle, navPaddingTop } = useSafeAreaInsets();
 
-const statusBarHeight = ref(0);
 const latitude = ref(locationStore.latitude);
 const longitude = ref(locationStore.longitude);
 const addressPreview = ref(locationStore.address || locationStore.cityName);
@@ -107,11 +107,6 @@ const amapRef = ref<InstanceType<typeof LocationMapAmapH5> | null>(null);
 /** 原生 map 上下文（小程序 / App） */
 let mapCtx: UniApp.MapContext | null = null;
 // #endif
-
-onLoad(() => {
-  const sys = uni.getSystemInfoSync();
-  statusBarHeight.value = sys.statusBarHeight || 0;
-});
 
 onMounted(() => {
   // #ifndef H5

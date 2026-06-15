@@ -1,5 +1,5 @@
 <template>
-  <view class="page-category cv-page">
+  <view class="page-category cv-page" :style="pageStyle">
     <!-- 加载骨架：与最终布局同形 -->
     <template v-if="loading">
       <view class="page-category__hero">
@@ -113,9 +113,11 @@ import CategoryRootStrip from '@/components/CategoryRootStrip/CategoryRootStrip.
 import CategorySubGrid from '@/components/CategorySubGrid/CategorySubGrid.vue';
 import { getCategoryRootHint, getCategoryRootIcon } from '@/constants/category';
 import { useTabBarPage } from '@/composables/useTabBarPage';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import type { CategoryItem } from '@/types/city-info';
 
 useTabBarPage();
+const { pageStyle } = useSafeAreaInsets();
 
 const categories = ref<CategoryItem[]>([]);
 const activeRootId = ref(0);
@@ -166,7 +168,7 @@ onMounted(async () => {
   overflow: hidden;
   @include cv-hero-bg;
   padding: 28rpx $cv-space-page 52rpx;
-  padding-top: calc(28rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(28rpx);
 }
 
 .page-category__hero-glow {

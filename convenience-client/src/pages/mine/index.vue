@@ -1,5 +1,5 @@
 <template>
-  <view class="page-mine cv-page">
+  <view class="page-mine cv-page" :style="pageStyle">
     <!-- 顶部用户区 -->
     <view class="page-mine__header">
       <view class="page-mine__glow page-mine__glow--1" />
@@ -185,6 +185,7 @@ import SkeletonLine from '@/components/SkeletonLine/SkeletonLine.vue';
 import SkeletonList from '@/components/SkeletonList/SkeletonList.vue';
 import { AI_PAGE_PATH, isTabBarPath, openPublishPage } from '@/constants/tabbar';
 import { useTabBarPage } from '@/composables/useTabBarPage';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import { useUserStore } from '@/stores/user';
 import type { CityInfoItem } from '@/types/city-info';
 import {
@@ -196,6 +197,7 @@ import {
 } from '@/utils/format';
 
 useTabBarPage();
+const { pageStyle } = useSafeAreaInsets();
 
 const userStore = useUserStore();
 const appVersion = 'v1.0.0';
@@ -349,7 +351,7 @@ onShow(loadMineData);
   position: relative;
   overflow: hidden;
   padding: 48rpx $cv-space-page 56rpx;
-  padding-top: calc(36rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(36rpx);
   @include cv-hero-bg;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <view class="page-ai">
+  <view class="page-ai" :style="pageStyle">
     <!-- 顶部：深色编辑感头部，非浮动卡片 -->
     <view class="page-ai__header">
       <view class="page-ai__header-glow" />
@@ -87,12 +87,14 @@ import AiMessageBubble from '@/components/AiMessageBubble/AiMessageBubble.vue';
 import SkeletonBlock from '@/components/SkeletonBlock/SkeletonBlock.vue';
 import { isTabBarPath } from '@/constants/tabbar';
 import { useTabBarPage } from '@/composables/useTabBarPage';
+import { useSafeAreaInsets } from '@/composables/useSafeAreaInsets';
 import { useTabBarStore } from '@/stores/tabbar';
 import { useAiStore } from '@/stores/ai';
 import { useUserStore } from '@/stores/user';
 import type { AiMessageItem } from '@/types/city-info';
 
 useTabBarPage();
+const { pageStyle } = useSafeAreaInsets();
 
 const aiStore = useAiStore();
 const userStore = useUserStore();
@@ -281,7 +283,7 @@ $ai-composer-offset: calc(112rpx + env(safe-area-inset-bottom));
   overflow: hidden;
   @include cv-hero-bg;
   padding: 20rpx $cv-space-page 28rpx;
-  padding-top: calc(20rpx + env(safe-area-inset-top));
+  @include cv-safe-area-top(20rpx);
 }
 
 .page-ai__header-glow {
