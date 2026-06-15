@@ -1,0 +1,40 @@
+<view class="cv-tabbar" wx:if="{{show}}">
+  <view class="cv-tabbar__safe">
+    <view class="cv-tabbar__bar">
+      <block wx:for="{{list}}" wx:key="pagePath">
+        <!-- 中间发布占位 -->
+        <view
+          wx:if="{{item.isPublish}}"
+          class="cv-tabbar__item cv-tabbar__item--publish"
+          data-index="{{index}}"
+          data-path="{{item.pagePath}}"
+          data-publish="1"
+          bindtap="onTap"
+        >
+          <view class="cv-tabbar__publish-circle">
+            <text class="cv-tabbar__publish-plus">+</text>
+          </view>
+        </view>
+
+        <!-- 常规 Tab -->
+        <view
+          wx:else
+          class="cv-tabbar__item"
+          data-index="{{index}}"
+          data-path="{{item.pagePath}}"
+          bindtap="onTap"
+        >
+          <image
+            class="cv-tabbar__icon"
+            src="{{selected === index ? item.selectedIconPath : item.iconPath}}"
+            mode="aspectFit"
+          />
+          <text
+            class="cv-tabbar__text"
+            style="color: {{selected === index ? selectedColor : color}}"
+          >{{item.text}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

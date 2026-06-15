@@ -149,7 +149,9 @@
       </view>
     </view>
 
+    <!-- #ifndef MP-WEIXIN -->
     <AppTabBar page-path="pages/home/index" />
+    <!-- #endif -->
 
     <!-- 省市区选择弹层（页面根级，避免 hero 内 overflow 导致 H5 不可见） -->
     <RegionPickerPopup
@@ -171,7 +173,9 @@ import { queryCityInfoList } from '@/api/city-info.api';
 import { queryCollectedIds } from '@/api/collect.api';
 import { queryNoticeList } from '@/api/notice.api';
 import ArtImageCover from '@/components/ArtImageCover/ArtImageCover.vue';
+// #ifndef MP-WEIXIN
 import AppTabBar from '@/components/AppTabBar/AppTabBar.vue';
+// #endif
 import CategoryGrid from '@/components/CategoryGrid/CategoryGrid.vue';
 import HomeFeaturedCard from '@/components/HomeFeaturedCard/HomeFeaturedCard.vue';
 import HomeInfoTile from '@/components/HomeInfoTile/HomeInfoTile.vue';

@@ -390,10 +390,10 @@ function onBack() {
   });
 }
 
-/** 发布页隐藏原生 TabBar（小程序 / APP） */
+/** 发布页隐藏原生 TabBar（H5 / App；微信 custom TabBar 在非 Tab 页自动隐藏） */
 function hideNativeTabBar() {
-  // #ifdef MP-WEIXIN || APP-PLUS
-  uni.hideTabBar({ animation: false, fail: () => { } });
+  // #ifdef H5 || APP-PLUS
+  uni.hideTabBar({ animation: false, fail: () => {} });
   // #endif
 }
 

@@ -1,11 +1,11 @@
 <template>
   <!--
     Tab 页底部导航
+    - 微信小程序：由 custom-tab-bar/index.vue 单例挂载
+    - H5 / App：各 Tab 页挂载并传 page-path，避免多实例叠层
     - 沉浸式 Tab（AI）不展示
-    - 发布按钮：独立浮层（微信端 u-tabbar midButton 字体图标不可靠）
-    - H5 各 Tab 页各自挂载时需传 page-path，避免 fixed 实例在切换后残留
   -->
-  <view v-if="visible" class="app-tabbar">
+  <view v-show="visible" class="app-tabbar">
     <u-tabbar :value="tabBarStore.activeIndex" :fixed="true" :placeholder="true" :safe-area-inset-bottom="true"
       :border="false" :active-color="TAB_BAR_ACTIVE_COLOR" :inactive-color="TAB_BAR_INACTIVE_COLOR"
       :background-color="TAB_BAR_BG" :z-index="1000" @change="onTabChange">
@@ -26,7 +26,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
 import {
   TAB_BAR_ACTIVE_COLOR,
   TAB_BAR_BG,
@@ -42,28 +41,28 @@ import { useTabBarStore } from '@/stores/tabbar';
 const PUBLISH_TAB_INDEX = TAB_BAR_ITEMS.findIndex((item) => item.midButton);
 
 const props = defineProps<{
-  /**
-   * 当前页面路由（不含前导 /），H5 多 Tab 页各自挂载时必传
-   * 微信小程序各 Tab 页内挂载时需传 page-path
-   */
+  /** H5 / App 各 Tab 页挂载时必传，用于多实例间仅展示当前页那一个 */
   pagePath?: string;
 }>();
 
 const tabBarStore = useTabBarStore();
-/** 路由同步计数，确保 Tab 切换后各页面内 AppTabBar 实例重新计算显隐 */
-const { routeSyncKey } = storeToRefs(tabBarStore);
 
-/** 是否渲染 TabBar：仅 switchTab Tab 页展示，发布等子页不展示 */
+/** 是否展示 TabBar：store 路由驱动；微信单例由 custom-tab-bar 挂载 */
 const visible = computed(() => {
-  routeSyncKey.value;
-
-  const pages = getCurrentPages();
-  const currentRoute = normalizeRoute(pages[pages.length - 1]?.route ?? '');
+  const currentRoute = tabBarStore.currentRoute;
   if (!currentRoute) return false;
   if (isTabBarHiddenPath(currentRoute)) return false;
   if (!isTabSwitchPath(currentRoute)) return false;
-  if (props.pagePath) return currentRoute === props.pagePath;
+
+  // #ifdef MP-WEIXIN
   return true;
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  const pagePath = props.pagePath ?? '';
+  if (!pagePath) return false;
+  return currentRoute === normalizeRoute(pagePath);
+  // #endif
 });
 
 /** u-tabbar 切换回调 */

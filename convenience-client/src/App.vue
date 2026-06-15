@@ -3,14 +3,14 @@ import { onLaunch, onShow } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
 import { useLocationStore } from '@/stores/location';
 
-/** 隐藏微信/APP 原生 TabBar，各 Tab 页内挂载 uview AppTabBar */
+/** 隐藏 H5 / App 原生 TabBar（微信小程序 tabBar.custom 已由框架隐藏原生栏） */
 function hideNativeTabBar() {
-  // #ifdef MP-WEIXIN || APP-PLUS
-  uni.hideTabBar({ animation: false, fail: () => { } });
+  // #ifdef H5 || APP-PLUS
+  uni.hideTabBar({ animation: false, fail: () => {} });
   // #endif
 }
 
-/** 应用启动时恢复登录态，并隐藏原生 TabBar */
+/** 应用启动时恢复登录态 */
 onLaunch(() => {
   const userStore = useUserStore();
   userStore.restoreFromStorage();
@@ -18,7 +18,7 @@ onLaunch(() => {
   hideNativeTabBar();
 });
 
-/** 部分端切回前台会重新显示原生 TabBar，需再次隐藏 */
+/** App 切回前台时再次隐藏原生 TabBar */
 onShow(() => {
   hideNativeTabBar();
 });

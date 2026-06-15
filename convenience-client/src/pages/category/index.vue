@@ -98,7 +98,9 @@
       </view>
     </view>
 
+    <!-- #ifndef MP-WEIXIN -->
     <AppTabBar page-path="pages/category/index" />
+    <!-- #endif -->
     </template>
   </view>
 </template>
@@ -108,7 +110,9 @@ import { ref, computed, onMounted } from 'vue';
 import { queryCategoryTree } from '@/api/category.api';
 import SkeletonBlock from '@/components/SkeletonBlock/SkeletonBlock.vue';
 import SkeletonLine from '@/components/SkeletonLine/SkeletonLine.vue';
+// #ifndef MP-WEIXIN
 import AppTabBar from '@/components/AppTabBar/AppTabBar.vue';
+// #endif
 import CategoryRootStrip from '@/components/CategoryRootStrip/CategoryRootStrip.vue';
 import CategorySubGrid from '@/components/CategorySubGrid/CategorySubGrid.vue';
 import { getCategoryRootHint, getCategoryRootIcon } from '@/constants/category';

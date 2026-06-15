@@ -6,6 +6,7 @@ import {
   PUBLISH_PAGE_PATH,
   TAB_BAR_ITEMS,
 } from '@/constants/tabbar';
+import { resolveMpCustomTabBarPayload, syncMpCustomTabBar } from '@/utils/mp-custom-tab-bar';
 
 /**
  * 自定义 TabBar 选中态
@@ -16,22 +17,30 @@ export const useTabBarStore = defineStore('tabbar', {
     activeIndex: 0,
     /** 沉浸式 Tab 页（AI）：隐藏底部 TabBar */
     tabBarHidden: false,
-    /** 每次 syncFromRoute 递增，驱动各页面 AppTabBar 重新计算显隐 */
-    routeSyncKey: 0,
+    /** 当前栈顶路由（驱动 TabBar 显隐与高亮） */
+    currentRoute: 'pages/home/index',
   }),
   actions: {
+    /** 写入当前路由并同步高亮态 */
+    applyRoute(route: string) {
+      const normalized = normalizeRoute(route);
+      this.currentRoute = normalized;
+      this.tabBarHidden = isTabBarHiddenPath(normalized);
+      const index = TAB_BAR_ITEMS.findIndex((item) => item.pagePath === normalized);
+      // 发布为独立子页，不更新 Tab 高亮
+      if (index >= 0 && normalized !== PUBLISH_PAGE_PATH) {
+        this.activeIndex = index;
+      }
+      syncMpCustomTabBar(resolveMpCustomTabBarPayload(normalized, this.activeIndex));
+    },
+
     /** 根据当前页面路由同步高亮项与 TabBar 显隐 */
     syncFromRoute() {
       const pages = getCurrentPages();
       const route = normalizeRoute(pages[pages.length - 1]?.route ?? '');
-      this.tabBarHidden = isTabBarHiddenPath(route);
-      const index = TAB_BAR_ITEMS.findIndex((item) => item.pagePath === route);
-      // 发布为独立子页，不更新 Tab 高亮
-      if (index >= 0 && route !== PUBLISH_PAGE_PATH) {
-        this.activeIndex = index;
-      }
-      this.routeSyncKey += 1;
+      this.applyRoute(route);
     },
+
     /** 切换 Tab 或打开发布子页 */
     switchTo(index: number) {
       const target = TAB_BAR_ITEMS[index];
@@ -39,8 +48,8 @@ export const useTabBarStore = defineStore('tabbar', {
 
       // 发布：独立子页，APP 端不走 switchTab 以避免原生 TabBar 残留
       if (target.pagePath === PUBLISH_PAGE_PATH || target.switchTab === false) {
-        // 立即刷新各 Tab 页内 AppTabBar 显隐，避免 fixed 实例在 navigateTo 过渡期间露出
-        this.routeSyncKey += 1;
+        // 立即更新路由态，避免 navigateTo 过渡期间 TabBar 露出
+        this.applyRoute(PUBLISH_PAGE_PATH);
         uni.navigateTo({
           url: `/${target.pagePath}`,
           fail: () => {
@@ -50,8 +59,10 @@ export const useTabBarStore = defineStore('tabbar', {
         return;
       }
 
-      if (index === this.activeIndex) return;
-      this.activeIndex = index;
+      if (index === this.activeIndex && this.currentRoute === target.pagePath) return;
+
+      // 乐观更新：switchTab 动画期间先隐藏旧页 TabBar，避免高亮与页面错位闪烁
+      this.applyRoute(target.pagePath);
       uni.switchTab({ url: `/${target.pagePath}` });
     },
     /** 当前栈顶是否为 switchTab Tab 页（用于 AppTabBar 显隐） */
