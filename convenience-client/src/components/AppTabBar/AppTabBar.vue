@@ -9,9 +9,19 @@
     <u-tabbar :value="tabBarStore.activeIndex" :fixed="true" :placeholder="true" :safe-area-inset-bottom="true"
       :border="false" :active-color="TAB_BAR_ACTIVE_COLOR" :inactive-color="TAB_BAR_INACTIVE_COLOR"
       :background-color="TAB_BAR_BG" :z-index="1000" @change="onTabChange">
-      <u-tabbar-item v-for="item in TAB_BAR_ITEMS" :key="item.name" :name="item.name"
-        :text="item.midButton ? ' ' : item.text" :icon="item.inactiveIcon" :active-icon="item.activeIcon"
-        :inactive-icon="item.inactiveIcon" />
+      <u-tabbar-item
+        v-for="item in TAB_BAR_ITEMS"
+        :key="item.name"
+        :name="item.name"
+        :text="item.midButton ? ' ' : item.text"
+      >
+        <template v-if="item.iconPath && item.selectedIconPath && !item.midButton" #inactive-icon>
+          <image class="app-tabbar__icon" :src="item.iconPath" mode="aspectFit" />
+        </template>
+        <template v-if="item.iconPath && item.selectedIconPath && !item.midButton" #active-icon>
+          <image class="app-tabbar__icon" :src="item.selectedIconPath" mode="aspectFit" />
+        </template>
+      </u-tabbar-item>
     </u-tabbar>
 
     <!-- 中间发布：纯 view + text，全端一致，不依赖 uview 字体图标 -->
@@ -95,6 +105,12 @@ function onPublishTap() {
 
 :deep(.u-tabbar-item) {
   padding: 0 4rpx;
+}
+
+.app-tabbar__icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
 }
 
 /** 第 3 项为发布占位：保留宽度，视觉由浮层承担 */

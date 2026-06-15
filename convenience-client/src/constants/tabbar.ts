@@ -1,6 +1,6 @@
 /**
- * 底部 Tab 配置（uview-plus u-tabbar-item 图标）
- * inactiveIcon / activeIcon 均为 uview 内置图标名
+ * 底部 Tab 配置
+ * 图标使用 /static/tab/*.png，微信 custom-tab-bar 与 H5/App AppTabBar 共用
  */
 export interface TabBarItemConfig {
   /** 与 u-tabbar value 匹配的标识 */
@@ -8,8 +8,14 @@ export interface TabBarItemConfig {
   /** uni-app 页面路径（不含前导 /） */
   pagePath: string;
   text: string;
-  inactiveIcon: string;
-  activeIcon: string;
+  /** 未选中图标（静态资源路径） */
+  iconPath?: string;
+  /** 选中图标（静态资源路径） */
+  selectedIconPath?: string;
+  /** @deprecated 保留兼容，优先使用 iconPath */
+  inactiveIcon?: string;
+  /** @deprecated 保留兼容，优先使用 selectedIconPath */
+  activeIcon?: string;
   /** 中间凸起发布按钮（独立子页，非 switchTab） */
   midButton?: boolean;
   /** 是否使用 uni.switchTab 切换（false 则走 navigateTo） */
@@ -28,24 +34,22 @@ export const TAB_BAR_ITEMS: TabBarItemConfig[] = [
     name: 0,
     pagePath: 'pages/home/index',
     text: '首页',
-    inactiveIcon: 'home',
-    activeIcon: 'home-fill',
+    iconPath: '/static/tab/home.png',
+    selectedIconPath: '/static/tab/home-active.png',
     switchTab: true,
   },
   {
     name: 1,
     pagePath: 'pages/category/index',
     text: '分类',
-    inactiveIcon: 'grid',
-    activeIcon: 'grid-fill',
+    iconPath: '/static/tab/category.png',
+    selectedIconPath: '/static/tab/category-active.png',
     switchTab: true,
   },
   {
     name: 2,
     pagePath: 'pages/publish/index',
     text: '',
-    inactiveIcon: 'plus',
-    activeIcon: 'plus',
     midButton: true,
     switchTab: false,
   },
@@ -53,16 +57,16 @@ export const TAB_BAR_ITEMS: TabBarItemConfig[] = [
     name: 3,
     pagePath: 'pages/ai/index',
     text: 'AI',
-    inactiveIcon: 'chat',
-    activeIcon: 'chat-fill',
+    iconPath: '/static/tab/ai.png',
+    selectedIconPath: '/static/tab/ai-active.png',
     switchTab: true,
   },
   {
     name: 4,
     pagePath: 'pages/mine/index',
     text: '我的',
-    inactiveIcon: 'account',
-    activeIcon: 'account-fill',
+    iconPath: '/static/tab/mine.png',
+    selectedIconPath: '/static/tab/mine-active.png',
     switchTab: true,
   },
 ];

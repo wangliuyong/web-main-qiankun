@@ -45,12 +45,7 @@
 
     <view class="page-home__body">
       <!-- 快捷入口 Bento -->
-      <HomeQuickActions
-        @publish="goPublish"
-        @ai="goAi"
-        @category="goCategoryTab"
-        @search="goSearch"
-      />
+      <HomeQuickActions @publish="goPublish" @ai="goAi" @category="goCategoryTab" @search="goSearch" />
 
       <!-- 轮播 + 公告：加载中显示骨架 -->
       <view v-if="loading" class="page-home__promo">
@@ -63,22 +58,11 @@
       </view>
       <view v-else-if="banners.length || notices.length" class="page-home__promo">
         <view v-if="banners.length" class="page-home__swiper-wrap cv-card">
-          <swiper
-            class="page-home__swiper"
-            circular
-            indicator-dots
-            indicator-color="rgba(255,255,255,0.35)"
-            :indicator-active-color="primaryColor"
-            autoplay
-            :interval="4500"
-          >
+          <swiper class="page-home__swiper" circular indicator-dots indicator-color="rgba(255,255,255,0.35)"
+            :indicator-active-color="primaryColor" autoplay :interval="4500">
             <swiper-item v-for="banner in banners" :key="banner.id">
-              <ArtImageCover
-                class="page-home__banner-cover"
-                :src="banner.imageUrl"
-                :seed="`banner-${banner.id}`"
-                image-class="page-home__banner-img"
-              />
+              <ArtImageCover class="page-home__banner-cover" :src="banner.imageUrl" :seed="`banner-${banner.id}`"
+                image-class="page-home__banner-img" />
             </swiper-item>
           </swiper>
         </view>
@@ -99,14 +83,8 @@
       <view class="cv-section">
         <SectionHead title="热门分类" action-text="全部分类" @action="goCategoryTab" />
         <view v-if="loading" class="page-home__cat-sk">
-          <SkeletonBlock
-            v-for="i in 8"
-            :key="i"
-            width="calc(25% - 12rpx)"
-            height="140rpx"
-            radius="20rpx"
-            :shimmer="true"
-          />
+          <SkeletonBlock v-for="i in 8" :key="i" width="calc(25% - 12rpx)" height="140rpx" radius="20rpx"
+            :shimmer="true" />
         </view>
         <CategoryGrid v-else :list="homeCategories" @select="onCategorySelect" />
       </view>
@@ -117,28 +95,13 @@
         <view v-if="loading" class="page-home__feed-sk">
           <SkeletonBlock height="320rpx" radius="20rpx" :shimmer="true" />
           <view class="page-home__grid-sk">
-            <SkeletonBlock
-              v-for="i in 6"
-              :key="i"
-              height="280rpx"
-              radius="16rpx"
-              :shimmer="true"
-            />
+            <SkeletonBlock v-for="i in 6" :key="i" height="280rpx" radius="16rpx" :shimmer="true" />
           </view>
         </view>
         <template v-else>
-          <HomeFeaturedCard
-            v-if="featuredInfo"
-            :item="featuredInfo"
-            @click="goDetail"
-          />
+          <HomeFeaturedCard v-if="featuredInfo" :item="featuredInfo" @click="goDetail" />
           <view v-if="gridInfoList.length" class="page-home__grid">
-            <HomeInfoTile
-              v-for="item in gridInfoList"
-              :key="item.id"
-              :item="item"
-              @click="goDetail"
-            />
+            <HomeInfoTile v-for="item in gridInfoList" :key="item.id" :item="item" @click="goDetail" />
           </view>
           <u-empty v-if="!featuredInfo && !gridInfoList.length" mode="list" text="暂无推荐信息" />
           <view v-if="infoList.length" class="page-home__more" @click="goList">
@@ -154,13 +117,8 @@
     <!-- #endif -->
 
     <!-- 省市区选择弹层（页面根级，避免 hero 内 overflow 导致 H5 不可见） -->
-    <RegionPickerPopup
-      v-model:show="regionPickerShow"
-      :province="locationStore.province"
-      :city="locationStore.city"
-      :district="locationStore.district"
-      @confirm="onRegionConfirm"
-    />
+    <RegionPickerPopup v-model:show="regionPickerShow" :province="locationStore.province" :city="locationStore.city"
+      :district="locationStore.district" @confirm="onRegionConfirm" />
   </view>
 </template>
 
