@@ -12,7 +12,9 @@
       "path": "pages/home/index",
       "style": {
         "navigationBarTitleText": "同城便民",
-        "navigationStyle": "custom"
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true,
+        "backgroundTextStyle": "dark"
       }
     },
     {

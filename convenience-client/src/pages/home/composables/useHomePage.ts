@@ -1,5 +1,5 @@
 import { ref, computed, onMounted } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { onShow, onPullDownRefresh } from '@dcloudio/uni-app';
 import { queryBannerList } from '@/api/banner.api';
 import { queryCategoryTree } from '@/api/category.api';
 import { queryCityInfoList } from '@/api/city-info.api';
@@ -40,8 +40,10 @@ export function useHomePage() {
   const gridInfoList = computed(() => infoList.value.slice(1, 7));
 
   /** 加载首页数据（推荐列表与轮播/分类并行，避免被收藏接口 401 打断） */
-  async function loadData() {
-    loading.value = true;
+  async function loadData(silent = false) {
+    if (!silent) {
+      loading.value = true;
+    }
 
     const lat = locationStore.latitude;
     const lng = locationStore.longitude;
@@ -82,13 +84,17 @@ export function useHomePage() {
           collected: collectedIds.includes(item.id),
         }));
         totalInfoCount.value = cityInfoResult.value.total;
-      } else {
+      } else if (!silent) {
         uni.showToast({ title: '推荐加载失败，请检查网络', icon: 'none' });
       }
     } catch {
-      uni.showToast({ title: '推荐加载失败，请检查网络', icon: 'none' });
+      if (!silent) {
+        uni.showToast({ title: '推荐加载失败，请检查网络', icon: 'none' });
+      }
     } finally {
-      loading.value = false;
+      if (!silent) {
+        loading.value = false;
+      }
     }
   }
 
@@ -139,6 +145,13 @@ export function useHomePage() {
     if (!loading.value && !infoList.value.length) {
       void loadData();
     }
+  });
+
+  /** 下拉刷新：静默重载轮播、公告、分类与推荐，不触发全页骨架屏 */
+  onPullDownRefresh(() => {
+    void loadData(true).finally(() => {
+      uni.stopPullDownRefresh();
+    });
   });
 
   return {
