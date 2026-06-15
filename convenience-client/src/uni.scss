@@ -1,12 +1,5 @@
-@import '@/styles/tokens.scss';
-
 /**
- * uview-plus 主题变量覆盖（与 tokens v5 对齐）
- * vite.config 已预加载 uview-plus/theme.scss，此处覆盖主色
+ * uni-app 会将本文件内容 prepend 到每个组件 SCSS 的最前面（早于 vite additionalData）。
+ * 因此 tokens / uview 主题 / 变量覆盖统一放在 vite.config.ts 的 additionalData 中（绝对路径），
+ * 本文件仅保留占位，避免相对路径或 @/ 别名在 Docker 构建中解析失败。
  */
-$u-primary: $cv-primary;
-$u-warning: $cv-accent;
-$u-main-color: $cv-text;
-$u-content-color: $cv-text-secondary;
-$u-tips-color: $cv-text-muted;
-$u-bg-color: $cv-bg;

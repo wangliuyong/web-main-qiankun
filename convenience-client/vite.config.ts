@@ -17,6 +17,10 @@ export default defineConfig(({ mode }) => {
     throw new Error('apply-manifest-env.mjs failed');
   }
 
+  // uni-app 注入顺序：uni.scss → vite additionalData → 组件样式
+  // 使用绝对路径 import，避免注入到 pages/* 或 node_modules/* 时相对路径 / @/ 解析失败
+  const tokensScss = path.resolve(__dirname, 'src/styles/tokens.scss').replace(/\\/g, '/');
+
   return {
   plugins: [uni()],
   define: {
@@ -26,8 +30,16 @@ export default defineConfig(({ mode }) => {
   css: {
     preprocessorOptions: {
       scss: {
-        // uview-plus 主题变量预加载
-        additionalData: '@import "uview-plus/theme.scss";',
+        additionalData: `
+@import "${tokensScss}";
+@import "uview-plus/theme.scss";
+$u-primary: $cv-primary;
+$u-warning: $cv-accent;
+$u-main-color: $cv-text;
+$u-content-color: $cv-text-secondary;
+$u-tips-color: $cv-text-muted;
+$u-bg-color: $cv-bg;
+`,
         api: 'modern-compiler',
         silenceDeprecations: true,
       },
