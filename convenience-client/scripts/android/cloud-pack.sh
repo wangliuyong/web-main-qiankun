@@ -17,7 +17,9 @@ bash "$ROOT_DIR/scripts/android/generate-keystore.sh"
 
 echo "==> 3/5 检查 Node 版本（云打包编译需 Node 16+）"
 NODE20="/Users/wly/.nvm/versions/node/v20.20.2/bin/node"
+NODE_BIN_DIR="$(dirname "$NODE20")"
 if [[ -x "$NODE20" ]]; then
+  export PATH="$NODE_BIN_DIR:/usr/local/bin:$PATH"
   CURRENT_NODE="$(/usr/local/bin/node -v 2>/dev/null || echo 'none')"
   if [[ "$CURRENT_NODE" != v20.* && "$CURRENT_NODE" != v18.* && "$CURRENT_NODE" != v16.* ]]; then
     echo "将 /usr/local/bin/node 指向 Node 20（原版本已备份为 node-v14.bak）"
@@ -50,7 +52,12 @@ echo "提示：首次使用需登录 DCloud 账号："
 echo "  $HX_CLI user login --username <账号> --password <密码>"
 echo ""
 
-"$HX_CLI" pack --config "$CONFIG_FILE"
+# 云打包前再次写入 manifest 环境变量，降低 HBuilderX 二次编译失败概率
+if [[ -x "${NODE20:-}" ]]; then
+  "$NODE20" "$ROOT_DIR/scripts/apply-manifest-env.mjs" || true
+fi
+
+PATH="${NODE_BIN_DIR:-/usr/local/bin}:$PATH" "$HX_CLI" pack --config "$CONFIG_FILE"
 
 echo ""
 echo "打包完成后，CLI 会输出 APK 临时下载链接（可下载 5 次）。"

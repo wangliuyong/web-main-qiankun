@@ -1,15 +1,21 @@
 import { defineConfig, loadEnv } from 'vite';
 import uni from '@dcloudio/vite-plugin-uni';
-import { execSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
+import path from 'node:path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   // 启动/构建前将 .env 中的高德地图 Key 写入 manifest.json
-  execSync('node scripts/apply-manifest-env.mjs', {
+  // 使用 process.execPath 而非 shell 调用 node，兼容 HBuilderX 云打包环境（PATH 中无 node 命令）
+  const scriptPath = path.resolve(process.cwd(), 'scripts/apply-manifest-env.mjs');
+  const result = spawnSync(process.execPath, [scriptPath], {
     env: { ...process.env, ...env },
     stdio: 'inherit',
   });
+  if (result.status !== 0) {
+    throw new Error('apply-manifest-env.mjs failed');
+  }
 
   return {
   plugins: [uni()],
