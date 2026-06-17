@@ -22,15 +22,15 @@ export default defineConfig(({ mode }) => {
   const tokensScss = path.resolve(__dirname, 'src/styles/tokens.scss').replace(/\\/g, '/');
 
   return {
-  plugins: [uni()],
-  define: {
-    __VUE_OPTIONS_API__: true,
-    __VUE_PROD_DEVTOOLS__: false,
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `
+    plugins: [uni()],
+    define: {
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `
 @import "${tokensScss}";
 @import "uview-plus/theme.scss";
 $u-primary: $cv-primary;
@@ -40,22 +40,22 @@ $u-content-color: $cv-text-secondary;
 $u-tips-color: $cv-text-muted;
 $u-bg-color: $cv-bg;
 `,
-        api: 'modern-compiler',
-        silenceDeprecations: true,
+          api: 'modern-compiler',
+          silenceDeprecations: true,
+        },
       },
     },
-  },
-  optimizeDeps: {
-    include: ['uview-plus'],
-  },
-  server: {
-    port: 5175,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
+    optimizeDeps: {
+      include: ['uview-plus'],
+    },
+    server: {
+      port: 5175,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+        },
       },
     },
-  },
   };
 });

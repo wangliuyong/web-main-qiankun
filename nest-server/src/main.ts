@@ -17,13 +17,26 @@ async function bootstrap() {
     'http://localhost:4001',
     'http://localhost:4007',
     'http://localhost:5175',
+    'http://127.0.0.1:5175',
   ];
   if (process.env.CORS_ORIGIN) {
     corsOrigins.push(process.env.CORS_ORIGIN);
   }
 
+  /** 开发环境允许 localhost/127.0.0.1 任意端口（Vite 端口被占用时会自动递增） */
+  const isDev = process.env.NODE_ENV !== 'production';
+  const localDevOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
   app.enableCors({
-    origin: corsOrigins,
+    origin: isDev
+      ? (origin, callback) => {
+          if (!origin || localDevOriginPattern.test(origin) || corsOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(null, false);
+          }
+        }
+      : corsOrigins,
     credentials: true,
   });
 

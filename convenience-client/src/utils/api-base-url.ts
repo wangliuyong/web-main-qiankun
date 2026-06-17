@@ -1,7 +1,7 @@
 /**
  * 获取 API 请求基址
  *
- * - H5 本地开发：使用 .env.development 中的 localhost（可走 Vite proxy）
+ * - H5 本地开发：使用 .env.development 中的 /api（Vite 代理到 nest-server，无跨域）
  * - 微信小程序本地开发：无法请求 localhost，使用 VITE_API_BASE_URL_MP_WEIXIN
  * - 生产 / 打包构建：由各 mode 对应 .env 文件中的 VITE_API_BASE_URL 注入
  */
