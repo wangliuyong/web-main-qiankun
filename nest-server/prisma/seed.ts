@@ -7,6 +7,8 @@ import {
 } from '../src/site/site.types';
 import { seedRbac, ensureAdminSuperRole, syncRbacModules } from './rbac-seed';
 import { seedConvenience } from './convenience-seed';
+import { seedArticles } from './articles-seed';
+import { syncReadmeToBlog } from './readme-blog-sync';
 
 const prisma = new PrismaClient();
 
@@ -156,6 +158,14 @@ async function main() {
 
   // 同城便民 C 端演示用户与业务数据（用户与业务数据在 seedConvenience 内统一 upsert）
   await seedConvenience(prisma);
+
+  // 博客：近 24 个月 × 每月 8~14 篇（按 slug upsert，不影响已有文章）
+  const articleSeeded = await seedArticles(prisma);
+  console.log(`Articles seeded/updated: ${articleSeeded}`);
+
+  // 仓库 README 同步到博客（slug: project-readme）
+  const readmeBlog = await syncReadmeToBlog(prisma);
+  console.log(`README synced to blog: ${readmeBlog.slug} (#${readmeBlog.id})`);
 
   console.log('Seed completed (existing data preserved).');
 }
