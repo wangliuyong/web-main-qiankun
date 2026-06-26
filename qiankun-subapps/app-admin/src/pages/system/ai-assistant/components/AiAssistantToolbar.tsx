@@ -1,7 +1,6 @@
-import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
-import { Button, Space } from 'antd';
 import type { ReactNode } from 'react';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import { TechButton } from '../../../../components/tech-ui';
 
 export interface AiAssistantToolbarProps {
   configStatus: ReactNode;
@@ -11,7 +10,7 @@ export interface AiAssistantToolbarProps {
   onOpenSync: () => void;
 }
 
-/** 数据配置管理页顶栏操作：AI 配置、向量化 */
+/** 数据配置管理页顶栏操作 */
 export default function AiAssistantToolbar({
   configStatus,
   configLoading,
@@ -20,21 +19,21 @@ export default function AiAssistantToolbar({
   onOpenSync,
 }: AiAssistantToolbarProps) {
   return (
-    <Space wrap>
-      {configStatus}
-      <Button
-        type="primary"
-        icon={<SettingOutlined />}
+    <div className="ai-data-page__toolbar">
+      <div className="ai-data-page__status">{configStatus}</div>
+      <TechButton
+        variant="primary"
+        icon="mdi:cog-outline"
         loading={configLoading && !configModalOpen}
         onClick={onOpenConfig}
       >
-        AI配置
-      </Button>
+        AI 配置
+      </TechButton>
       <PermissionGuard code="admin:ai-assistant:sync">
-        <Button type="primary" icon={<SyncOutlined />} onClick={onOpenSync}>
+        <TechButton variant="primary" icon="mdi:database-sync-outline" onClick={onOpenSync}>
           向量化数据
-        </Button>
+        </TechButton>
       </PermissionGuard>
-    </Space>
+    </div>
   );
 }

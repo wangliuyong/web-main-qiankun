@@ -1,11 +1,5 @@
-import {
-  EyeOutlined,
-  FireOutlined,
-  MessageOutlined,
-  RobotOutlined,
-} from '@ant-design/icons';
-import { Card, Tag } from 'antd';
 import dayjs from 'dayjs';
+import { TechBadge, TechCard, TechIcon } from '../../../components/tech-ui';
 import type { DashboardOverview } from '../types';
 import { formatDayDelta, truncateText } from '../utils/formatters';
 import DashboardKvList from './DashboardKvList';
@@ -16,7 +10,6 @@ interface DashboardInteractionPanelProps {
   messagesTotal: number;
 }
 
-/** 带较昨日变化的数值展示 */
 function ValueWithDelta({ value, today, yesterday }: { value: number; today: number; yesterday: number }) {
   return (
     <span className="dashboard-interaction-metric">
@@ -81,16 +74,11 @@ export default function DashboardInteractionPanel({
       wrapValue: true,
     },
     { key: 'week', label: '本周 PV', value: interaction.pageViewsThisWeek, emphasize: true },
-    {
-      key: 'rate',
-      label: '留言转化',
-      value: messageRate ?? '暂无访问',
-      wrapValue: true,
-    },
+    { key: 'rate', label: '留言转化', value: messageRate ?? '暂无访问', wrapValue: true },
   ];
 
   return (
-    <Card title="互动概览" bordered={false} className="dashboard-panel dashboard-interaction-panel">
+    <TechCard title="互动概览">
       <div className="dashboard-interaction-summary">
         <div className="dashboard-interaction-summary__item">
           <span className="dashboard-interaction-summary__label">今日访问</span>
@@ -109,23 +97,21 @@ export default function DashboardInteractionPanel({
       <div className="dashboard-interaction-grid dashboard-interaction-grid--triple">
         <section className="dashboard-interaction-section">
           <h4 className="dashboard-interaction-section__title">
-            <MessageOutlined aria-hidden />
+            <TechIcon icon="mdi:comment-outline" size={16} />
             留言
           </h4>
           <DashboardKvList items={messageItems} />
         </section>
-
         <section className="dashboard-interaction-section">
           <h4 className="dashboard-interaction-section__title">
-            <RobotOutlined aria-hidden />
+            <TechIcon icon="mdi:robot-outline" size={16} />
             AI 问答
           </h4>
           <DashboardKvList items={aiItems} />
         </section>
-
         <section className="dashboard-interaction-section">
           <h4 className="dashboard-interaction-section__title">
-            <EyeOutlined aria-hidden />
+            <TechIcon icon="mdi:eye-outline" size={16} />
             站点访问
           </h4>
           <DashboardKvList items={visitItems} />
@@ -148,17 +134,17 @@ export default function DashboardInteractionPanel({
               </div>
             </>
           ) : (
-            <div className="dashboard-interaction-insight__empty">暂无留言</div>
+            <div className="dashboard-muted">暂无留言</div>
           )}
         </div>
-
         <div className="dashboard-interaction-insight">
           <div className="dashboard-interaction-insight__label">
-            <FireOutlined aria-hidden /> 本周热门页
+            <TechIcon icon="mdi:fire" size={14} />
+            本周热门页
           </div>
           {interaction.topPageThisWeek ? (
             <>
-              <div className="dashboard-interaction-insight__title dashboard-interaction-insight__path">
+              <div className="dashboard-interaction-insight__title">
                 {interaction.topPageThisWeek.path}
               </div>
               <div className="dashboard-interaction-insight__body">
@@ -166,23 +152,23 @@ export default function DashboardInteractionPanel({
               </div>
             </>
           ) : (
-            <div className="dashboard-interaction-insight__empty">暂无访问记录</div>
+            <div className="dashboard-muted">暂无访问记录</div>
           )}
         </div>
       </div>
 
-      <div className="dashboard-interaction-logs">
-        <div className="dashboard-interaction-logs__title">系统日志</div>
-        <div className="dashboard-interaction-logs__tags">
-          <Tag color="blue">今日审计 {logs.auditToday} 条</Tag>
-          <Tag color={logs.appErrorsToday > 0 ? 'error' : 'success'}>
+      <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid var(--ta-line)' }}>
+        <div className="dashboard-muted" style={{ marginBottom: 10, fontWeight: 600 }}>系统日志</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <TechBadge variant="info">今日审计 {logs.auditToday} 条</TechBadge>
+          <TechBadge variant={logs.appErrorsToday > 0 ? 'danger' : 'success'}>
             今日错误 {logs.appErrorsToday} 条
-          </Tag>
-          <Tag color={logs.appErrorsThisWeek > 0 ? 'warning' : 'default'}>
+          </TechBadge>
+          <TechBadge variant={logs.appErrorsThisWeek > 0 ? 'warning' : 'default'}>
             本周错误 {logs.appErrorsThisWeek} 条
-          </Tag>
+          </TechBadge>
         </div>
       </div>
-    </Card>
+    </TechCard>
   );
 }

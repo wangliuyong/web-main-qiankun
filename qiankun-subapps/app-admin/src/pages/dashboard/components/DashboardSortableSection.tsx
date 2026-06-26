@@ -1,7 +1,7 @@
-import { HolderOutlined } from '@ant-design/icons';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { ReactNode } from 'react';
+import { TechIcon } from '../../../components/tech-ui';
 import { SECTION_LABELS, type DashboardSectionId } from '../config/sectionTypes';
 
 interface DashboardSortableSectionProps {
@@ -16,27 +16,15 @@ export default function DashboardSortableSection({
   isEditing,
   children,
 }: DashboardSortableSectionProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     disabled: !isEditing,
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
       className={[
         'dashboard-section',
         isEditing && 'dashboard-section--editing',
@@ -45,7 +33,7 @@ export default function DashboardSortableSection({
         .filter(Boolean)
         .join(' ')}
     >
-      {isEditing && (
+      {isEditing ? (
         <div className="dashboard-section__toolbar">
           <button
             type="button"
@@ -54,11 +42,11 @@ export default function DashboardSortableSection({
             {...attributes}
             {...listeners}
           >
-            <HolderOutlined />
+            <TechIcon icon="mdi:drag" size={16} />
             <span>{SECTION_LABELS[id]}</span>
           </button>
         </div>
-      )}
+      ) : null}
       <div className="dashboard-section__body">{children}</div>
     </div>
   );

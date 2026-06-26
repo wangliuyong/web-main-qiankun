@@ -1,4 +1,4 @@
-import { Card, Col, Row } from 'antd';
+import { TechCard } from '../../../components/tech-ui';
 import type { DashboardOverview } from '../types';
 import DashboardEChart from './charts/DashboardEChart';
 import {
@@ -13,45 +13,26 @@ interface DashboardChartsSectionProps {
 
 /** 访问趋势与页面分布图表区 */
 export default function DashboardChartsSection({ charts }: DashboardChartsSectionProps) {
-  const trendOption = buildVisitTrendOption(charts.dailyTrend);
-  const topPagesOption = buildTopPagesOption(charts.topPages);
-  const contentMixOption = buildContentMixOption(charts.contentMix);
-
   return (
     <section className="dashboard-charts">
-      <Row gutter={[16, 16]}>
-        <Col xs={24} xl={16}>
-          <Card
-            bordered={false}
-            className="dashboard-panel dashboard-chart-card"
-            title="近 14 天访问与互动趋势"
-          >
-            <DashboardEChart option={trendOption} height={320} />
-          </Card>
-        </Col>
-        <Col xs={24} xl={8}>
-          <Card
-            bordered={false}
-            className="dashboard-panel dashboard-chart-card"
-            title="站点内容构成"
-          >
-            <DashboardEChart option={contentMixOption} height={320} />
-          </Card>
-        </Col>
-        <Col xs={24}>
-          <Card
-            bordered={false}
-            className="dashboard-panel dashboard-chart-card"
-            title="本周热门页面"
-          >
-            {charts.topPages.length > 0 ? (
-              <DashboardEChart option={topPagesOption} height={Math.max(220, charts.topPages.length * 42)} />
-            ) : (
-              <div className="dashboard-chart__empty">暂无访问记录，浏览前台页面后将自动统计</div>
-            )}
-          </Card>
-        </Col>
-      </Row>
+      <div className="dashboard-charts__row">
+        <TechCard title="近 14 天访问与互动趋势">
+          <DashboardEChart option={buildVisitTrendOption(charts.dailyTrend)} height={320} />
+        </TechCard>
+        <TechCard title="站点内容构成">
+          <DashboardEChart option={buildContentMixOption(charts.contentMix)} height={320} />
+        </TechCard>
+      </div>
+      <TechCard title="本周热门页面">
+        {charts.topPages.length > 0 ? (
+          <DashboardEChart
+            option={buildTopPagesOption(charts.topPages)}
+            height={Math.max(220, charts.topPages.length * 42)}
+          />
+        ) : (
+          <div className="dashboard-chart__empty">暂无访问记录，浏览前台页面后将自动统计</div>
+        )}
+      </TechCard>
     </section>
   );
 }

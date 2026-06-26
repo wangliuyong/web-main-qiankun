@@ -1,5 +1,7 @@
 @use '../../_shared/styles/index';
+@use './styles/tech-admin-tokens';
 @use './components/admin-page/admin-page';
+@use './components/tech-ui/tech-ui';
 
 html,
 body,
@@ -34,7 +36,8 @@ body,
   padding: 24px;
   overflow-x: hidden;
   overflow-y: auto;
-  background: var(--ed-bg, #faf8f5);
+  background: var(--ta-bg, #070b14);
+  color: var(--ta-text, #e2e8f0);
 }
 
 /* 侧栏折叠过渡：隐藏溢出、固定 Logo 占位，减少 Menu 闪动 */

@@ -1,13 +1,14 @@
-import type { ColumnsType } from 'antd/es/table';
 import type { SyncCandidateItem } from '../../../../api/ai.api';
+import type { TechColumn } from '../../../../components/tech-ui';
 
 /** 同步候选记录表格列 */
-export const SYNC_CANDIDATE_COLUMNS: ColumnsType<SyncCandidateItem> = [
-  { title: '标题', dataIndex: 'title', ellipsis: true },
+export const SYNC_CANDIDATE_COLUMNS: TechColumn<SyncCandidateItem>[] = [
+  { key: 'title', title: '标题', dataIndex: 'title', ellipsis: true },
   {
+    key: 'subtitle',
     title: '说明',
     dataIndex: 'subtitle',
     ellipsis: true,
-    render: (v?: string) => v ?? '-',
+    render: (v) => (v as string | undefined) ?? '-',
   },
 ];

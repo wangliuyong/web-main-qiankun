@@ -1,29 +1,29 @@
-import { Alert, Button, Form, Input, InputNumber, Modal, Select } from 'antd';
-import type { FormInstance } from 'antd/es/form';
-import type { AiConfigResponse } from '../../../../api/ai.api';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import {
+  TechAlert,
+  TechButton,
+  TechInput,
+  TechModal,
+  TechNumberInput,
+  TechPasswordInput,
+  TechSelect,
+} from '../../../../components/tech-ui';
+import type { AiConfigResponse } from '../../../../api/ai.api';
 import type { UseAiConfigResult } from '../hooks/useAiConfig';
-
-interface AiConfigFormValues {
-  openaiBaseUrl: string;
-  openaiApiKey: string;
-  openaiChatModel: string;
-  openaiEmbeddingModel: string;
-  embeddingDimensions: number;
-}
 
 export interface AiConfigModalProps {
   open: boolean;
   saving: boolean;
   loading: boolean;
   config: AiConfigResponse | null;
-  form: FormInstance<AiConfigFormValues>;
+  formValues: UseAiConfigResult['formValues'];
+  setFormField: UseAiConfigResult['setFormField'];
   isDashscope: boolean;
   dashscopeHint: UseAiConfigResult['dashscopeHint'];
   chatModelOptions: UseAiConfigResult['chatModelOptions'];
   embeddingModelOptions: UseAiConfigResult['embeddingModelOptions'];
   onClose: () => void;
-  onSubmit: (values: AiConfigFormValues) => void;
+  onSubmit: () => void;
   onEmbeddingModelChange: (model: string) => void;
   onBaseUrlChange: (url: string) => void;
 }
@@ -34,7 +34,8 @@ export default function AiConfigModal({
   saving,
   loading,
   config,
-  form,
+  formValues,
+  setFormField,
   isDashscope,
   dashscopeHint,
   chatModelOptions,
@@ -45,123 +46,93 @@ export default function AiConfigModal({
   onBaseUrlChange,
 }: AiConfigModalProps) {
   return (
-    <Modal
-      title="AI 服务配置"
+    <TechModal
       open={open}
-      onCancel={() => !saving && onClose()}
+      title="AI 服务配置"
       width={560}
-      destroyOnClose={false}
+      onClose={() => !saving && onClose()}
       footer={
         <>
-          <Button onClick={onClose} disabled={saving}>
-            取消
-          </Button>
+          <TechButton onClick={onClose} disabled={saving}>取消</TechButton>
           <PermissionGuard code="admin:ai-assistant:update">
-            <Button type="primary" loading={saving} onClick={() => form.submit()}>
+            <TechButton variant="primary" loading={saving} onClick={onSubmit}>
               保存配置
-            </Button>
+            </TechButton>
           </PermissionGuard>
         </>
       }
     >
-      {config?.fromEnv && (
-        <Alert
+      {config?.fromEnv ? (
+        <TechAlert
           type="info"
-          showIcon
           message="当前 API Key 来自服务端环境变量"
           description="在此保存后将写入数据库并优先生效。"
-          style={{ marginBottom: 16 }}
         />
-      )}
-      {!config?.hasApiKey && !loading && (
-        <Alert
+      ) : null}
+      {!config?.hasApiKey && !loading ? (
+        <TechAlert
           type="warning"
-          showIcon
           message="尚未配置 API Key"
           description="请填写 API Key 与模型配置后保存，再进行数据源同步。"
-          style={{ marginBottom: 16 }}
         />
-      )}
-      {isDashscope && (
-        <Alert
+      ) : null}
+      {isDashscope ? (
+        <TechAlert
           type="info"
-          showIcon
           message="通义千问推荐配置"
           description={`对话模型：${dashscopeHint.chatModel}；向量模型：${dashscopeHint.embeddingModel}；向量维度：${dashscopeHint.dimensions}`}
-          style={{ marginBottom: 16 }}
         />
-      )}
+      ) : null}
 
-      <Form form={form} layout="vertical" onFinish={onSubmit}>
-        <Form.Item
+      <div className="ai-config-form">
+        <TechInput
           label="OPENAI_BASE_URL"
-          name="openaiBaseUrl"
-          rules={[{ required: true, message: '请输入 API Base URL' }]}
+          value={formValues.openaiBaseUrl}
+          onChange={(e) => setFormField('openaiBaseUrl', e.target.value)}
+          onBlur={(e) => onBaseUrlChange(e.target.value.trim())}
+          placeholder="https://api.openai.com/v1"
           extra="通义千问：https://dashscope.aliyuncs.com/compatible-mode/v1"
-        >
-          <Input
-            placeholder="https://api.openai.com/v1"
-            onBlur={(e) => onBaseUrlChange(e.target.value.trim())}
-          />
-        </Form.Item>
-
-        <Form.Item
+        />
+        <TechPasswordInput
           label="OPENAI_API_KEY"
-          name="openaiApiKey"
+          value={formValues.openaiApiKey}
+          onChange={(e) => setFormField('openaiApiKey', e.target.value)}
+          placeholder={config?.hasApiKey ? '留空保留原 Key' : 'sk-...'}
           extra={
             config?.apiKeyMasked
               ? `当前已配置：${config.apiKeyMasked}（留空则保留原 Key）`
               : '请输入百炼 / OpenAI 兼容 API Key'
           }
-        >
-          <Input.Password
-            placeholder={config?.hasApiKey ? '留空保留原 Key' : 'sk-...'}
-            autoComplete="new-password"
-          />
-        </Form.Item>
-
-        <Form.Item
+        />
+        <TechSelect
           label="对话模型 OPENAI_CHAT_MODEL"
-          name="openaiChatModel"
-          rules={[{ required: true, message: '请选择对话模型' }]}
+          value={formValues.openaiChatModel}
+          options={chatModelOptions}
+          placeholder="请选择对话模型"
+          onChange={(v) => setFormField('openaiChatModel', v)}
           extra={isDashscope ? '通义千问对话模型' : 'OpenAI 兼容对话模型'}
-        >
-          <Select
-            options={chatModelOptions}
-            placeholder="请选择对话模型"
-            showSearch
-            optionFilterProp="label"
-          />
-        </Form.Item>
-
-        <Form.Item
+        />
+        <TechSelect
           label="向量模型 OPENAI_EMBEDDING_MODEL"
-          name="openaiEmbeddingModel"
-          rules={[{ required: true, message: '请选择向量模型' }]}
+          value={formValues.openaiEmbeddingModel}
+          options={embeddingModelOptions}
+          placeholder="请选择向量模型"
+          onChange={onEmbeddingModelChange}
           extra={
             isDashscope
               ? '通义向量模型，切换后自动更新推荐维度'
               : 'OpenAI 向量模型，切换后自动更新推荐维度'
           }
-        >
-          <Select
-            options={embeddingModelOptions}
-            placeholder="请选择向量模型"
-            showSearch
-            optionFilterProp="label"
-            onChange={onEmbeddingModelChange}
-          />
-        </Form.Item>
-
-        <Form.Item
+        />
+        <TechNumberInput
           label="向量维度"
-          name="embeddingDimensions"
-          rules={[{ required: true, message: '请输入向量维度' }]}
+          value={formValues.embeddingDimensions}
+          min={64}
+          max={4096}
+          onChange={(v) => setFormField('embeddingDimensions', v)}
           extra="通义 text-embedding-v3 默认 1024；OpenAI text-embedding-3-small 为 1536"
-        >
-          <InputNumber min={64} max={4096} style={{ width: '100%' }} />
-        </Form.Item>
-      </Form>
-    </Modal>
+        />
+      </div>
+    </TechModal>
   );
 }

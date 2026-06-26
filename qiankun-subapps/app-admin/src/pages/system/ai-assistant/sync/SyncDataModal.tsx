@@ -1,4 +1,4 @@
-import { Alert, Modal } from 'antd';
+import { TechAlert, TechModal } from '../../../../components/tech-ui';
 import SyncCandidatePanel from './SyncCandidatePanel';
 import SyncResultTable from './SyncResultTable';
 import { useSyncDataModal } from './useSyncDataModal';
@@ -11,9 +11,7 @@ export interface SyncDataModalProps {
   onSuccess: () => void | Promise<void>;
 }
 
-/**
- * 向量化数据弹窗：编排候选勾选与同步提交。
- */
+/** 向量化数据弹窗 */
 export default function SyncDataModal({
   open,
   syncing,
@@ -36,24 +34,20 @@ export default function SyncDataModal({
   } = useSyncDataModal({ open, onSyncingChange, onClose, onSuccess });
 
   return (
-    <Modal
-      title="选择要向量化的数据"
+    <TechModal
       open={open}
-      onCancel={() => !syncing && onClose()}
+      title="选择要向量化的数据"
+      width={720}
+      onClose={() => !syncing && onClose()}
       onOk={handleConfirm}
       okText={totalSelected > 0 ? `同步已选 ${totalSelected} 条` : '确定同步'}
-      okButtonProps={{ disabled: totalSelected === 0 }}
+      okDisabled={totalSelected === 0}
       confirmLoading={syncing}
-      width={720}
-      destroyOnClose
     >
-      <Alert
+      <TechAlert
         type="info"
-        showIcon
-        style={{ marginBottom: 12 }}
         message="仅对勾选的记录生成/更新向量，不会默认同步全库数据。"
       />
-
       <SyncCandidatePanel
         activeSource={activeSource}
         onActiveSourceChange={setActiveSource}
@@ -64,8 +58,7 @@ export default function SyncDataModal({
         keyword={keyword}
         onKeywordChange={setKeyword}
       />
-
-      {syncResults && <SyncResultTable results={syncResults} />}
-    </Modal>
+      {syncResults ? <SyncResultTable results={syncResults} /> : null}
+    </TechModal>
   );
 }

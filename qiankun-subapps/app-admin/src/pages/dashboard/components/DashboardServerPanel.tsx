@@ -1,5 +1,4 @@
-import { CloudServerOutlined } from '@ant-design/icons';
-import { Card, Progress, Tag } from 'antd';
+import { TechBadge, TechCard, TechIcon, TechProgress } from '../../../components/tech-ui';
 import type { DashboardOverview } from '../types';
 import { formatBytes, formatUptime } from '../utils/formatters';
 import DashboardKvList, { type DashboardKvItem } from './DashboardKvList';
@@ -13,18 +12,18 @@ interface DashboardServerPanelProps {
 export default function DashboardServerPanel({ server, ai }: DashboardServerPanelProps) {
   const memoryPercent = Math.round((server.memory.usedMb / server.memory.totalMb) * 100);
 
-  const syncStatusColor =
+  const syncVariant =
     ai.lastSyncStatus === 'success'
       ? 'success'
       : ai.lastSyncStatus === 'partial'
         ? 'warning'
         : ai.lastSyncStatus === 'running'
-          ? 'processing'
+          ? 'info'
           : 'default';
 
   const serverItems: DashboardKvItem[] = [
     { key: 'hostname', label: '主机名', value: server.hostname, breakValue: true },
-    { key: 'env', label: '运行环境', value: <Tag>{server.env}</Tag>, wrapValue: true },
+    { key: 'env', label: '运行环境', value: <TechBadge variant="accent">{server.env}</TechBadge>, wrapValue: true },
     { key: 'platform', label: '系统', value: server.platform, breakValue: true },
     { key: 'arch', label: '架构', value: server.arch },
     { key: 'node', label: 'Node', value: server.nodeVersion },
@@ -38,9 +37,9 @@ export default function DashboardServerPanel({ server, ai }: DashboardServerPane
       key: 'configured',
       label: '配置状态',
       value: (
-        <Tag color={ai.configured ? 'success' : 'default'}>
+        <TechBadge variant={ai.configured ? 'success' : 'default'}>
           {ai.configured ? '已配置' : '未配置'}
-        </Tag>
+        </TechBadge>
       ),
       wrapValue: true,
     },
@@ -50,7 +49,7 @@ export default function DashboardServerPanel({ server, ai }: DashboardServerPane
       label: '最近同步',
       value: ai.lastSyncAt ? (
         <span className="dashboard-kv__inline">
-          <Tag color={syncStatusColor}>{ai.lastSyncStatus ?? '未知'}</Tag>
+          <TechBadge variant={syncVariant}>{ai.lastSyncStatus ?? '未知'}</TechBadge>
           <span className="dashboard-muted">{ai.lastSyncAt.slice(0, 19).replace('T', ' ')}</span>
         </span>
       ) : (
@@ -61,32 +60,26 @@ export default function DashboardServerPanel({ server, ai }: DashboardServerPane
   ];
 
   return (
-    <Card
+    <TechCard
       title={
         <>
-          <CloudServerOutlined /> 服务器信息
+          <TechIcon icon="mdi:server" size={18} />
+          服务器信息
         </>
       }
-      bordered={false}
-      className="dashboard-panel dashboard-server-panel"
     >
       <DashboardKvList items={serverItems} />
-
-      <div className="dashboard-server-memory">
-        <div className="dashboard-server-memory__label">
-          系统内存 {server.memory.usedMb} / {server.memory.totalMb} MB
-        </div>
-        <Progress
+      <div style={{ margin: '16px 0', paddingTop: 4, borderTop: '1px solid var(--ta-line)' }}>
+        <TechProgress
           percent={memoryPercent}
-          status={memoryPercent > 85 ? 'exception' : 'normal'}
-          strokeColor={memoryPercent > 85 ? undefined : '#b45309'}
+          status={memoryPercent > 85 ? 'danger' : 'normal'}
+          label={`系统内存 ${server.memory.usedMb} / ${server.memory.totalMb} MB`}
         />
       </div>
-
-      <div className="dashboard-server-ai">
-        <div className="dashboard-server-ai__title">AI 小助手</div>
+      <div style={{ marginTop: 4, paddingTop: 12, borderTop: '1px solid var(--ta-line)' }}>
+        <div style={{ marginBottom: 10, fontSize: 14, fontWeight: 600 }}>AI 小助手</div>
         <DashboardKvList items={aiItems} />
       </div>
-    </Card>
+    </TechCard>
   );
 }

@@ -1,13 +1,10 @@
-import { RobotOutlined, SyncOutlined } from '@ant-design/icons';
 import type { ReactNode } from 'react';
-import { AdminPageShell, AdminSectionCard } from '../../../../components/admin-page';
+import { TechCard, TechIcon, TechPageShell } from '../../../../components/tech-ui';
 
 export interface AiAssistantPageCardProps {
   extra: ReactNode;
   children: ReactNode;
-  /** 向量库文档总数 */
   vectorTotal?: number;
-  /** 同步记录数 */
   syncRecordCount?: number;
 }
 
@@ -19,7 +16,7 @@ export default function AiAssistantPageCard({
   syncRecordCount,
 }: AiAssistantPageCardProps) {
   return (
-    <AdminPageShell
+    <TechPageShell
       title="数据配置管理"
       description="管理 AI 模型配置、内容向量化同步与 LanceDB 向量库统计"
       extra={extra}
@@ -27,18 +24,18 @@ export default function AiAssistantPageCard({
         {
           label: '向量文档',
           value: vectorTotal ?? '-',
-          icon: <RobotOutlined />,
-          accent: 'primary',
+          icon: <TechIcon icon="mdi:database-outline" size={24} />,
+          accent: true,
         },
         {
           label: '同步记录',
           value: syncRecordCount ?? '-',
-          icon: <SyncOutlined />,
+          icon: <TechIcon icon="mdi:sync" size={24} />,
           hint: '历史同步任务',
         },
       ]}
     >
-      <AdminSectionCard>{children}</AdminSectionCard>
-    </AdminPageShell>
+      <TechCard>{children}</TechCard>
+    </TechPageShell>
   );
 }

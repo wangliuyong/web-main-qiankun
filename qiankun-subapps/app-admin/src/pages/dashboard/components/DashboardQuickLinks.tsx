@@ -1,10 +1,4 @@
-import {
-  BugOutlined,
-  CommentOutlined,
-  FileTextOutlined,
-  SettingOutlined,
-} from '@ant-design/icons';
-import { Button, Card, Space } from 'antd';
+import { TechButton, TechCard, TechIcon } from '../../../components/tech-ui';
 
 interface DashboardQuickLinksProps {
   onNavigate: (path: string) => void;
@@ -13,25 +7,25 @@ interface DashboardQuickLinksProps {
 /** 常用管理入口快捷跳转 */
 export default function DashboardQuickLinks({ onNavigate }: DashboardQuickLinksProps) {
   const links = [
-    { path: 'articles', label: '博客管理', icon: <FileTextOutlined /> },
-    { path: 'messages', label: '留言管理', icon: <CommentOutlined /> },
-    { path: 'system/site-config', label: '站点配置', icon: <SettingOutlined /> },
-    { path: 'logs/app', label: '错误日志', icon: <BugOutlined /> },
+    { path: 'articles', label: '博客管理', icon: 'mdi:file-document-outline' },
+    { path: 'messages', label: '留言管理', icon: 'mdi:comment-text-outline' },
+    { path: 'system/site-config', label: '站点配置', icon: 'mdi:cog-outline' },
+    { path: 'logs/app', label: '错误日志', icon: 'mdi:bug-outline' },
   ];
 
   return (
-    <Card title="快捷入口" bordered={false} className="dashboard-panel">
-      <Space wrap size="middle">
+    <TechCard title="快捷入口">
+      <div className="dashboard-quick-links">
         {links.map((link) => (
-          <Button
+          <TechButton
             key={link.path}
             icon={link.icon}
             onClick={() => onNavigate(link.path)}
           >
             {link.label}
-          </Button>
+          </TechButton>
         ))}
-      </Space>
-    </Card>
+      </div>
+    </TechCard>
   );
 }

@@ -7,6 +7,7 @@ import VectorStatsRow from './components/VectorStatsRow';
 import { useAiAssistantPage } from './hooks/useAiAssistantPage';
 import { useAiConfig } from './AiConfigCard';
 import SyncDataModal from './sync/SyncDataModal';
+import './styles/ai-data-page.scss';
 
 /** 路由 system/ai-assistant — 数据配置管理（按条选择向量化 + 向量统计） */
 export default function AiAssistantPage() {

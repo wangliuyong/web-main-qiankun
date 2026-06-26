@@ -1,21 +1,16 @@
-import { Table } from 'antd';
 import type { SourceSyncResult } from '../../../../api/ai.api';
+import { TechTable } from '../../../../components/tech-ui';
 import { SYNC_RESULT_COLUMNS } from './syncResultColumns';
 
 export interface SyncResultTableProps {
   results: SourceSyncResult[];
 }
 
-/** 向量化同步结果表格 */
+/** 同步结果汇总表 */
 export default function SyncResultTable({ results }: SyncResultTableProps) {
   return (
-    <Table
-      style={{ marginTop: 16 }}
-      rowKey="source"
-      size="small"
-      columns={SYNC_RESULT_COLUMNS}
-      dataSource={results}
-      pagination={false}
-    />
+    <div style={{ marginTop: 16 }}>
+      <TechTable columns={SYNC_RESULT_COLUMNS} dataSource={results} pagination={false} />
+    </div>
   );
 }

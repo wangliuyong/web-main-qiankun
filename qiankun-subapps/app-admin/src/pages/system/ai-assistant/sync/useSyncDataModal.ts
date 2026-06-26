@@ -1,4 +1,4 @@
-import { message } from 'antd';
+import { techToast } from '../../../../components/tech-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AI_SOURCE_OPTIONS,
@@ -106,7 +106,7 @@ export function useSyncDataModal({
   const handleConfirm = async () => {
     const items = buildPayload();
     if (!items.length) {
-      message.warning('请至少勾选一条要向量化的数据');
+      techToast.warning('请至少勾选一条要向量化的数据');
       return;
     }
     onSyncingChange(true);
@@ -116,12 +116,12 @@ export function useSyncDataModal({
       setSyncResults(res.results);
       const failed = res.results.filter((r) => r.error);
       if (failed.length) {
-        message.error(`同步失败：${failed.map((r) => `${r.source}: ${r.error}`).join('；')}`);
+        techToast.error(`同步失败：${failed.map((r) => `${r.source}: ${r.error}`).join('；')}`);
       } else if (res.chunkCount === 0) {
-        message.warning('同步完成，但未产生向量块（选中记录可能无有效内容）');
+        techToast.warning('同步完成，但未产生向量块（选中记录可能无有效内容）');
         onClose();
       } else {
-        message.success(`同步完成，共写入 ${res.chunkCount} 个向量块`);
+        techToast.success(`同步完成，共写入 ${res.chunkCount} 个向量块`);
         onClose();
       }
       await onSuccess();

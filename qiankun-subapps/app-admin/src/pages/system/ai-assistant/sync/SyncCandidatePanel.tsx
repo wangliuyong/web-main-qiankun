@@ -1,11 +1,9 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { Input, Table, Tabs } from 'antd';
-import type { TableRowSelection } from 'antd/es/table/interface';
 import {
   AI_SOURCE_OPTIONS,
   type AiDataSource,
   type SyncCandidateItem,
 } from '../../../../api/ai.api';
+import { TechInput, TechTable, TechTabs } from '../../../../components/tech-ui';
 import { SYNC_CANDIDATE_COLUMNS } from './syncCandidateColumns';
 
 export interface SyncCandidatePanelProps {
@@ -35,48 +33,38 @@ export default function SyncCandidatePanel({
     return {
       key: opt.value,
       label: count > 0 ? `${opt.label} (${count})` : opt.label,
-      children: null,
     };
   });
 
-  const rowSelection: TableRowSelection<SyncCandidateItem> = {
-    selectedRowKeys: selection[activeSource],
-    onChange: (keys) => onSelectionChange(activeSource, keys as string[]),
-    preserveSelectedRowKeys: true,
-  };
-
   return (
-    <>
-      <Tabs
+    <div className="ai-sync-panel">
+      <TechTabs
         activeKey={activeSource}
+        items={tabItems}
         onChange={(key) => {
           onActiveSourceChange(key as AiDataSource);
           onKeywordChange('');
         }}
-        items={tabItems}
-        style={{ marginBottom: 12 }}
       />
-
-      <Input
-        allowClear
-        prefix={<SearchOutlined />}
+      <TechInput
+        prefixIcon="mdi:magnify"
         placeholder="搜索标题或说明"
         value={keyword}
         onChange={(e) => onKeywordChange(e.target.value)}
-        style={{ marginBottom: 12 }}
       />
-
-      <Table
+      <TechTable
         rowKey="id"
-        size="small"
         loading={loading}
         columns={SYNC_CANDIDATE_COLUMNS}
         dataSource={candidates}
-        rowSelection={rowSelection}
-        pagination={{ pageSize: 8, showSizeChanger: false }}
-        locale={{ emptyText: '该数据源下暂无可同步数据' }}
+        rowSelection={{
+          selectedRowKeys: selection[activeSource],
+          onChange: (keys) => onSelectionChange(activeSource, keys),
+        }}
+        pagination={{ pageSize: 8 }}
         scroll={{ y: 320 }}
+        emptyText="该数据源下暂无可同步数据"
       />
-    </>
+    </div>
   );
 }

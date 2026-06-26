@@ -10,11 +10,12 @@ import {
 export type { UseAiConfigOptions, UseAiConfigResult };
 
 /**
- * AI 配置组合：状态标签 + 配置弹窗（供数据配置管理页使用）。
+ * AI 配置组合：状态标签 + 配置弹窗
  */
-export function useAiConfigCard(options?: UseAiConfigOptions): UseAiConfigResult & {
+export function useAiConfigCard(options?: UseAiConfigOptions): Omit<UseAiConfigResult, 'formValues' | 'setFormField' | 'handleSubmit'> & {
   configStatus: ReactNode;
   modal: ReactNode;
+  open: () => void;
 } {
   const cfg = useAiConfigState(options);
 
@@ -28,13 +29,14 @@ export function useAiConfigCard(options?: UseAiConfigOptions): UseAiConfigResult
       saving={cfg.saving}
       loading={cfg.loading}
       config={cfg.config}
-      form={cfg.form}
+      formValues={cfg.formValues}
+      setFormField={cfg.setFormField}
       isDashscope={cfg.isDashscope}
       dashscopeHint={cfg.dashscopeHint}
       chatModelOptions={cfg.chatModelOptions}
       embeddingModelOptions={cfg.embeddingModelOptions}
       onClose={cfg.closeModal}
-      onSubmit={(v) => void cfg.handleSubmit(v)}
+      onSubmit={() => void cfg.handleSubmit()}
       onEmbeddingModelChange={cfg.handleEmbeddingModelChange}
       onBaseUrlChange={cfg.handleBaseUrlChange}
     />
@@ -43,5 +45,5 @@ export function useAiConfigCard(options?: UseAiConfigOptions): UseAiConfigResult
   return { ...cfg, configStatus, modal };
 }
 
-/** @deprecated 使用 useAiConfigCard，保留别名兼容 */
+/** @deprecated 使用 useAiConfigCard */
 export const useAiConfig = useAiConfigCard;
