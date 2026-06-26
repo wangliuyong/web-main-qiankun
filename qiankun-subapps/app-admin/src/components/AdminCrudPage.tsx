@@ -1,16 +1,6 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Form,
-  Modal,
-  Popconfirm,
-  Space,
-  Table,
-  message,
-  type FormInstance,
-} from 'antd';
-import type { ColumnsType } from 'antd/es/table';
 import { useMemo, useState, type ReactNode } from 'react';
+import { Form, Table, type FormInstance } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import {
   AdminPageShell,
   AdminSectionCard,
@@ -20,6 +10,13 @@ import {
 } from './admin-page';
 import PageLoading from './_common/PageLoading';
 import PermissionGuard from './PermissionGuard';
+import {
+  TechButton,
+  TechConfirm,
+  TechModal,
+  TechIcon,
+  techToast,
+} from './tech-ui';
 
 export interface AdminCrudPageProps<T extends { id: number }> {
   title: string;
@@ -86,7 +83,7 @@ export default function AdminCrudPage<T extends { id: number }>({
       items.unshift({
         label: '总记录数',
         value: data.length,
-        icon: <UnorderedListOutlined />,
+        icon: <TechIcon icon="mdi:format-list-bulleted" size={18} />,
         accent: 'primary',
       });
     }
@@ -113,10 +110,10 @@ export default function AdminCrudPage<T extends { id: number }>({
     try {
       if (editing?.id) {
         await onUpdate(editing.id, values);
-        message.success('已更新');
+        techToast.success('已更新');
       } else {
         await onCreate(values);
-        message.success('已创建');
+        techToast.success('已创建');
       }
       setModalOpen(false);
       onReload();
@@ -127,14 +124,14 @@ export default function AdminCrudPage<T extends { id: number }>({
 
   const handleDelete = async (id: number) => {
     await onDelete(id);
-    message.success('已删除');
+    techToast.success('已删除');
     onReload();
   };
 
   const createBtn = (
-    <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
+    <TechButton variant="primary" icon="mdi:plus" onClick={openCreate}>
       {createLabel}
-    </Button>
+    </TechButton>
   );
 
   const actionColumn: ColumnsType<T>[number] = {
@@ -142,21 +139,25 @@ export default function AdminCrudPage<T extends { id: number }>({
     width: extraActions ? 200 : 140,
     fixed: 'right',
     render: (_, record) => (
-      <Space>
+      <span style={{ display: 'inline-flex', gap: 4, flexWrap: 'wrap' }}>
         {extraActions?.(record)}
         <PermissionGuard code={updatePermission ?? ''}>
-          <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(record)}>
+          <TechButton
+            variant="ghost"
+            icon="mdi:pencil-outline"
+            onClick={() => openEdit(record)}
+          >
             编辑
-          </Button>
+          </TechButton>
         </PermissionGuard>
         <PermissionGuard code={deletePermission ?? ''}>
-          <Popconfirm title={deleteConfirmTitle} onConfirm={() => handleDelete(record.id)}>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+          <TechConfirm title={deleteConfirmTitle} onConfirm={() => handleDelete(record.id)}>
+            <TechButton variant="danger" icon="mdi:delete-outline">
               删除
-            </Button>
-          </Popconfirm>
+            </TechButton>
+          </TechConfirm>
         </PermissionGuard>
-      </Space>
+      </span>
     ),
   };
 
@@ -186,19 +187,18 @@ export default function AdminCrudPage<T extends { id: number }>({
         />
       </AdminSectionCard>
 
-      <Modal
-        title={editing?.id ? modalTitles.edit : modalTitles.create}
+      <TechModal
         open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        onOk={handleSave}
+        title={editing?.id ? modalTitles.edit : modalTitles.create}
+        onClose={() => setModalOpen(false)}
+        onOk={() => void handleSave()}
         confirmLoading={saving}
         width={modalWidth}
-        destroyOnClose
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" className="admin-modal-form">
           {renderForm(form)}
         </Form>
-      </Modal>
+      </TechModal>
     </AdminPageShell>
   );
 }

@@ -6,8 +6,8 @@
   align-items: stretch;
   gap: 10px;
   padding: 14px 16px;
-  background: rgba(250, 248, 245, 0.55);
-  border-bottom: 1px solid rgba(20, 20, 20, 0.06);
+  background: var(--obs-surface-inset);
+  border-bottom: 1px solid var(--obs-border);
 }
 
 .report-type-breakdown__empty {
@@ -16,7 +16,7 @@
   gap: 6px;
   padding: 8px 12px;
   font-size: 13px;
-  color: #a8a29e;
+  color: var(--obs-text-tertiary);
 }
 
 .report-type-chip {
@@ -26,18 +26,15 @@
   min-width: 0;
   padding: 10px 14px;
   text-align: left;
-  background: #fff;
-  border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 2px;
+  background: var(--obs-bg-elevated);
+  border: 1px solid var(--obs-border);
+  border-radius: var(--obs-radius-sm);
   cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
+  transition: border-color 0.18s ease, background 0.18s ease;
 
   &:hover:not(:disabled) {
-    border-color: rgba(154, 52, 18, 0.22);
-    box-shadow: 0 10px 28px -22px rgba(20, 20, 20, 0.25);
+    border-color: var(--obs-border-strong);
+    background: var(--obs-surface-hover);
   }
 
   &:active:not(:disabled) {
@@ -45,24 +42,23 @@
   }
 
   &:disabled {
-    opacity: 0.65;
+    opacity: 0.55;
     cursor: not-allowed;
   }
 
   &--active {
-    border-color: rgba(154, 52, 18, 0.35);
-    background: rgba(154, 52, 18, 0.04);
-    box-shadow: inset 0 0 0 1px rgba(154, 52, 18, 0.08);
+    border-color: var(--obs-accent-border);
+    background: var(--obs-accent-muted);
   }
 
   &--warning .report-type-chip__icon {
-    color: #b45309;
-    background: rgba(180, 83, 9, 0.1);
+    color: var(--obs-warning);
+    background: var(--obs-warning-muted);
   }
 
   &--danger .report-type-chip__icon {
-    color: #b91c1c;
-    background: rgba(185, 28, 28, 0.1);
+    color: var(--obs-danger);
+    background: var(--obs-danger-muted);
   }
 }
 
@@ -74,9 +70,9 @@
   width: 32px;
   height: 32px;
   font-size: 16px;
-  color: #9a3412;
-  background: rgba(154, 52, 18, 0.08);
-  border-radius: 2px;
+  color: var(--obs-accent);
+  background: var(--obs-accent-muted);
+  border-radius: var(--obs-radius-sm);
 }
 
 .report-type-chip__body {
@@ -89,41 +85,41 @@
 .report-type-chip__label {
   font-size: 13px;
   font-weight: 600;
-  color: #141414;
+  color: var(--obs-text);
   line-height: 1.3;
 }
 
 .report-type-chip__value {
   font-size: 20px;
   font-weight: 600;
-  color: #9a3412;
+  color: var(--obs-accent);
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
 }
 
 .report-type-chip__meta {
   font-size: 11px;
-  color: #78716c;
+  color: var(--obs-text-tertiary);
   line-height: 1.35;
 }
 
 .report-cell-info-title {
   font-weight: 500;
-  color: #141414;
+  color: var(--obs-text);
 }
 
 .report-cell-content {
-  color: #57534e;
+  color: var(--obs-text-secondary);
 
   &--muted {
-    color: #a8a29e;
+    color: var(--obs-text-tertiary);
     font-style: italic;
   }
 }
 
 .report-cell-time {
   font-variant-numeric: tabular-nums;
-  color: #57534e;
+  color: var(--obs-text-secondary);
 }
 
 .report-detail-descriptions {
@@ -133,11 +129,12 @@
 .report-detail-hint {
   margin-top: 16px;
   padding: 12px 14px;
-  background: rgba(250, 248, 245, 0.8);
-  border: 1px solid rgba(20, 20, 20, 0.06);
-  border-radius: 2px;
+  background: var(--obs-surface-inset);
+  border: 1px solid var(--obs-border);
+  border-radius: var(--obs-radius-sm);
   font-size: 13px;
   line-height: 1.55;
+  color: var(--obs-text-secondary);
 }
 
 @media (max-width: 767px) {

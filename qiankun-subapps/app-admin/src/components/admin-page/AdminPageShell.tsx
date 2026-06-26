@@ -1,9 +1,8 @@
+import TechPageShell from '../tech-ui/TechPageShell';
 import type { AdminPageShellProps } from './types';
-import AdminStatGrid from './AdminStatGrid';
 
 /**
- * 后台页面统一外壳：Hero 标题区 + 统计指标 + 内容区
- * 对齐 Ink & Sand 设计语言，提升信息层次与可读性
+ * 后台页面统一外壳 — 委托 Obsidian TechPageShell
  */
 export default function AdminPageShell({
   title,
@@ -13,19 +12,23 @@ export default function AdminPageShell({
   children,
   className,
 }: AdminPageShellProps) {
+  const techStats = stats?.map((item) => ({
+    label: item.label,
+    value: item.value,
+    hint: item.hint,
+    icon: item.icon,
+    accent: item.accent === 'primary' || item.accent === 'warning',
+  }));
+
   return (
-    <div className={['admin-page', className].filter(Boolean).join(' ')}>
-      <header className="admin-page__hero">
-        <div className="admin-page__hero-copy">
-          <h1 className="admin-page__title">{title}</h1>
-          {description ? <p className="admin-page__description">{description}</p> : null}
-        </div>
-        {extra ? <div className="admin-page__hero-actions">{extra}</div> : null}
-      </header>
-
-      {stats && stats.length > 0 ? <AdminStatGrid items={stats} /> : null}
-
+    <TechPageShell
+      title={title}
+      description={description}
+      extra={extra}
+      stats={techStats}
+      className={['admin-page', className].filter(Boolean).join(' ')}
+    >
       <div className="admin-page__body">{children}</div>
-    </div>
+    </TechPageShell>
   );
 }

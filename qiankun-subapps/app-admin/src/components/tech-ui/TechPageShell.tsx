@@ -23,7 +23,6 @@ export default function TechPageShell({
   return (
     <div className={['tech-page', className].filter(Boolean).join(' ')}>
       <header className="tech-page__hero">
-        <div className="tech-page__hero-glow" aria-hidden />
         <div className="tech-page__hero-copy">
           <h1 className="tech-page__title">{title}</h1>
           {description ? <p className="tech-page__desc">{description}</p> : null}

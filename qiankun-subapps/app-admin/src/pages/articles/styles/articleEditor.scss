@@ -4,16 +4,16 @@
  */
 
 .article-editor-page {
-  --ae-bg: var(--ed-bg, #faf8f5);
-  --ae-surface: var(--ed-surface-elevated, #fff);
-  --ae-text: var(--ed-text, #141414);
-  --ae-muted: var(--ed-muted, #6f6a65);
-  --ae-faint: var(--ed-faint, #a8a29e);
-  --ae-line: var(--ed-line, rgba(20, 20, 20, 0.08));
-  --ae-accent: var(--ed-accent, #9a3412);
-  --ae-accent-soft: var(--ed-accent-soft, rgba(154, 52, 18, 0.08));
-  --ae-sans: var(--ed-sans, 'IBM Plex Sans', 'PingFang SC', sans-serif);
-  --ae-serif: var(--ed-serif, 'Noto Serif SC', 'Songti SC', serif);
+  --ae-bg: var(--obs-bg);
+  --ae-surface: var(--obs-bg-elevated);
+  --ae-text: var(--obs-text);
+  --ae-muted: var(--obs-text-secondary);
+  --ae-faint: var(--obs-text-tertiary);
+  --ae-line: var(--obs-border);
+  --ae-accent: var(--obs-accent-strong);
+  --ae-accent-soft: var(--obs-accent-muted);
+  --ae-sans: var(--obs-font);
+  --ae-serif: var(--obs-font);
   --ae-toolbar-h: 56px;
 
   display: flex;

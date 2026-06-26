@@ -1,50 +1,7 @@
-@use '../../../../_shared/styles/tokens' as t;
-
-/* ── 后台页面通用布局 ── */
+/* ── 后台页面通用布局（Obsidian 深色，委托 tech-ui 外壳） ── */
 .admin-page {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  /* TechPageShell 已承担布局，此处仅保留 antd 表格/表单增强类 */
   min-width: 0;
-}
-
-/* Hero：与 dashboard 一致的暖色渐变标题区 */
-.admin-page__hero {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 18px 22px;
-  border-radius: 2px;
-  background:
-    linear-gradient(135deg, rgba(154, 52, 18, 0.07) 0%, rgba(250, 248, 245, 0.92) 48%, #fff 100%);
-  border: 1px solid rgba(20, 20, 20, 0.06);
-  box-shadow: 0 20px 44px -34px rgba(20, 20, 20, 0.22);
-}
-
-.admin-page__title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: #141414;
-}
-
-.admin-page__description {
-  margin: 6px 0 0;
-  max-width: 56ch;
-  font-size: 14px;
-  line-height: 1.55;
-  color: #78716c;
-}
-
-.admin-page__hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
 }
 
 .admin-page__body {
@@ -54,176 +11,70 @@
   min-width: 0;
 }
 
-/* ── 统计指标卡片 ── */
-.admin-stat-grid {
-  margin: 0;
-}
-
-.admin-stat-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  height: 100%;
-  padding: 14px 16px;
-  background: #fff;
-  border: 1px solid rgba(20, 20, 20, 0.06);
-  border-radius: 2px;
-  box-shadow: 0 12px 32px -28px rgba(20, 20, 20, 0.18);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.admin-stat-card:hover {
-  border-color: rgba(154, 52, 18, 0.14);
-  box-shadow: 0 16px 36px -28px rgba(20, 20, 20, 0.22);
-}
-
-.admin-stat-card__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  font-size: 18px;
-  color: #9a3412;
-  background: rgba(154, 52, 18, 0.08);
-  border-radius: 2px;
-}
-
-.admin-stat-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.admin-stat-card__label {
-  font-size: 12px;
-  line-height: 1.4;
-  color: #78716c;
-}
-
-.admin-stat-card__value {
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: #141414;
-  font-variant-numeric: tabular-nums;
-}
-
-.admin-stat-card__hint {
-  font-size: 11px;
-  line-height: 1.35;
-  color: #a8a29e;
-}
-
-.admin-stat-card--warning .admin-stat-card__value {
-  color: #b45309;
-}
-
-.admin-stat-card--warning .admin-stat-card__icon {
-  color: #b45309;
-  background: rgba(180, 83, 9, 0.1);
-}
-
-.admin-stat-card--success .admin-stat-card__value {
-  color: #15803d;
-}
-
-.admin-stat-card--success .admin-stat-card__icon {
-  color: #15803d;
-  background: rgba(21, 128, 61, 0.1);
-}
-
-.admin-stat-card--danger .admin-stat-card__value {
-  color: #b91c1c;
-}
-
-.admin-stat-card--danger .admin-stat-card__icon {
-  color: #b91c1c;
-  background: rgba(185, 28, 28, 0.1);
-}
-
-.admin-stat-card--primary .admin-stat-card__value {
-  color: #9a3412;
-}
-
-/* ── 内容区卡片 ── */
-.admin-section-card.ant-card {
-  border: 1px solid rgba(20, 20, 20, 0.06);
-  border-radius: 2px;
-  box-shadow: 0 16px 40px -32px rgba(20, 20, 20, 0.16);
-}
-
-.admin-section-card.ant-card .ant-card-head {
-  min-height: 48px;
-  padding: 0 20px;
-  border-bottom: 1px solid rgba(20, 20, 20, 0.06);
-}
-
-.admin-section-card.ant-card .ant-card-head-title {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.admin-section-card.ant-card .ant-card-body {
-  padding: 20px;
-}
-
-.admin-section-card--flush.ant-card .ant-card-body {
+/* 无内边距卡片：表格贴边 */
+.admin-section-card--flush .tech-card__body {
   padding: 0;
 }
 
-.admin-section-card--flush.ant-card .ant-table-wrapper {
-  border-radius: 0 0 2px 2px;
+.admin-section-card--flush .admin-data-table.ant-table-wrapper {
+  border-radius: 0 0 var(--obs-radius) var(--obs-radius);
 }
 
-/* ── 筛选工具条（FilterForm 容器） ── */
+/* ── 筛选工具条 ── */
 .admin-filter-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 12px 16px;
-  margin-bottom: 16px;
+  margin-bottom: 0;
   padding: 14px 16px;
-  background: rgba(250, 248, 245, 0.65);
-  border: 1px solid rgba(20, 20, 20, 0.05);
-  border-radius: 2px;
+  background: var(--obs-surface-inset);
+  border-bottom: 1px solid var(--obs-border);
 }
 
 .admin-filter-bar .ant-form-item {
   margin-bottom: 0;
 }
 
-/* ── 数据表格增强 ── */
+/* ── 数据表格增强（antd Table 深色适配） ── */
 .admin-data-table.ant-table-wrapper {
   .ant-table {
     font-size: 13px;
+    background: transparent;
   }
 
   .ant-table-thead > tr > th {
     font-weight: 600;
-    font-size: 12px;
-    color: #57534e;
-    background: rgba(250, 248, 245, 0.85) !important;
-    border-bottom: 1px solid rgba(20, 20, 20, 0.08);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--obs-text-tertiary) !important;
+    background: var(--obs-surface) !important;
+    border-bottom: 1px solid var(--obs-border) !important;
   }
 
   .ant-table-tbody > tr > td {
-    border-bottom: 1px solid rgba(20, 20, 20, 0.05);
+    border-bottom: 1px solid var(--obs-border);
+    color: var(--obs-text);
   }
 
   .ant-table-tbody > tr:hover > td {
-    background: rgba(154, 52, 18, 0.03) !important;
+    background: rgba(99, 102, 241, 0.06) !important;
+  }
+
+  .ant-table-tbody > tr:last-child > td {
+    border-bottom: none;
   }
 
   .ant-pagination {
-    margin: 16px 20px !important;
+    margin: 14px 16px !important;
+  }
+
+  .ant-table-cell-fix-right {
+    background: var(--obs-bg-elevated) !important;
   }
 }
 
-/* 表格贴边模式下的分页内边距 */
 .admin-section-card--flush .admin-data-table.ant-table-wrapper .ant-pagination {
   padding: 0 4px;
 }
@@ -234,48 +85,43 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
-  padding: 10px 14px;
-  background: rgba(154, 52, 18, 0.05);
-  border: 1px solid rgba(154, 52, 18, 0.12);
-  border-radius: 2px;
+  margin-bottom: 0;
+  padding: 10px 16px;
+  background: var(--obs-accent-muted);
+  border-bottom: 1px solid var(--obs-accent-border);
 }
 
 .admin-batch-bar__count {
   font-size: 13px;
-  color: #57534e;
+  color: var(--obs-text-secondary);
 }
 
 .admin-batch-bar__count strong {
-  color: #9a3412;
+  color: var(--obs-accent);
   font-weight: 600;
 }
 
-/* ── 顶栏页面标题增强 ── */
+/* ── 顶栏页面标题 ── */
 .admin-shell-header__page-title {
   margin: 0 !important;
   font-size: 15px !important;
   font-weight: 600 !important;
-  color: #141414 !important;
+  color: var(--obs-text) !important;
   letter-spacing: -0.01em;
 }
 
-.admin-shell-header__breadcrumb {
+/* ── Modal 内表单间距 ── */
+.admin-modal-form .ant-form-item {
+  margin-bottom: 14px;
+}
+
+.admin-modal-form .ant-form-item-label > label {
   font-size: 12px;
-  color: #a8a29e;
-  line-height: 1.2;
+  color: var(--obs-text-secondary);
 }
 
 @media (max-width: 767px) {
-  .admin-page__hero {
-    padding: 14px 16px;
-  }
-
-  .admin-page__title {
-    font-size: 18px;
-  }
-
-  .admin-stat-card__value {
-    font-size: 20px;
+  .admin-filter-bar {
+    padding: 12px;
   }
 }

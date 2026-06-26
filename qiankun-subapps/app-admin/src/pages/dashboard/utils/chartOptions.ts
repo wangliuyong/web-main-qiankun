@@ -1,15 +1,18 @@
 import type { DashboardOverview } from '../types';
 
-/** Tech Admin 图表色板（深色科技风） */
+/** Obsidian 控制台图表色板（靛蓝 + 语义色） */
 export const DASHBOARD_CHART_COLORS = {
-  accent: '#22d3ee',
-  accentSoft: '#06b6d4',
-  ink: '#e2e8f0',
-  sand: '#64748b',
-  muted: '#94a3b8',
-  message: '#34d399',
-  ai: '#60a5fa',
-  grid: 'rgba(148, 163, 184, 0.12)',
+  accent: '#818cf8',
+  accentStrong: '#6366f1',
+  ink: '#fafafa',
+  sand: '#71717a',
+  muted: '#a1a1aa',
+  message: '#4ade80',
+  ai: '#a78bfa',
+  grid: 'rgba(63, 63, 70, 0.45)',
+  tooltipBg: '#111113',
+  tooltipBorder: 'rgba(99, 102, 241, 0.35)',
+  pieBorder: '#111113',
 } as const;
 
 /** 访问与互动趋势折线图 */
@@ -19,11 +22,15 @@ export function buildVisitTrendOption(
   const labels = dailyTrend.map((item) => item.label);
 
   return {
-    color: [DASHBOARD_CHART_COLORS.accent, DASHBOARD_CHART_COLORS.message, DASHBOARD_CHART_COLORS.ai],
+    color: [
+      DASHBOARD_CHART_COLORS.accent,
+      DASHBOARD_CHART_COLORS.message,
+      DASHBOARD_CHART_COLORS.ai,
+    ],
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#0c1222',
-      borderColor: 'rgba(34, 211, 238, 0.2)',
+      backgroundColor: DASHBOARD_CHART_COLORS.tooltipBg,
+      borderColor: DASHBOARD_CHART_COLORS.tooltipBorder,
       textStyle: { color: DASHBOARD_CHART_COLORS.ink, fontSize: 12 },
     },
     legend: {
@@ -61,8 +68,8 @@ export function buildVisitTrendOption(
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(34, 211, 238, 0.22)' },
-              { offset: 1, color: 'rgba(34, 211, 238, 0.02)' },
+              { offset: 0, color: 'rgba(99, 102, 241, 0.22)' },
+              { offset: 1, color: 'rgba(99, 102, 241, 0.02)' },
             ],
           },
         },
@@ -94,12 +101,12 @@ export function buildTopPagesOption(topPages: DashboardOverview['charts']['topPa
   const values = [...topPages].reverse().map((item) => item.views);
 
   return {
-    color: [DASHBOARD_CHART_COLORS.accent],
+    color: [DASHBOARD_CHART_COLORS.accentStrong],
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
-      backgroundColor: '#0c1222',
-      borderColor: 'rgba(34, 211, 238, 0.2)',
+      backgroundColor: DASHBOARD_CHART_COLORS.tooltipBg,
+      borderColor: DASHBOARD_CHART_COLORS.tooltipBorder,
       textStyle: { color: DASHBOARD_CHART_COLORS.ink, fontSize: 12 },
     },
     grid: { left: 8, right: 24, top: 8, bottom: 8, containLabel: true },
@@ -141,11 +148,11 @@ export function buildContentMixOption(contentMix: DashboardOverview['charts']['c
   ].filter((item) => item.value > 0);
 
   return {
-    color: ['#22d3ee', '#34d399', '#60a5fa'],
+    color: ['#6366f1', '#4ade80', '#a78bfa'],
     tooltip: {
       trigger: 'item',
-      backgroundColor: '#0c1222',
-      borderColor: 'rgba(34, 211, 238, 0.2)',
+      backgroundColor: DASHBOARD_CHART_COLORS.tooltipBg,
+      borderColor: DASHBOARD_CHART_COLORS.tooltipBorder,
       textStyle: { color: DASHBOARD_CHART_COLORS.ink, fontSize: 12 },
     },
     legend: {
@@ -157,9 +164,8 @@ export function buildContentMixOption(contentMix: DashboardOverview['charts']['c
         type: 'pie',
         radius: ['42%', '68%'],
         center: ['50%', '44%'],
-        // avoidLabelOverlap: true,
         itemStyle: {
-          borderColor: '#0c1222',
+          borderColor: DASHBOARD_CHART_COLORS.pieBorder,
           borderWidth: 2,
         },
         label: {

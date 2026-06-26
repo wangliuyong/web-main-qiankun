@@ -1,13 +1,14 @@
+import { TechIcon } from '../../../components/tech-ui';
 import { LOGIN_FEATURES } from '../constants';
 
-/** 登录页左侧：后台能力概览（纯展示） */
+/** 登录页左侧：后台能力概览 */
 export default function LoginFeatureList() {
   return (
     <ul className="admin-login-features" aria-label="后台能力">
-      {LOGIN_FEATURES.map(({ icon: Icon, title, description }) => (
+      {LOGIN_FEATURES.map(({ icon, title, description }) => (
         <li key={title} className="admin-login-feature">
           <span className="admin-login-feature__icon" aria-hidden="true">
-            <Icon />
+            <TechIcon icon={icon} size={20} />
           </span>
           <div>
             <p className="admin-login-feature__title">{title}</p>

@@ -1,4 +1,4 @@
-import { Card } from 'antd';
+import TechCard from '../tech-ui/TechCard';
 import type { ReactNode } from 'react';
 
 export interface AdminSectionCardProps {
@@ -10,9 +10,7 @@ export interface AdminSectionCardProps {
   noPadding?: boolean;
 }
 
-/**
- * 页面内容区卡片：统一圆角、边框与阴影，承载表格 / 表单 / Tabs
- */
+/** 页面内容区卡片 — 基于 TechCard */
 export default function AdminSectionCard({
   title,
   extra,
@@ -20,13 +18,12 @@ export default function AdminSectionCard({
   noPadding = false,
 }: AdminSectionCardProps) {
   return (
-    <Card
-      className={`admin-section-card${noPadding ? ' admin-section-card--flush' : ''}`}
+    <TechCard
       title={title}
       extra={extra}
-      bordered={false}
+      className={noPadding ? 'admin-section-card--flush' : undefined}
     >
       {children}
-    </Card>
+    </TechCard>
   );
 }

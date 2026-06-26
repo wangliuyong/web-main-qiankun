@@ -51,7 +51,7 @@ export default function ArticleMarkdownEditor({
   );
 
   return (
-    <div ref={containerRef} className="article-md-editor" data-color-mode="light">
+    <div ref={containerRef} className="article-md-editor" data-color-mode="dark">
       <Suspense
         fallback={
           <div className="article-md-editor__loading">

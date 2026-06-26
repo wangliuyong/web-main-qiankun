@@ -25,7 +25,7 @@ export function TechInput({ prefixIcon, label, extra, error, className, ...rest 
 
 /** 密码输入框 */
 export function TechPasswordInput(props: TechInputProps) {
-  return <TechInput type="password" autoComplete="new-password" {...props} />;
+  return <TechInput type="password" autoComplete="current-password" {...props} />;
 }
 
 /** 数字输入框 */

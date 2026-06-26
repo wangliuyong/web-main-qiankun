@@ -1,13 +1,13 @@
-import { HomeOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { Button, Layout, Menu, Space, Typography, theme } from 'antd';
+import { Layout, Menu } from 'antd';
 import type { MenuProps } from 'antd';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AdminMenuNode } from '../types/rbac';
 import { usePageTitle } from '../context/PageTitleContext';
 import { buildMenuItems, findOpenGroupKeysByPath, isMenuGroupKey } from '../router/menuUtils';
 import { isAdminStandalone } from '../utils/runtime';
+import { TechIcon } from './tech-ui';
 
-const { Header, Sider, Content } = Layout;
+const { Sider, Content } = Layout;
 
 const SIDER_COLLAPSED_KEY = 'admin-sider-collapsed';
 const SIDER_TRANSITION_MS = 200;
@@ -33,7 +33,7 @@ interface AdminShellProps {
   children: ReactNode;
 }
 
-/** Ant Design 后台主布局：动态菜单侧栏 + 顶栏 + 内容区 */
+/** Obsidian 后台主布局：侧栏 + 顶栏 + 内容区 */
 export default function AdminShell({
   username,
   menus,
@@ -43,7 +43,6 @@ export default function AdminShell({
   children,
 }: AdminShellProps) {
   const pageTitle = usePageTitle();
-  const { token } = theme.useToken();
   const initialCollapsed = readSiderCollapsed();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   const [menuExpanded, setMenuExpanded] = useState(!initialCollapsed);
@@ -140,8 +139,11 @@ export default function AdminShell({
         theme="dark"
       >
         <div className="admin-shell-sider__brand">
-          <span className="admin-shell-sider__brand-full">网站后台设置</span>
-          <span className="admin-shell-sider__brand-mini">后台</span>
+          <span className="admin-shell-sider__brand-full">
+            <span className="admin-shell-sider__brand-mark" aria-hidden />
+            网站后台
+          </span>
+          <span className="admin-shell-sider__brand-mini">管</span>
         </div>
         <Menu
           className="admin-shell-menu"
@@ -151,46 +153,40 @@ export default function AdminShell({
           selectedKeys={[currentPath]}
           items={menuItems}
           onClick={handleMenuClick}
-          style={{ borderInlineEnd: 0 }}
           {...menuOpenProps}
         />
       </Sider>
 
       <Layout className="admin-shell-body">
-        <Header
-          className="admin-shell-header"
-          style={{
-            padding: '0 24px',
-            background: token.colorBgContainer,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: `1px solid ${token.colorBorderSecondary}`,
-          }}
-        >
-          <Space size="middle">
-            <Button
-              type="text"
+        <header className="admin-shell-header">
+          <div className="admin-shell-header__left">
+            <button
+              type="button"
+              className="admin-shell-header__toggle"
               aria-label={collapsed ? '展开菜单' : '折叠菜单'}
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => handleSiderCollapse(!collapsed)}
-            />
-            <Space size="middle" direction="vertical" style={{ gap: 0 }}>
-              <Typography.Title level={5} className="admin-shell-header__page-title">
-                {pageTitle}
-              </Typography.Title>
-            </Space>
-          </Space>
-          <Space size="middle">
-            <Typography.Text>你好，{username}</Typography.Text>
-            <Button type="link" icon={<HomeOutlined />} href={publicSiteHref} target="_blank">
+            >
+              <TechIcon icon={collapsed ? 'mdi:menu' : 'mdi:menu-open'} size={18} />
+            </button>
+            <h1 className="admin-shell-header__page-title">{pageTitle}</h1>
+          </div>
+          <div className="admin-shell-header__right">
+            <span className="admin-shell-header__user">你好，{username}</span>
+            <a
+              className="admin-shell-header__link"
+              href={publicSiteHref}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <TechIcon icon="mdi:home-outline" size={16} />
               返回前台
-            </Button>
-            <Button type="text" danger icon={<LogoutOutlined />} onClick={onLogout}>
+            </a>
+            <button type="button" className="admin-shell-header__logout" onClick={onLogout}>
+              <TechIcon icon="mdi:logout" size={16} />
               退出
-            </Button>
-          </Space>
-        </Header>
+            </button>
+          </div>
+        </header>
 
         <Content className="admin-shell-content">{children}</Content>
       </Layout>
