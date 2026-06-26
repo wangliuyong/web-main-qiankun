@@ -74,6 +74,10 @@
 /* 筛选栏 / 工具条：标题之后入场 */
 .app-toolbar {
   animation: app-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+  position: sticky;
+  top: 80px;
+  background-color: var(--ed-bg);
+  z-index: 2;
 }
 
 /* 博客详情正文：元信息渲染后再淡入 */
