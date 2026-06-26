@@ -21,8 +21,8 @@ export const SECTION_LABELS: Record<DashboardSectionId, string> = {
 export const DEFAULT_SECTION_ORDER: DashboardSectionId[] = [
   'stats',
   'charts',
-  'visits',
-  'panels',
-  'quickLinks',
-  'recent',
+  // 'visits',
+  // 'panels',
+  // 'quickLinks',
+  // 'recent',
 ];

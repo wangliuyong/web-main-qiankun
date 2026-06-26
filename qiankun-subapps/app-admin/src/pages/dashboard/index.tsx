@@ -37,9 +37,7 @@ export default function DashboardPage() {
               </TechButton>
             </>
           ) : (
-            <TechButton icon="mdi:view-grid-outline" onClick={() => setIsEditing(true)}>
-              自定义布局
-            </TechButton>
+            null
           )}
           <TechButton icon="mdi:refresh" onClick={() => void reload()}>
             刷新数据
