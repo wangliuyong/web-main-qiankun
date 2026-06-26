@@ -15,6 +15,8 @@ import {
   TechConfirm,
   TechModal,
   TechIcon,
+  TechTableAction,
+  TechTableActions,
   techToast,
 } from './tech-ui';
 
@@ -136,28 +138,19 @@ export default function AdminCrudPage<T extends { id: number }>({
 
   const actionColumn: ColumnsType<T>[number] = {
     title: '操作',
-    width: extraActions ? 200 : 140,
     fixed: 'right',
     render: (_, record) => (
-      <span style={{ display: 'inline-flex', gap: 4, flexWrap: 'wrap' }}>
+      <TechTableActions>
         {extraActions?.(record)}
         <PermissionGuard code={updatePermission ?? ''}>
-          <TechButton
-            variant="ghost"
-            icon="mdi:pencil-outline"
-            onClick={() => openEdit(record)}
-          >
-            编辑
-          </TechButton>
+          <TechTableAction onClick={() => openEdit(record)}>编辑</TechTableAction>
         </PermissionGuard>
         <PermissionGuard code={deletePermission ?? ''}>
           <TechConfirm title={deleteConfirmTitle} onConfirm={() => handleDelete(record.id)}>
-            <TechButton variant="danger" icon="mdi:delete-outline">
-              删除
-            </TechButton>
+            <TechTableAction variant="danger">删除</TechTableAction>
           </TechConfirm>
         </PermissionGuard>
-      </span>
+      </TechTableActions>
     ),
   };
 

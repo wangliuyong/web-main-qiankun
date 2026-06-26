@@ -1,8 +1,8 @@
-import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Space, Tag, Tooltip } from 'antd';
+import { Popconfirm, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import type { ConvReportItem } from '../../../../types/convenience';
 import { INFO_AUDIT_STATUS_MAP, REPORT_TYPE_CONFIG, type ReportTypeKey } from '../constants';
 
@@ -91,21 +91,16 @@ export function createReportColumns(handlers: ReportColumnHandlers): ColumnsType
     },
     {
       title: '操作',
-      width: 130,
       fixed: 'right',
       render: (_, record) => (
-        <Space size={0}>
-          <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => handlers.onViewDetail(record)}>
-            详情
-          </Button>
+        <TechTableActions>
+          <TechTableAction onClick={() => handlers.onViewDetail(record)}>详情</TechTableAction>
           <PermissionGuard code="admin:conv:reports:delete">
             <Popconfirm title="确定删除该举报记录？" onConfirm={() => void handlers.onDelete(record.id)}>
-              <Button type="link" size="small" danger icon={<DeleteOutlined />}>
-                删除
-              </Button>
+              <TechTableAction variant="danger">删除</TechTableAction>
             </Popconfirm>
           </PermissionGuard>
-        </Space>
+        </TechTableActions>
       ),
     },
   ];

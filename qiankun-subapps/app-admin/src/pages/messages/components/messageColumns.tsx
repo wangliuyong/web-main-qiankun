@@ -1,7 +1,7 @@
-import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Popconfirm } from 'antd';
+import { Popconfirm } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import PermissionGuard from '../../../components/PermissionGuard';
+import { TechTableAction } from '../../../components/tech-ui';
 import type { Message } from '../../../types';
 
 export interface MessageColumnHandlers {
@@ -21,11 +21,10 @@ export function createMessageColumns(handlers: MessageColumnHandlers): ColumnsTy
     },
     {
       title: '操作',
-      width: 80,
       render: (_, record) => (
         <PermissionGuard code="admin:messages:delete">
           <Popconfirm title="确定删除该留言？" onConfirm={() => handlers.onDelete(record.id)}>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} />
+            <TechTableAction variant="danger">删除</TechTableAction>
           </Popconfirm>
         </PermissionGuard>
       ),

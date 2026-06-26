@@ -1,5 +1,5 @@
-import { DeleteOutlined, EditOutlined, FileTextOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Space, Table, message } from 'antd';
+import { FileTextOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Popconfirm, Table, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
   AdminPageShell,
@@ -10,6 +10,7 @@ import {
 import { deleteArticle } from '../../api/articles.api';
 import PageLoading from '../../components/_common/PageLoading';
 import PermissionGuard from '../../components/PermissionGuard';
+import { TechTableAction, TechTableActions } from '../../components/tech-ui';
 import type { Article } from '../../types';
 import { ARTICLE_PERMISSIONS, ARTICLE_ROUTES } from './constants';
 import { ARTICLE_COLUMNS } from './components/articleColumns';
@@ -71,31 +72,23 @@ export default function ArticlesPage() {
             ...ARTICLE_COLUMNS,
             {
               title: '操作',
-              width: 140,
               fixed: 'right',
               render: (_, record) => (
-                <Space>
+                <TechTableActions>
                   <PermissionGuard code={ARTICLE_PERMISSIONS.update}>
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<EditOutlined />}
-                      onClick={() => navigate(ARTICLE_ROUTES.edit(record.id))}
-                    >
+                    <TechTableAction onClick={() => navigate(ARTICLE_ROUTES.edit(record.id))}>
                       编辑
-                    </Button>
+                    </TechTableAction>
                   </PermissionGuard>
                   <PermissionGuard code={ARTICLE_PERMISSIONS.delete}>
                     <Popconfirm
                       title="确定删除该文章？"
                       onConfirm={() => void handleDelete(record.id)}
                     >
-                      <Button type="link" size="small" danger icon={<DeleteOutlined />}>
-                        删除
-                      </Button>
+                      <TechTableAction variant="danger">删除</TechTableAction>
                     </Popconfirm>
                   </PermissionGuard>
-                </Space>
+                </TechTableActions>
               ),
             },
           ]}

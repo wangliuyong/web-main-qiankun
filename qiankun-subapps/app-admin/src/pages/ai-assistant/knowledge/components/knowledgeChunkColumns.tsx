@@ -1,8 +1,8 @@
-import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Space, Tag } from 'antd';
+import { Popconfirm, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { KnowledgeChunkItem } from '../../../../api/ai.api';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { SOURCE_LABEL } from '../constants';
 
 export interface KnowledgeChunkColumnHandlers {
@@ -53,27 +53,19 @@ export function createKnowledgeChunkColumns(
     },
     {
       title: '操作',
-      width: 120,
       fixed: 'right',
       render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="link"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handlers.onView(record.id)}
-          >
-            查看
-          </Button>
+        <TechTableActions>
+          <TechTableAction onClick={() => handlers.onView(record.id)}>查看</TechTableAction>
           <PermissionGuard code="admin:ai-knowledge:delete">
             <Popconfirm
               title="确定删除该向量块？删除后需重新同步数据源才能恢复检索。"
               onConfirm={() => handlers.onDelete(record.id)}
             >
-              <Button type="link" size="small" danger icon={<DeleteOutlined />} />
+              <TechTableAction variant="danger">删除</TechTableAction>
             </Popconfirm>
           </PermissionGuard>
-        </Space>
+        </TechTableActions>
       ),
     },
   ];

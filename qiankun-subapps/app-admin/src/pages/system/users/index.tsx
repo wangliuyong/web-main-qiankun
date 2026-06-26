@@ -1,4 +1,4 @@
-import { Button, Space } from 'antd';
+import { TechTableAction } from '../../../components/tech-ui';
 import {
   createUser,
   deleteUser,
@@ -44,18 +44,14 @@ export default function UsersPage() {
         onDelete={async (id) => deleteUser(id)}
         onReload={page.load}
         extraActions={(record) => (
-          <Space size={0}>
+          <>
             <PermissionGuard code="admin:system:users:assign">
-              <Button type="link" size="small" onClick={() => page.openRoles(record)}>
-                分配角色
-              </Button>
+              <TechTableAction onClick={() => page.openRoles(record)}>分配角色</TechTableAction>
             </PermissionGuard>
             <PermissionGuard code="admin:system:users:reset-password">
-              <Button type="link" size="small" onClick={() => page.openResetPwd(record)}>
-                重置密码
-              </Button>
+              <TechTableAction onClick={() => page.openResetPwd(record)}>重置密码</TechTableAction>
             </PermissionGuard>
-          </Space>
+          </>
         )}
       />
 

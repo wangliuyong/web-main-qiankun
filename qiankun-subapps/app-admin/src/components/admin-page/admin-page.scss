@@ -73,6 +73,12 @@
   .ant-table-cell-fix-right {
     background: var(--obs-bg-elevated) !important;
   }
+
+  /* 操作列：宽度随文字按钮内容自适应 */
+  .ant-table-cell:has(.tech-table-actions) {
+    width: 1%;
+    white-space: nowrap;
+  }
 }
 
 .admin-section-card--flush .admin-data-table.ant-table-wrapper .ant-pagination {

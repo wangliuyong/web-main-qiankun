@@ -21,6 +21,7 @@ import {
 } from '../../../components/admin-page';
 import PageLoading from '../../../components/_common/PageLoading';
 import PermissionGuard from '../../../components/PermissionGuard';
+import { TechTableAction, TechTableActions } from '../../../components/tech-ui';
 import {
   postConvUserResetPassword,
   postConvUserUpdate,
@@ -109,22 +110,17 @@ export default function ConvUsersPage() {
     { title: '注册时间', dataIndex: 'createdAt', width: 180 },
     {
       title: '操作',
-      width: 180,
       render: (_, record) => (
-        <Space size="small">
+        <TechTableActions>
           <PermissionGuard code="admin:conv:users:update">
-            <Button type="link" size="small" onClick={() => openEdit(record)}>
-              编辑
-            </Button>
+            <TechTableAction onClick={() => openEdit(record)}>编辑</TechTableAction>
           </PermissionGuard>
           {record.phone && (
             <PermissionGuard code="admin:conv:users:reset-password">
-              <Button type="link" size="small" onClick={() => openResetPwd(record)}>
-                重置密码
-              </Button>
+              <TechTableAction onClick={() => openResetPwd(record)}>重置密码</TechTableAction>
             </PermissionGuard>
           )}
-        </Space>
+        </TechTableActions>
       ),
     },
   ];

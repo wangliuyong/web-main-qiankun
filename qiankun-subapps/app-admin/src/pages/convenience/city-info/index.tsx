@@ -27,6 +27,7 @@ import {
 } from '../../../components/admin-page';
 import PageLoading from '../../../components/_common/PageLoading';
 import PermissionGuard from '../../../components/PermissionGuard';
+import { TechTableAction, TechTableActions } from '../../../components/tech-ui';
 import {
   postConvCityInfoAudit,
   postConvCityInfoDelete,
@@ -112,23 +113,20 @@ export default function ConvCityInfoPage() {
     { title: '发布时间', dataIndex: 'createdAt', width: 180 },
     {
       title: '操作',
-      width: 220,
       render: (_, record) => (
-        <Space size="small">
-          <Button type="link" size="small" onClick={() => void openDetail(record.id)}>
-            详情
-          </Button>
+        <TechTableActions>
+          <TechTableAction onClick={() => void openDetail(record.id)}>详情</TechTableAction>
           {record.auditStatus === 'PENDING' && (
             <PermissionGuard code="admin:conv:city-info:audit">
-              <Button type="link" size="small" onClick={() => void handleAudit(record.id, 'APPROVED')}>
+              <TechTableAction onClick={() => void handleAudit(record.id, 'APPROVED')}>
                 通过
-              </Button>
-              <Button type="link" size="small" danger onClick={() => void handleAudit(record.id, 'REJECTED')}>
+              </TechTableAction>
+              <TechTableAction variant="danger" onClick={() => void handleAudit(record.id, 'REJECTED')}>
                 驳回
-              </Button>
+              </TechTableAction>
             </PermissionGuard>
           )}
-        </Space>
+        </TechTableActions>
       ),
     },
   ];

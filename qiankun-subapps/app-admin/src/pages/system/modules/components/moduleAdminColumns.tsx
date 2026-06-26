@@ -1,6 +1,7 @@
-import { Button, Popconfirm, Space, Tag } from 'antd';
+import { Popconfirm, Space, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { isMenuGroup, isPageMenu, type ModuleAdminTreeNode } from '../../../../router/moduleTreeUtils';
 import { isPathRegistered } from '../../../../router/pageRegistry';
 import type { AdminModuleRecord } from '../../../../types/rbac';
@@ -70,15 +71,12 @@ export function createModuleAdminColumns(
     },
     {
       title: '操作',
-      width: 300,
       render: (_, record) => {
         if (record.type === 'permission') {
           return (
-            <Space>
+            <TechTableActions>
               <PermissionGuard code="admin:system:modules:update">
-                <Button
-                  type="link"
-                  size="small"
+                <TechTableAction
                   onClick={() => {
                     const parent = modules.find((m) => m.id === record.moduleId);
                     if (!parent) return;
@@ -91,60 +89,48 @@ export function createModuleAdminColumns(
                   }}
                 >
                   编辑
-                </Button>
+                </TechTableAction>
               </PermissionGuard>
               <PermissionGuard code="admin:system:modules:delete">
                 <Popconfirm
                   title="确定删除该权限点？"
                   onConfirm={() => onDeletePermission(record.permissionId!)}
                 >
-                  <Button type="link" size="small" danger>
-                    删除
-                  </Button>
+                  <TechTableAction variant="danger">删除</TechTableAction>
                 </Popconfirm>
               </PermissionGuard>
-            </Space>
+            </TechTableActions>
           );
         }
 
         const menuRecord = modules.find((m) => m.id === record.moduleId);
 
         return (
-          <Space wrap>
+          <TechTableActions>
             {menuRecord && isMenuGroup(menuRecord) && (
               <PermissionGuard code="admin:system:modules:create">
-                <Button type="link" size="small" onClick={() => onOpenChildMenu(menuRecord)}>
-                  新增
-                </Button>
+                <TechTableAction onClick={() => onOpenChildMenu(menuRecord)}>新增</TechTableAction>
               </PermissionGuard>
             )}
             {menuRecord && isPageMenu(menuRecord) && (
               <PermissionGuard code="admin:system:modules:update">
-                <Button type="link" size="small" onClick={() => onOpenPermCreate(menuRecord)}>
-                  新增
-                </Button>
+                <TechTableAction onClick={() => onOpenPermCreate(menuRecord)}>新增</TechTableAction>
               </PermissionGuard>
             )}
             <PermissionGuard code="admin:system:modules:update">
-              <Button
-                type="link"
-                size="small"
-                onClick={() => menuRecord && onOpenMenuEdit(menuRecord)}
-              >
+              <TechTableAction onClick={() => menuRecord && onOpenMenuEdit(menuRecord)}>
                 编辑
-              </Button>
+              </TechTableAction>
             </PermissionGuard>
             <PermissionGuard code="admin:system:modules:delete">
               <Popconfirm
                 title="确定删除？请先删除子菜单"
                 onConfirm={() => onDeleteModule(record.moduleId!)}
               >
-                <Button type="link" size="small" danger>
-                  删除
-                </Button>
+                <TechTableAction variant="danger">删除</TechTableAction>
               </Popconfirm>
             </PermissionGuard>
-          </Space>
+          </TechTableActions>
         );
       },
     },

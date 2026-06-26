@@ -5,6 +5,8 @@ export { default as TechCard } from './TechCard';
 export { default as TechStatCard } from './TechStatCard';
 export { default as TechGrid, TechCol } from './TechGrid';
 export { default as TechTable } from './TechTable';
+export { default as TechTableAction } from './TechTableAction';
+export { default as TechTableActions } from './TechTableActions';
 export { default as TechModal } from './TechModal';
 export { default as TechAlert } from './TechAlert';
 export { TechInput, TechPasswordInput, TechNumberInput } from './TechInput';

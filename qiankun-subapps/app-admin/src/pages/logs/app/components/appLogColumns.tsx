@@ -1,7 +1,7 @@
-import { EyeOutlined } from '@ant-design/icons';
-import { Button, Tag } from 'antd';
+import { Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { AppLog } from '../../../../api/logs.api';
+import { TechTableAction } from '../../../../components/tech-ui';
 import { LEVEL_COLORS } from '../constants';
 
 export interface AppLogColumnHandlers {
@@ -29,17 +29,9 @@ export function createAppLogColumns(handlers: AppLogColumnHandlers): ColumnsType
     },
     {
       title: '详情',
-      width: 80,
       fixed: 'right',
       render: (_, record) => (
-        <Button
-          type="link"
-          size="small"
-          icon={<EyeOutlined />}
-          onClick={() => handlers.onViewDetail(record)}
-        >
-          查看
-        </Button>
+        <TechTableAction onClick={() => handlers.onViewDetail(record)}>查看</TechTableAction>
       ),
     },
   ];

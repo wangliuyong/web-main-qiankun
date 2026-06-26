@@ -6,6 +6,8 @@ export interface TechColumn<T> {
   title: string;
   dataIndex?: keyof T & string;
   width?: number | string;
+  /** 列单元格 className，常用于操作列 tech-table__actions */
+  className?: string;
   ellipsis?: boolean;
   render?: (value: unknown, row: T, index: number) => ReactNode;
 }

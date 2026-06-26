@@ -84,7 +84,7 @@ export default function TechTable<T extends { id?: string | number }>({
                 </th>
               ) : null}
               {columns.map((col) => (
-                <th key={col.key} style={{ width: col.width }}>{col.title}</th>
+                <th key={col.key} className={col.className} style={{ width: col.width }}>{col.title}</th>
               ))}
             </tr>
           </thead>
@@ -114,7 +114,10 @@ export default function TechTable<T extends { id?: string | number }>({
                       const raw = resolveCellValue(row, col);
                       const content = col.render ? col.render(raw, row, rowIndex) : (raw as ReactNode) ?? '-';
                       return (
-                        <td key={col.key} className={col.ellipsis ? 'tech-table__ellipsis' : undefined}>
+                        <td
+                          key={col.key}
+                          className={[col.className, col.ellipsis && 'tech-table__ellipsis'].filter(Boolean).join(' ') || undefined}
+                        >
                           {content}
                         </td>
                       );

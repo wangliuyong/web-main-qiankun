@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { TechTableAction } from '../../../components/tech-ui';
 import {
   createRole,
   deleteRole,
@@ -37,9 +37,7 @@ export default function RolesPage() {
         onReload={page.load}
         extraActions={(record) => (
           <PermissionGuard code="admin:system:roles:assign">
-            <Button type="link" size="small" onClick={() => void page.openAssign(record)}>
-              分配权限
-            </Button>
+            <TechTableAction onClick={() => void page.openAssign(record)}>分配权限</TechTableAction>
           </PermissionGuard>
         )}
       />

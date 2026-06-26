@@ -42,6 +42,13 @@
   --obs-font: 'SF Pro Text', 'PingFang SC', 'Helvetica Neue', system-ui, sans-serif;
   --obs-font-mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
 
+  /* 滚动条：细窄、与边框色阶对齐，悬停略提亮 */
+  --obs-scrollbar-size: 6px;
+  --obs-scrollbar-track: transparent;
+  --obs-scrollbar-thumb: rgba(63, 63, 70, 0.72);
+  --obs-scrollbar-thumb-hover: rgba(113, 113, 122, 0.88);
+  --obs-scrollbar-thumb-active: rgba(129, 140, 248, 0.52);
+
   /* 兼容旧变量引用，映射到新体系 */
   --ta-bg: var(--obs-bg);
   --ta-bg-elevated: var(--obs-bg-elevated);

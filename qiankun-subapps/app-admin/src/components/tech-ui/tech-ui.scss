@@ -308,6 +308,59 @@
   overflow-x: auto;
 }
 
+/* 表格操作列：文字按钮 + 列宽随内容收缩 */
+.tech-table-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 10px;
+  white-space: nowrap;
+}
+
+.tech-table-action {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--obs-accent);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    color: #a5b4fc;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  &:active:not(:disabled) {
+    opacity: 0.85;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.tech-table-action--danger {
+  color: var(--obs-danger);
+
+  &:hover:not(:disabled) {
+    color: #fca5a5;
+  }
+}
+
+.tech-table__actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
 .tech-table {
   width: 100%;
   border-collapse: collapse;
