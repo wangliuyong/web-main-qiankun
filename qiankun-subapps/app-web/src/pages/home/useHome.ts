@@ -4,12 +4,12 @@ import { fetchSiteConfig } from '../../../../_shared/siteConfig';
 import { useApiBase } from '../../context/ApiBaseContext';
 import { webApi } from '../../utils/webApi';
 
-/** 首页 Hero 默认文案（站点配置未就绪时） */
+/** 首页 Hero 默认文案（站点配置未就绪时，与简历对齐） */
 export const FALLBACK_HERO = {
   name: '王刘永',
-  title: '全栈开发工程师',
+  title: '前端开发工程师',
   intro:
-    '六年一线经验，专注微前端架构、数据可视化与工程化。用克制的设计与可靠的代码，构建可长期维护的产品体验。',
+    '六年一线经验，专注微前端架构、工程化与跨端交付。擅长从业务场景出发做技术选型，用克制的设计与可靠的代码，构建可长期维护的产品体验。',
 };
 
 /** 首页聚合数据：Hero + 近期文章/项目预览 */

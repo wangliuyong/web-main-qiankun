@@ -36,8 +36,8 @@ export class SiteService implements OnModuleInit {
       data: {
         id: 1,
         siteName: '王刘永的博客',
-        githubUrl: 'https://github.com/wly-dev',
-        email: 'hello@wly.dev',
+        githubUrl: 'https://github.com/wangliuyong',
+        email: '1355498705@qq.com',
         navJson: JSON.stringify(DEFAULT_NAV),
         aboutJson: JSON.stringify(DEFAULT_ABOUT),
         contactJson: JSON.stringify(DEFAULT_CONTACT),

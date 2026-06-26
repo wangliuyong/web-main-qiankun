@@ -1,9 +1,7 @@
 import type { FormEvent } from 'react';
-import {
-  AppButton,
-  AppField,
-  AppInput,
-} from '../../../../../_shared/components';
+import { AppButton, AppField, AppInput } from '../../../../../_shared/components';
+
+const CONTENT_MAX = 2000;
 
 export interface ContactFormSectionProps {
   nickname: string;
@@ -18,7 +16,7 @@ export interface ContactFormSectionProps {
   handleSubmit: (e: FormEvent) => void;
 }
 
-/** 联系页右侧：留言表单与提交反馈 */
+/** 联系页：留言表单与提交反馈 */
 export default function ContactFormSection({
   nickname,
   setNickname,
@@ -31,14 +29,19 @@ export default function ContactFormSection({
   formSuccess,
   handleSubmit,
 }: ContactFormSectionProps) {
+  const contentLength = content.length;
+  const contentNearLimit = contentLength > CONTENT_MAX * 0.9;
+
   return (
     <section className="contact-form-panel" aria-labelledby="contact-form-heading">
-      <h2 id="contact-form-heading" className="contact-form-heading">
-        留言
-      </h2>
-      <p className="contact-form-desc">
-        填写昵称与留言内容即可。如需回复，请留下邮箱或其他联系方式。
-      </p>
+      <div className="contact-form-head">
+        <h2 id="contact-form-heading" className="contact-form-heading">
+          留言
+        </h2>
+        <p className="contact-form-desc">
+          填写昵称与留言内容即可。如需回复，请留下邮箱或微信。
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="contact-form-fields" noValidate>
         {formError && (
@@ -52,47 +55,55 @@ export default function ContactFormSection({
           </p>
         )}
 
-        <AppField label="昵称" required>
-          <AppInput
-            required
-            autoComplete="nickname"
-            placeholder="怎么称呼你"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            disabled={submitting}
-          />
-        </AppField>
+        <div className="contact-form-row">
+          <AppField label="昵称" required>
+            <AppInput
+              required
+              autoComplete="nickname"
+              placeholder="怎么称呼你"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              disabled={submitting}
+            />
+          </AppField>
 
-        <AppField label="联系方式（选填）">
-          <AppInput
-            autoComplete="email"
-            placeholder="邮箱、微信或 Telegram"
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
-            disabled={submitting}
-          />
-        </AppField>
+          <AppField label="联系方式（选填）">
+            <AppInput
+              autoComplete="email"
+              placeholder="邮箱或微信"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              disabled={submitting}
+            />
+          </AppField>
+        </div>
 
         <AppField label="留言内容" required>
           <textarea
             required
-            rows={5}
-            className="app-input resize-y min-h-[120px]"
+            rows={6}
+            className="app-input contact-form-textarea resize-y"
             placeholder="想聊的内容、项目背景或问题"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             disabled={submitting}
-            maxLength={2000}
+            maxLength={CONTENT_MAX}
             aria-describedby="contact-content-hint"
           />
-          <p id="contact-content-hint" className="mt-1.5 text-xs text-faint">
-            最多 2000 字
+          <p
+            id="contact-content-hint"
+            className={`contact-form-counter${contentNearLimit ? ' contact-form-counter--warn' : ''}`}
+          >
+            {contentLength} / {CONTENT_MAX}
           </p>
         </AppField>
 
-        <AppButton type="submit" disabled={submitting} className="contact-submit">
-          {submitting ? '提交中...' : '发送留言'}
-        </AppButton>
+        <div className="contact-form-actions">
+          <AppButton type="submit" disabled={submitting} className="contact-submit">
+            {submitting ? '提交中...' : '发送留言'}
+          </AppButton>
+          <p className="contact-form-privacy">留言仅用于联系回复，不会对外公开。</p>
+        </div>
       </form>
     </section>
   );

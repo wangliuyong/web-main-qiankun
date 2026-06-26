@@ -12,7 +12,7 @@ interface NavItem {
 /** 顶栏站点名 / GitHub / 导航（API 失败时使用 router 默认配置） */
 export function useSiteConfig() {
   const [siteName, setSiteName] = useState('王刘永的博客');
-  const [githubUrl, setGithubUrl] = useState('https://github.com/wly-dev');
+  const [githubUrl, setGithubUrl] = useState('https://github.com/wangliuyong');
   const [navItems, setNavItems] = useState<NavItem[]>(FALLBACK_NAV);
 
   useEffect(() => {

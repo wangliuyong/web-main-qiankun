@@ -36,11 +36,22 @@ async function main() {
     create: {
       id: 1,
       siteName: '王刘永的博客',
-      githubUrl: 'https://github.com/wly-dev',
-      email: 'hello@wly.dev',
+      githubUrl: 'https://github.com/wangliuyong',
+      email: '1355498705@qq.com',
       navJson: JSON.stringify(DEFAULT_NAV),
       aboutJson: JSON.stringify(DEFAULT_ABOUT),
       contactJson: JSON.stringify(DEFAULT_CONTACT),
+    },
+  });
+
+  // 增量同步关于页与联系页：与简历默认内容对齐（保留站点名称、导航等其余后台配置）
+  await prisma.siteConfig.update({
+    where: { id: 1 },
+    data: {
+      aboutJson: JSON.stringify(DEFAULT_ABOUT),
+      contactJson: JSON.stringify(DEFAULT_CONTACT),
+      email: DEFAULT_ABOUT.email,
+      githubUrl: DEFAULT_ABOUT.github,
     },
   });
 

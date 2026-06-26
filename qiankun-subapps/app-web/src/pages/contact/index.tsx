@@ -5,18 +5,17 @@ import ContactHeroSection from './components/ContactHeroSection';
 import { useContactConfig } from './useContactConfig';
 import { useContactForm } from './useContactForm';
 
-/** 联系我 — 不对称双栏：渠道展示 + 留言表单 */
+/** 联系我 — 刊物式渠道卡片 + 留言表单 */
 export default function ContactPage() {
   const { email, githubUrl, intro } = useContactConfig();
   const form = useContactForm();
 
   return (
     <SubApp className="contact">
-      <div className="contact-layout">
-        <aside className="contact-aside">
-          <ContactHeroSection intro={intro} />
-          <ContactChannelsSection email={email} githubUrl={githubUrl} />
-        </aside>
+      <ContactHeroSection intro={intro} />
+
+      <div className="contact-body">
+        <ContactChannelsSection email={email} githubUrl={githubUrl} />
 
         <ContactFormSection
           nickname={form.nickname}

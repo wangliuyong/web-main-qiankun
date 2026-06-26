@@ -23,7 +23,7 @@ export function buildProjectSeedItems(): ProjectSeedItem[] {
         '面向技术访客与潜在合作方的个人品牌站点，集博客、作品集、留言、友链与 AI 问答于一体；采用 Next.js 主基座 + Qiankun 微前端双子应用 + NestJS 统一 API，含 RBAC 管理后台与 RAG 知识库。',
       techStack:
         'Next.js, Qiankun, React, Vite, TypeScript, Tailwind, NestJS, Prisma, LanceDB, Docker, Nginx',
-      githubUrl: 'https://github.com/wly-dev',
+      githubUrl: 'https://github.com/wangliuyong',
       previewUrl: origin,
     },
     {
