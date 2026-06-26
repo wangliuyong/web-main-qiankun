@@ -1,7 +1,8 @@
 import { Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { AppLog } from '../../../../api/logs.api';
-import { TechTableAction } from '../../../../components/tech-ui';
+import { adminTableActionColumnProps } from '../../../../components/admin-page';
+import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { LEVEL_COLORS } from '../constants';
 
 export interface AppLogColumnHandlers {
@@ -30,8 +31,11 @@ export function createAppLogColumns(handlers: AppLogColumnHandlers): ColumnsType
     {
       title: '详情',
       fixed: 'right',
+      ...adminTableActionColumnProps,
       render: (_, record) => (
-        <TechTableAction onClick={() => handlers.onViewDetail(record)}>查看</TechTableAction>
+        <TechTableActions>
+          <TechTableAction onClick={() => handlers.onViewDetail(record)}>查看</TechTableAction>
+        </TechTableActions>
       ),
     },
   ];

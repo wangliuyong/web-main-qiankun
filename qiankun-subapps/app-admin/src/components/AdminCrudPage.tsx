@@ -5,6 +5,7 @@ import {
   AdminPageShell,
   AdminSectionCard,
   ADMIN_TABLE_DEFAULTS,
+  adminTableActionColumnProps,
   mergeAdminTablePagination,
   type AdminStatItem,
 } from './admin-page';
@@ -139,6 +140,7 @@ export default function AdminCrudPage<T extends { id: number }>({
   const actionColumn: ColumnsType<T>[number] = {
     title: '操作',
     fixed: 'right',
+    ...adminTableActionColumnProps,
     render: (_, record) => (
       <TechTableActions>
         {extraActions?.(record)}

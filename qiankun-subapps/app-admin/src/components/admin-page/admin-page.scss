@@ -74,9 +74,19 @@
     background: var(--obs-bg-elevated) !important;
   }
 
-  /* 操作列：宽度随文字按钮内容自适应 */
-  .ant-table-cell:has(.tech-table-actions) {
-    width: 1%;
+  /*
+   * 操作列宽度自适应：width:1px + min-width:max-content
+   * 列宽随文字按钮内容收缩，不被 table-layout:fixed 撑满剩余空间
+   */
+  .admin-table-actions-col,
+  .ant-table-thead > tr > th.admin-table-actions-col,
+  .ant-table-tbody > tr > td.admin-table-actions-col,
+  .ant-table-cell.admin-table-actions-col,
+  .ant-table-cell-fix-right.admin-table-actions-col,
+  .ant-table-cell:has(.tech-table-actions),
+  .ant-table-cell:has(.tech-table-action) {
+    width: 1px !important;
+    min-width: max-content;
     white-space: nowrap;
   }
 }

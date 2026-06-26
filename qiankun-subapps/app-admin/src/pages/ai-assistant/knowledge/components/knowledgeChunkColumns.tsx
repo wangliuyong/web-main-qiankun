@@ -2,6 +2,7 @@ import { Popconfirm, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { KnowledgeChunkItem } from '../../../../api/ai.api';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import { adminTableActionColumnProps } from '../../../../components/admin-page';
 import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { SOURCE_LABEL } from '../constants';
 
@@ -54,6 +55,7 @@ export function createKnowledgeChunkColumns(
     {
       title: '操作',
       fixed: 'right',
+      ...adminTableActionColumnProps,
       render: (_, record) => (
         <TechTableActions>
           <TechTableAction onClick={() => handlers.onView(record.id)}>查看</TechTableAction>

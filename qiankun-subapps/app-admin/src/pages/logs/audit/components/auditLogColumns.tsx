@@ -1,7 +1,8 @@
 import { Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { AuditLog } from '../../../../api/logs.api';
-import { TechTableAction } from '../../../../components/tech-ui';
+import { adminTableActionColumnProps } from '../../../../components/admin-page';
+import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { ACTION_COLORS, ACTION_LABELS } from '../constants';
 
 export interface AuditLogColumnHandlers {
@@ -36,13 +37,16 @@ export function createAuditLogColumns(
     {
       title: '详情',
       fixed: 'right',
+      ...adminTableActionColumnProps,
       render: (_, record) => (
-        <TechTableAction
-          disabled={!record.detail}
-          onClick={() => handlers.onViewDetail(record)}
-        >
-          查看
-        </TechTableAction>
+        <TechTableActions>
+          <TechTableAction
+            disabled={!record.detail}
+            onClick={() => handlers.onViewDetail(record)}
+          >
+            查看
+          </TechTableAction>
+        </TechTableActions>
       ),
     },
   ];

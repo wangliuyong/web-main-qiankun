@@ -2,6 +2,7 @@ import { Popconfirm, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { AiChatSessionItem } from '../../../../api/ai.api';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import { adminTableActionColumnProps } from '../../../../components/admin-page';
 import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { formatSessionTime, shortSessionId } from '../constants';
 
@@ -58,6 +59,7 @@ export function createQaSessionColumns(
     {
       title: '操作',
       fixed: 'right',
+      ...adminTableActionColumnProps,
       render: (_, record) => (
         <TechTableActions>
           <TechTableAction onClick={() => handlers.onView(record.id)}>查看</TechTableAction>

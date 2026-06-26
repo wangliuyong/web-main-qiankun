@@ -5,6 +5,7 @@ import {
   AdminPageShell,
   AdminSectionCard,
   ADMIN_TABLE_DEFAULTS,
+  adminTableActionColumnProps,
   mergeAdminTablePagination,
 } from '../../components/admin-page';
 import { deleteArticle } from '../../api/articles.api';
@@ -73,6 +74,7 @@ export default function ArticlesPage() {
             {
               title: '操作',
               fixed: 'right',
+              ...adminTableActionColumnProps,
               render: (_, record) => (
                 <TechTableActions>
                   <PermissionGuard code={ARTICLE_PERMISSIONS.update}>

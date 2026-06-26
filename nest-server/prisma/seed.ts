@@ -9,6 +9,7 @@ import { seedRbac, ensureAdminSuperRole, syncRbacModules } from './rbac-seed';
 import { seedConvenience } from './convenience-seed';
 import { seedArticles } from './articles-seed';
 import { syncReadmeToBlog } from './readme-blog-sync';
+import { syncProjectsSeed } from './projects-seed';
 
 const prisma = new PrismaClient();
 
@@ -82,53 +83,12 @@ async function main() {
 
   const projectCount = await prisma.project.count();
   if (projectCount === 0) {
-    await prisma.project.createMany({
-    data: [
-      {
-        name: '个人全能站点',
-        desc: 'Next.js 主基座 + Lit Web Components + NestJS 后端。',
-        techStack: 'Next.js, Lit, NestJS, Prisma',
-        githubUrl: 'https://github.com',
-        previewUrl: 'http://localhost:3000',
-      },
-      {
-        name: '组件库 Playground',
-        desc: '独立 Vite 打包的 Web Components 演示集合。',
-        techStack: 'Vite, Lit, TypeScript',
-        githubUrl: 'https://github.com',
-      },
-      {
-        name: '博客 Markdown 渲染器',
-        desc: 'marked + prismjs 在 Shadow DOM 内安全渲染。',
-        techStack: 'marked, prismjs',
-        previewUrl: 'http://localhost:3000/blog',
-      },
-      {
-        name: '同城便民',
-        desc: '同城生活服务 C 端与管理后台。支持 H5 / 微信小程序 / APP 多端，含分类浏览、信息发布、收藏、举报、AI 助手与 RBAC 后台审核。',
-        techStack: 'uni-app, Vue3, uview-plus, Pinia, NestJS, Prisma',
-        previewUrl: process.env.PUBLIC_ORIGIN
-          ? `${process.env.PUBLIC_ORIGIN}/convenience/`
-          : 'http://localhost:5175',
-      },
-    ],
-    });
+    await syncProjectsSeed(prisma);
   }
 
-  /** 增量补全：已有作品集时仍写入「同城便民」条目（按名称去重） */
-  const convProject = await prisma.project.findFirst({ where: { name: '同城便民' } });
-  if (!convProject) {
-    await prisma.project.create({
-      data: {
-        name: '同城便民',
-        desc: '同城生活服务 C 端与管理后台。支持 H5 / 微信小程序 / APP 多端，含分类浏览、信息发布、收藏、举报、AI 助手与 RBAC 后台审核。',
-        techStack: 'uni-app, Vue3, uview-plus, Pinia, NestJS, Prisma',
-        previewUrl: process.env.PUBLIC_ORIGIN
-          ? `${process.env.PUBLIC_ORIGIN}/convenience/`
-          : 'http://localhost:5175',
-      },
-    });
-  }
+  // 增量同步作品集：更新描述/技术栈，补全简历中的项目条目
+  const projectSynced = await syncProjectsSeed(prisma);
+  console.log(`Projects synced: ${projectSynced}`);
 
   const linkCount = await prisma.link.count();
   if (linkCount === 0) {

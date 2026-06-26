@@ -1,6 +1,7 @@
 import { Popconfirm, Space, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import PermissionGuard from '../../../../components/PermissionGuard';
+import { adminTableActionColumnProps } from '../../../../components/admin-page';
 import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { isMenuGroup, isPageMenu, type ModuleAdminTreeNode } from '../../../../router/moduleTreeUtils';
 import { isPathRegistered } from '../../../../router/pageRegistry';
@@ -71,6 +72,7 @@ export function createModuleAdminColumns(
     },
     {
       title: '操作',
+      ...adminTableActionColumnProps,
       render: (_, record) => {
         if (record.type === 'permission') {
           return (

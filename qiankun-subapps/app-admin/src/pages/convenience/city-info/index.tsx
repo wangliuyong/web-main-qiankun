@@ -23,6 +23,7 @@ import {
   AdminPageShell,
   AdminSectionCard,
   ADMIN_TABLE_DEFAULTS,
+  adminTableActionColumnProps,
   mergeAdminTablePagination,
 } from '../../../components/admin-page';
 import PageLoading from '../../../components/_common/PageLoading';
@@ -113,6 +114,7 @@ export default function ConvCityInfoPage() {
     { title: '发布时间', dataIndex: 'createdAt', width: 180 },
     {
       title: '操作',
+      ...adminTableActionColumnProps,
       render: (_, record) => (
         <TechTableActions>
           <TechTableAction onClick={() => void openDetail(record.id)}>详情</TechTableAction>

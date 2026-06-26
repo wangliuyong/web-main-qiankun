@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { RESUME_PDF_FILENAME, RESUME_PDF_HREF } from '../data/resume';
 import { AppLink } from './ui';
 import { formatDate, splitStack } from '../utils/format';
 
@@ -18,6 +19,9 @@ export function HomeHero({ name, title, intro, eyebrow }: HomeHeroData) {
       <p className="home-lead">{intro}</p>
       <div className="home-actions">
         <AppLink href="/projects">查看作品集</AppLink>
+        <AppLink href={RESUME_PDF_HREF} download={RESUME_PDF_FILENAME}>
+          下载简历
+        </AppLink>
         <AppLink href="/about" variant="ghost">
           关于我
         </AppLink>

@@ -17,6 +17,7 @@ import {
   AdminPageShell,
   AdminSectionCard,
   ADMIN_TABLE_DEFAULTS,
+  adminTableActionColumnProps,
   mergeAdminTablePagination,
 } from '../../../components/admin-page';
 import PageLoading from '../../../components/_common/PageLoading';
@@ -110,6 +111,7 @@ export default function ConvUsersPage() {
     { title: '注册时间', dataIndex: 'createdAt', width: 180 },
     {
       title: '操作',
+      ...adminTableActionColumnProps,
       render: (_, record) => (
         <TechTableActions>
           <PermissionGuard code="admin:conv:users:update">

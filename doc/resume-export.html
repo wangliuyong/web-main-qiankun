@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>王刘永 - 前端开发工程师</title>
+  <style>
+    @page { size: A4; margin: 14mm 16mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: #1a1a1a;
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .resume { max-width: 210mm; margin: 0 auto; }
+
+    /* 头部 */
+    .header { text-align: center; margin-bottom: 10px; border-bottom: 2px solid #2563eb; padding-bottom: 8px; }
+    .header h1 { font-size: 22pt; font-weight: 700; letter-spacing: 4px; color: #111; }
+    .header .meta { font-size: 10pt; color: #555; margin-top: 4px; }
+    .contact-row {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 20px;
+      margin-top: 6px; font-size: 9.5pt; color: #333;
+    }
+    .contact-row span::before { content: "• "; color: #2563eb; }
+
+    /* 求职信息 */
+    .job-info {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 8px;
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;
+      padding: 6px 12px; margin-bottom: 10px; font-size: 9.5pt;
+    }
+    .job-info .label { color: #64748b; }
+    .job-info .value { font-weight: 600; color: #1e293b; }
+
+    /* 区块标题 */
+    h2 {
+      font-size: 11.5pt; font-weight: 700; color: #2563eb;
+      border-left: 3px solid #2563eb; padding-left: 8px;
+      margin: 10px 0 6px;
+    }
+
+    /* 列表 */
+    ol, ul { padding-left: 18px; }
+    li { margin-bottom: 3px; }
+    ol li { list-style-type: decimal; }
+
+    /* 工作经历 */
+    .work-item, .project-item { margin-bottom: 8px; }
+    .work-title { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
+    .work-title h3 { font-size: 10.5pt; font-weight: 700; color: #111; }
+    .work-title .period { font-size: 9.5pt; color: #64748b; white-space: nowrap; }
+    .work-item ol, .project-item ol { margin-top: 4px; }
+
+    /* 项目 */
+    .project-item h3 { font-size: 10.5pt; font-weight: 700; color: #111; margin-bottom: 2px; }
+    .project-meta { font-size: 9.5pt; color: #64748b; margin-bottom: 4px; }
+    .tag-line { font-size: 9.5pt; color: #475569; margin-bottom: 4px; }
+    .tag-line strong { color: #334155; }
+    .sub-title { font-size: 10pt; font-weight: 600; color: #334155; margin: 4px 0 3px; }
+    .project-item ul { margin-top: 3px; }
+    .project-item ul li { list-style: disc; }
+
+    /* 教育 */
+    .edu { font-size: 10.5pt; }
+
+    strong { font-weight: 600; }
+    a { color: #2563eb; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="resume">
+    <header class="header">
+      <h1>王刘永</h1>
+      <p class="meta">男 &nbsp;|&nbsp; 31 岁 &nbsp;|&nbsp; 籍贯：亳州</p>
+      <div class="contact-row">
+        <span>电话：18355093647</span>
+        <span>微信：18355093647</span>
+        <span>邮箱：1355498705@qq.com</span>
+      </div>
+    </header>
+
+    <div class="job-info">
+      <div><span class="label">工作时长：</span><span class="value">6 年</span></div>
+      <div><span class="label">求职意向：</span><span class="value">前端开发工程师</span></div>
+      <div><span class="label">期望薪资：</span><span class="value">14K</span></div>
+      <div><span class="label">期望城市：</span><span class="value">合肥</span></div>
+    </div>
+
+    <h2>个人优势</h2>
+    <ol>
+      <li><strong>架构与工程化</strong>：具备中大型前端架构设计与落地能力，熟悉微前端（Qiankun）、Monorepo 分层与模块边界治理；能从业务复杂度出发做技术选型与演进（如多子应用收敛、共享层抽离），兼顾可维护性与交付效率。</li>
+      <li><strong>产品思维</strong>：习惯从用户场景与验收标准反推方案，参与需求拆解、MVP 边界划定与体验闭环设计；注重首屏性能、主题一致性、权限与可观测性等产品可感知指标。</li>
+      <li><strong>技术广度</strong>：熟练掌握 JavaScript / TypeScript、HTML / CSS；精通 Vue 3 生态，熟悉 React 18、Next.js App Router；具备 NestJS 全栈协作与接口联调经验。</li>
+      <li><strong>跨端交付</strong>：熟练使用 UniApp 开发 H5、微信小程序及 App，具备多端统一交付、兼容性处理与性能优化实战经验。</li>
+      <li><strong>组件与平台化</strong>：主导过企业级组件库从 0 到 1 建设，制定开发/发布规范，支撑多业务线复用，显著提升研发效率。</li>
+      <li><strong>构建与性能</strong>：熟悉 Vite / Webpack 工程配置，具备打包体积优化、按需加载、缓存策略等性能治理实践。</li>
+      <li><strong>协作与规范</strong>：熟练使用 Git 进行版本管理与 Code Review；具备团队流程规范、文档沉淀与知识传递意识。</li>
+    </ol>
+
+    <h2>工作经历</h2>
+    <div class="work-item">
+      <div class="work-title">
+        <h3>深迪科技 · 前端开发工程师</h3>
+        <span class="period">2021.05 — 至今</span>
+      </div>
+      <ol>
+        <li>负责工业互联网平台及工业企业 SaaS 产品的前端模块设计、研发与架构演进，保障多业务线稳定交付。</li>
+        <li>参与产品需求评审与技术方案讨论，从用户操作路径与可维护性角度提出前端实现建议，推动交互体验与研发效率双提升。</li>
+        <li>主导前端技术调研与基础架构建设，封装 Vue 3 / Angular 通用组件与工具库，沉淀 NPM 公共仓库与使用规范。</li>
+        <li>负责前端性能优化、跨端兼容与线上问题治理，建立可复用的排查与监控思路，降低异常率与维护成本。</li>
+        <li>参与研发团队流程规范建设，推动组件化、类型化与工程化标准在团队内落地。</li>
+      </ol>
+    </div>
+    <div class="work-item">
+      <div class="work-title">
+        <h3>懂微信息技术（上海）有限公司 · 前端开发工程师</h3>
+        <span class="period">2019.09 — 2021.04</span>
+      </div>
+      <ol>
+        <li>负责公司官网及后台系统维护与功能迭代，独立完成多个 Web 前端模块的设计、开发与上线。</li>
+        <li>参与前端技术选型与项目框架搭建，协调 UI 与产品高效完成需求沟通，保障项目按期交付。</li>
+        <li>封装常用模块、组件及数据处理函数，主导公司 NPM 公共仓库开发与维护，规范代码复用标准。</li>
+        <li>基于 UniApp 开发多个跨平台应用（小程序 / Android / iOS），实现多端统一开发与部署，缩短上线周期。</li>
+      </ol>
+    </div>
+
+    <h2>项目经历</h2>
+    <div class="project-item">
+      <h3>个人全能站点（个人品牌 + 内容平台） · 产品负责人 / 前端架构</h3>
+      <p class="project-meta">2026.01 — 至今</p>
+      <p class="tag-line"><strong>项目简介</strong>：面向技术访客与潜在合作方的个人品牌站点，集博客、作品集、留言、友链与 AI 问答于一体；采用「主基座 + 微前端 + 统一 API」架构，支持独立部署与持续迭代。线上地址：<a href="http://47.116.30.137/">http://47.116.30.137/</a></p>
+      <p class="tag-line"><strong>技术栈</strong>：Next.js 14 · Qiankun 2 · React 18 · Vite · TypeScript · Tailwind · NestJS 10 · Prisma 6 · SQLite · LanceDB（RAG 向量检索）· Docker · Nginx</p>
+      <p class="sub-title">产品与架构职责：</p>
+      <ol>
+        <li><strong>产品定义</strong>：独立撰写 PRD 与技术方案，明确目标用户（技术访客 / 合作方 / 站点运营者）、核心场景（内容阅读、能力评估、留言互动、AI 咨询）及 MVP 边界与验收指标。</li>
+        <li><strong>架构设计</strong>：采用 Next.js 主基座 + Qiankun 双子应用（前台 app-web、管理端 app-admin）+ NestJS REST API；将原六页独立子应用收敛为单前台应用 + React Router，降低构建与运维成本；抽离 _shared 共享层统一 UI、挂载逻辑与 API 封装。</li>
+        <li><strong>前台体验</strong>：实现六类业务页（首页 / 关于 / 博客 / 项目 / 联系 / 友链）、全站搜索、暗黑模式全链路同步（next-themes + Qiankun initGlobalState）、3D 可视化专题页等。</li>
+        <li><strong>管理后台</strong>：基于 RBAC 权限体系搭建 CMS（文章 / 项目 / 友链 / 留言）、站点配置、操作审计与应用日志；Dashboard 数据看板支持访问趋势、内容分布与 AI 使用统计。</li>
+        <li><strong>AI 能力</strong>：设计并实现访客侧 AI 浮窗（SSE 流式对话）+ 管理端 RAG 知识库（LanceDB 向量存储、内容同步与分块管理），将站点内容转化为可检索知识。</li>
+        <li><strong>工程与部署</strong>：Monorepo 一键 dev:all 联调；生产环境 Docker Compose + Nginx 三容器部署，静态资源 /micro/* 与 API /api/* 统一入口。</li>
+      </ol>
+      <p class="sub-title">项目业绩：</p>
+      <ul>
+        <li>完成从需求文档到线上部署的全链路交付，实现「内容展示 + 后台运营 + AI 增强」一体化产品闭环。</li>
+        <li>微前端架构由 6 子应用演进为 2 子应用，构建产物与 entry 数量显著减少，子应用可独立开发与发布。</li>
+        <li>管理端权限树与路由、按钮级 PermissionGuard 对齐，满足可扩展的多模块后台治理需求。</li>
+      </ul>
+    </div>
+
+    <div class="project-item">
+      <h3>XBOM 物料管理系统 · 前端开发工程师</h3>
+      <p class="project-meta">2021.07 — 至今</p>
+      <p class="tag-line"><strong>项目简介</strong>：汽车生产物料数据管理系统，服务企业内部多条业务线，经历 Angular → Vue2 → Vue3 三次技术栈演进。</p>
+      <p class="tag-line"><strong>技术栈</strong>：Vue 3 · TypeScript · UniApp · Vite · Angular 7 · Webpack · 自研 Ithink-dt 组件库</p>
+      <ol>
+        <li>负责前端技术选型与项目框架搭建，主导工程化配置与基础架构建设。</li>
+        <li>开发与维护公司内部 NPM 公共仓库，封装通用组件、工具函数与业务模块，支撑多项目复用。</li>
+        <li>制定组件开发、发布、更新规范，完善使用文档与示例，提升团队研发效率。</li>
+        <li>使用 UniApp 开发小程序、Android、iOS 应用，负责跨端功能实现、兼容性处理与性能优化。</li>
+        <li>参与各业务线 Web 前端需求开发，从业务场景出发抽象通用模块，保障功能实现、交互体验与交付质量。</li>
+      </ol>
+    </div>
+
+    <div class="project-item">
+      <h3>Ithink-dt 前端公共组件库 · 前端开发工程师</h3>
+      <p class="project-meta">2021.08 — 至今</p>
+      <p class="tag-line"><strong>项目简介</strong>：面向公司多业务线的前端组件库平台，提供表单、表格、弹窗等通用能力。</p>
+      <p class="tag-line"><strong>技术栈</strong>：Vue 3 · Naive UI · TypeScript · Less · Jest</p>
+      <ol>
+        <li>负责组件库开发、维护与迭代，完成表单、弹窗、表格、选择器等 30+ 通用组件。</li>
+        <li>基于 TypeScript 完善类型定义与 Props / 事件规范，提升开发体验与可维护性。</li>
+        <li>搭建组件库文档站点，完成示例、API 文档与使用规范，降低接入成本。</li>
+        <li>制定开发规范与代码检查流程，接入单元测试与自动化构建发布。</li>
+        <li>支撑多条业务线接入，从平台化视角减少重复开发、统一交互体验。</li>
+      </ol>
+      <p class="sub-title">项目业绩：</p>
+      <ul>
+        <li>支撑公司 8+ 业务项目接入，组件复用率达 70%+</li>
+        <li>单页面开发效率平均提升 30%–50%</li>
+      </ul>
+    </div>
+
+    <h2>教育经历</h2>
+    <p class="edu"><strong>安徽科技工程大学</strong> · 本科 · 城乡规划 · 2014 — 2019</p>
+  </div>
+</body>
+</html>
