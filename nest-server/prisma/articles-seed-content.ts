@@ -1,7 +1,9 @@
 /**
  * 博客 Markdown 正文生成器
- * 输出结构化长文：背景、分节详解、代码示例、对比表、踩坑与总结
+ * 按确定性随机组合多种开篇、小节与收尾模板，避免千篇一律的长文结构
  */
+
+import { seededInt, seededRandom } from './articles-seed-generators';
 
 /** 从标题提取可用于 TypeScript 标识符的片段 */
 function toTypeName(text: string): string {
@@ -161,16 +163,165 @@ export class ${typeName}Manager {
   }
 
   private async loadConfig(): Promise<void> {
-    // 从远程或本地加载配置，支持热更新
     await new Promise((r) => setTimeout(r, this.options.timeoutMs / 10));
   }
 }
 \`\`\``;
-  }
+}
 
-/**
- * 生成单个小节的详细 Markdown
- */
+/** 架构示意 ASCII 图（部分文章随机省略） */
+function buildArchitectureDiagram(theme: string): string {
+  return `\`\`\`text
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│  展示层      │ ──▶ │  BFF / API   │ ──▶ │  数据 & 缓存 │
+│  React/Vue  │     │  Nest/Next   │     │  Prisma/Redis│
+└─────────────┘     └──────────────┘     └─────────────┘
+       │                    │                    │
+       └────────────────────┴────────────────────┘
+              可观测性 / 鉴权 / ${theme}
+\`\`\``;
+}
+
+type SectionBuilder = (
+  index: number,
+  section: string,
+  title: string,
+  theme: string,
+  tags: string,
+) => string;
+
+/** 叙事型：短段落 + 要点列表 + 代码 */
+const buildNarrativeSection: SectionBuilder = (index, section, title, theme, tags) => {
+  const code = buildCodeSample(title, section, theme, tags);
+  return `## ${index}. ${section}
+
+在 **${theme}** 项目里，${section} 往往是「第一次能跑」和「长期能维护」的分水岭。下面用尽量少的概念，把关键路径讲清楚。
+
+**为什么值得单独成节？**
+
+- 它直接影响 ${theme} 模块的迭代速度
+- 排障时，80% 的时间花在理解这一层的边界
+- 与 ${title} 相关的线上问题，多数可以追溯到这里的约定缺失
+
+${code}
+
+> **小结**：先把 ${section} 的输入输出写进 README，再谈抽象；团队两人以上时，这一步能省掉大量口头同步。
+
+`;
+};
+
+/** 操作手册型：分步清单 + 代码 + 注意事项 */
+const buildHowToSection: SectionBuilder = (index, section, title, theme, tags) => {
+  const code = buildCodeSample(title, section, theme, tags);
+  return `## ${index}. ${section}
+
+### 操作步骤
+
+| 步骤 | 动作 | 验收 |
+|------|------|------|
+| 1 | 画出 ${section} 上下游依赖 | 时序图或组件图可复用 |
+| 2 | 实现 happy path | 本地可演示 |
+| 3 | 补日志与错误码 | 故障可定位到模块 |
+| 4 | 写 2 条回归用例 | CI 绿灯 |
+
+${code}
+
+**注意**：在 ${theme} 场景下，避免在 UI 层写死业务规则；${section} 的变更应能在 service 层单测覆盖。
+
+`;
+};
+
+/** 对比型：表格先行 + 简短结论 */
+const buildComparisonSection: SectionBuilder = (index, section, title, theme, tags) => {
+  const code = buildCodeSample(title, section, theme, tags);
+  return `## ${index}. ${section}
+
+| 方案 | 适用 | 代价 |
+|------|------|------|
+| 渐进增强 | 存量系统、人力紧张 | 短期存在双轨代码 |
+| 一次性重构 | 模块边界已清晰 | 需要冻结需求窗口 |
+| 封装兼容层 | 外部依赖不稳定 | 多一层 indirection |
+
+针对 **${title}** 中的 ${section}，我们更倾向「渐进增强 + 显式废弃时间表」，而不是大爆炸式重写。
+
+${code}
+
+`;
+};
+
+/** 深挖型：概念 + 流程 + 误区 */
+const buildDeepDiveSection: SectionBuilder = (index, section, title, theme, tags) => {
+  const code = buildCodeSample(title, section, theme, tags);
+  return `## ${index}. ${section}
+
+### 核心概念
+
+${section} 在 ${theme} 体系里承担「契约层」角色：上游只关心返回值形状，下游只关心输入约束。${title} 讨论的就是如何在不过度设计的前提下，把这条边界画稳。
+
+### 典型流程
+
+1. 定义 DTO / 类型
+2. 在 service 实现业务规则
+3. UI 或 API 层做薄封装
+4. 用集成测试锁住行为
+
+${code}
+
+### 常见误区
+
+- 把 ${section} 当成「万能工具箱」，塞入无关逻辑
+- 缺少失败分支文档，排障靠读代码
+- 与 ${theme} 其他模块共享可变单例
+
+`;
+};
+
+/** 案例型：场景驱动 */
+const buildCaseStudySection: SectionBuilder = (index, section, title, theme, tags) => {
+  const code = buildCodeSample(title, section, theme, tags);
+  return `## ${index}. ${section}
+
+**场景**：某次 ${theme} 迭代需要在两周内上线 ${section}，但旧接口不能 breaking change。
+
+**问题**：改动面跨三个包，Review 难以评估回归范围。
+
+**做法**：先加兼容层，新逻辑走 feature flag；观测稳定后再删旧路径。
+
+${code}
+
+**结果**：发布窗口内零回滚；${section} 相关告警在上线 48 小时内收敛。
+
+`;
+};
+
+/** 清单型：自检列表 + 可选代码 */
+const buildChecklistSection: SectionBuilder = (index, section, title, theme, tags) => {
+  const withCode = seededRandom(`${title}:${section}:code`) > 0.35;
+  const code = withCode ? `\n${buildCodeSample(title, section, theme, tags)}\n` : '';
+  return `## ${index}. ${section}
+
+上线 ${section} 前，我们在 ${theme} 项目里会用下面这张清单快速过一遍（约 15 分钟）：
+
+- [ ] 接口契约与错误码已同步到文档
+- [ ] 关键路径有自动化测试
+- [ ] 配置项走环境变量，无密钥入库
+- [ ] 监控面板能看到 ${section} 相关指标
+- [ ] 回滚步骤写在 Runbook 里
+
+${code}
+`;
+};
+
+const SECTION_BUILDERS: SectionBuilder[] = [
+  buildNarrativeSection,
+  buildHowToSection,
+  buildComparisonSection,
+  buildDeepDiveSection,
+  buildCaseStudySection,
+  buildChecklistSection,
+];
+
+/** 按标题与小节名确定性挑选小节模板 */
 function buildSectionBlock(
   index: number,
   section: string,
@@ -178,45 +329,205 @@ function buildSectionBlock(
   theme: string,
   tags: string,
 ): string {
-  const code = buildCodeSample(title, section, theme, tags);
-  return `## ${index}. ${section}
+  const builderIndex = seededInt(`section:${title}:${section}:${index}`, 0, SECTION_BUILDERS.length - 1);
+  return SECTION_BUILDERS[builderIndex](index, section, title, theme, tags);
+}
 
-### 背景与目标
+/** 开篇模板 A：元信息 + 前言 */
+function buildIntroVariantA(
+  title: string,
+  theme: string,
+  sections: string[],
+  tags: string,
+): string {
+  return `# ${title}
 
-在 **${theme}** 方向的工程实践中，「${section}」通常是团队从 POC 走向生产的关键节点。很多项目在早期为了赶进度会跳过这一环，结果在流量上涨或人员变动时付出更高昂的维护成本。本文在这一节给出可落地的步骤、验收标准，以及我们团队在类似场景下的真实取舍。
+> **系列**：${theme} · 全栈偏前端架构  
+> **标签**：${tags}  
+> **阅读建议**：约 15 分钟，可按目录跳读。
 
-从架构视角看，${section} 需要同时满足三类约束：**开发效率**（新人能否在一周内上手）、**运行稳定性**（异常能否快速定位）、**演进空间**（六个月后是否还能无痛扩展）。下面按「概念 → 实现 → 验证」的顺序展开。
+---
 
-### 实现步骤
+## 前言
 
-1. **梳理边界**：明确 ${section} 的输入/输出、失败模式与上下游依赖，画一张简单的时序图或组件图。
-2. **最小实现**：先完成 happy path，避免一开始就引入过多抽象；保留扩展点（interface / hook）。
-3. **补齐横切能力**：日志、指标、鉴权、限流等按优先级分批加入。
-4. **编写回归用例**：至少覆盖核心路径与两个典型异常分支。
-5. **文档与 Runbook**：记录配置项、常见告警与回滚步骤。
+${title} 源于 **${theme}** 方向上的真实迭代。全文围绕 ${sections.length} 个主题展开，每一节的结构并不相同 —— 有的偏操作步骤，有的是对比表或案例复盘。
 
-${code}
+### 你将学到
 
-### 设计考量
+- ${sections[0] ?? '核心概念'} 的落地路径  
+- ${sections[1] ?? '工程约定'} 在团队中的推行方式  
+- 可直接复用的代码片段与自检清单  
 
-| 维度 | 推荐做法 | 需避免的坑 |
-|------|----------|------------|
-| 可测试性 | 依赖注入、纯函数拆分 | 在组件内直接 fetch 且无 mock 点 |
-| 可观测性 | 结构化日志 + traceId | 仅 console.log 且无 request 关联 |
-| 性能 | 按需加载、缓存热点数据 | 首屏拉取全量列表 |
-| 安全 | 最小权限、输入校验 | 信任前端传来的 ID 不做服务端校验 |
+---
 
-### 实践建议
+`;
+}
 
-- 与产品/后端对齐 **${section}** 的 SLA：例如 P99 延迟、可用性目标。
-- Code Review 时重点看：错误处理是否完整、类型是否收窄、是否有 hidden coupling。
-- 每季度做一次小重构，清理 dead code 与过期配置，防止 ${theme} 相关模块变成「黑盒」。
+/** 开篇模板 B：TL;DR 置顶 */
+function buildIntroVariantB(
+  title: string,
+  theme: string,
+  sections: string[],
+  tags: string,
+): string {
+  return `# ${title}
 
+**TL;DR** — 如果你只有 3 分钟：先读「${sections[0] ?? '第一节'}」和文末总结；其余章节按需展开。
+
+标签：${tags} · 主题：${theme}
+
+---
+
+## 背景
+
+我们在做 **${theme}** 时写过一版「能跑就行」的实现，后来在 ${sections.join('、')} 等环节陆续补课。这篇文章把踩过的坑和最终采用的折中方案整理出来，避免你从零摸索。
+
+`;
+}
+
+/** 开篇模板 C：问答式引入 */
+function buildIntroVariantC(
+  title: string,
+  theme: string,
+  sections: string[],
+  tags: string,
+): string {
+  return `# ${title}
+
+## 这篇文章解决什么问题？
+
+> 当你已经在用 ${theme}，却在 **${sections[0] ?? '核心模块'}** 上反复返工时，本文提供一套可复制的讨论框架。
+
+${title} 不会重复官方文档的定义，而是聚焦：**选哪种做法、为什么、如何验证**。涉及标签：${tags}。
+
+后续章节包括：${sections.map((s) => `\`${s}\``).join('、')}。
+
+---
+
+`;
+}
+
+/** 开篇模板 D：短引子 + 直接进正文 */
+function buildIntroVariantD(title: string, theme: string, tags: string): string {
+  return `# ${title}
+
+_${theme} · ${tags}_
+
+下面不铺垫太多概念，直接从实践中提炼的内容开始。建议打开目录预览，跳到你关心的章节。
+
+---
+
+`;
+}
+
+/** 按索引选取开篇模板，避免混合参数签名带来的类型问题 */
+function buildIntro(title: string, theme: string, sections: string[], tags: string): string {
+  const introIndex = seededInt(`intro:${title}`, 0, 3);
+  switch (introIndex) {
+    case 0:
+      return buildIntroVariantA(title, theme, sections, tags);
+    case 1:
+      return buildIntroVariantB(title, theme, sections, tags);
+    case 2:
+      return buildIntroVariantC(title, theme, sections, tags);
+    default:
+      return buildIntroVariantD(title, theme, tags);
+  }
+}
+
+/** 收尾：FAQ */
+function buildOutroFaq(title: string, theme: string, sections: string[]): string {
+  return `## 常见问题
+
+**${theme} 项目最容易在哪一步翻车？**  
+边界不清：UI 写业务、service 操作 DOM、或多个模块共享可变全局。PR 里加一句「是否引入跨层依赖」往往就够了。
+
+**如何向非技术同事解释 ${title}？**  
+用「故障恢复时间」和「新需求交付周期」两个指标，比堆术语更有效。
+
+**小团队也要这么分层吗？**  
+要分层，不必过度抽象。\`api / service / ui\` 三层目录即可，第三次重复再抽公共包。
+
+---
+
+## 总结
+
+${title} 的核心，是在 **${theme}** 约束下找到够简单、又够健壮的解法。重点章节：${sections.slice(0, 3).join('、')}。
+
+---
+
+*本文属于个人全栈站点博客种子内容。*
+`;
+}
+
+/** 收尾：延伸阅读 */
+function buildOutroResources(title: string, theme: string, sections: string[]): string {
+  return `## 延伸阅读
+
+- 官方文档中与 **${theme}** 相关的 Best Practices
+- 团队内部关于 \`${sections[0] ?? '架构'}\` 的 ADR（Architecture Decision Record）
+- 开源项目中类似 ${title} 的 issue 讨论串
+
+## 复盘模板
+
+| 项目 | 记录 |
+|------|------|
+| 本次改动范围 | ${sections.join(' / ')} |
+| 上线窗口 | 建议低峰 + 可回滚 |
+| 观测指标 | 错误率、P99、业务转化 |
+| 遗留项 | 写入 backlog，标注 owner |
+
+---
+
+*${title} · ${theme}*
+`;
+}
+
+/** 按索引选取收尾模板（FAQ / 延伸阅读 / 快速参考） */
+function buildOutro(title: string, theme: string, sections: string[]): string {
+  const outroIndex = seededInt(`outro:${title}`, 0, 2);
+  switch (outroIndex) {
+    case 0:
+      return buildOutroFaq(title, theme, sections);
+    case 1:
+      return buildOutroResources(title, theme, sections);
+    default:
+      return buildOutroQuickRef(title, theme, sections);
+  }
+}
+
+/**
+ * 从 Markdown 正文中移除「## 上线前 Checklist」整段（含任务列表，保留下一章节）。
+ * 用于清理历史种子数据。
+ */
+export function stripLaunchChecklistSection(content: string): string {
+  return content
+    .replace(/(?:\r?\n)?## 上线前 Checklist\r?\n(?:[\s\S]*?)(?=\r?\n## |\r?\n---|\s*$)/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trimEnd();
+}
+
+/** 收尾：快速参考卡 */
+function buildOutroQuickRef(title: string, theme: string, sections: string[]): string {
+  return `## 快速参考
+
+| 主题 | 关键词 |
+|------|--------|
+| 本文 | ${title} |
+| 方向 | ${theme} |
+| 章节 | ${sections.join(' · ')} |
+
+> 收藏后可在排障时对照目录跳读，比通篇重读更高效。
+
+---
+
+*Generated seed article*
 `;
 }
 
 /**
  * 生成完整详细 Markdown 正文
+ * 开篇 / 小节 / 收尾均从多套模板中确定性随机选取，降低「同一套骨架」的观感
  */
 export function buildDetailedMarkdownContent(
   title: string,
@@ -224,87 +535,26 @@ export function buildDetailedMarkdownContent(
   sections: string[],
   tags: string,
 ): string {
-  const intro = `# ${title}
+  const intro = buildIntro(title, theme, sections, tags);
 
-> **系列**：${theme} · 全栈偏前端架构  
-> **标签**：${tags}  
-> **阅读建议**：本文约 15–20 分钟，适合有 1–3 年前端经验、正在负责模块设计或技术选型的工程师。
+  const showDiagram = seededRandom(`diagram:${title}`) > 0.45;
+  const architectureBlock = showDiagram
+    ? `## 架构一瞥
 
----
+${buildArchitectureDiagram(theme)}
 
-## 前言
-
-${title} 这篇文章源于我们在 **${theme}** 方向上的多次迭代。第一次做 demo 往往很快，但要达到「可长期维护的生产质量」，需要在架构分层、错误模型、监控与团队协作规范上投入相当精力。
-
-全文围绕 ${sections.length} 个核心小节展开，每一节都包含：**为什么要做**、**怎么做（含代码）**、**如何验证**、**常见误区**。你可以按顺序通读，也可以把某一节当作 Runbook 在排障时查阅。
-
-### 你将学到
-
-- ${sections[0] ?? '核心概念'} 的完整落地路径  
-- 与 ${theme} 相关的工程化与团队协作约定  
-- 可直接复制到项目中的 TypeScript / 框架代码片段  
-- 上线前自检清单与复盘模板  
+在 ${theme} 场景下，建议 **薄 UI、厚领域、显式边界**：UI 负责交互，规则沉到 service，跨模块用 DTO 通信。
 
 ---
 
-## 架构总览
-
-\`\`\`text
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  展示层      │ ──▶ │  BFF / API   │ ──▶ │  数据 & 缓存 │
-│  React/Vue  │     │  Nest/Next   │     │  Prisma/Redis│
-└─────────────┘     └──────────────┘     └─────────────┘
-       │                    │                    │
-       └────────────────────┴────────────────────┘
-                    可观测性 / 鉴权 / 配置中心
-\`\`\`
-
-在 ${theme} 场景下，建议坚持 **「薄 UI、厚领域、显式边界」**：UI 只负责展示与交互；业务规则沉到 service/domain；跨模块通信用明确契约（DTO / Event），避免隐式全局状态。
-
----
-
-`;
+`
+    : '';
 
   const body = sections
     .map((sec, i) => buildSectionBlock(i + 1, sec, title, theme, tags))
     .join('\n');
 
-  const pitfalls = `## 常见问题 FAQ
+  const outro = buildOutro(title, theme, sections);
 
-### Q1：${theme} 项目最容易在哪一步翻车？
-
-通常是 **边界不清**：UI 层写业务规则、service 层直接操作 DOM、或多个模块共享可变全局对象。建议在 PR 模板里加一项：「本 PR 是否引入新的跨层依赖？」
-
-### Q2：如何向非技术同事解释 ${title} 的价值？
-
-用「减少线上故障恢复时间」和「缩短新需求交付周期」两个指标，比堆技术名词更有效。可以准备一个 before/after 对比：重构前改一个字段要动 5 个文件，重构后 1 个。
-
-### Q3：团队规模很小，还需要这么「重」的架构吗？
-
-需要分层，但不需要过度抽象。两人团队也可以有 \`api / service / ui\` 三层目录，等第三次出现重复逻辑时再抽公共包。
-
----
-
-## 上线前 Checklist
-
-- [ ] 核心路径单元测试 / 集成测试通过  
-- [ ]  staging 环境压测或手工走查完成  
-- [ ] 监控告警（错误率、延迟）已配置  
-- [ ] 回滚方案与数据库迁移顺序已文档化  
-- [ ] 相关配置项已纳入环境变量管理，无密钥硬编码  
-
----
-
-## 总结
-
-${title} 的本质，是在 **${theme}** 约束下找到「足够简单、又足够健壮」的解法。不要追求一步到位的大重构；以 **可观测的小步迭代** 为主，每两周回顾一次指标与代码健康度。
-
-如果这篇文章对你有帮助，欢迎收藏并在实践中反馈 —— 尤其是 ${sections.join('、')} 等章节，我们会根据读者问题持续补充案例。
-
----
-
-*本文属于个人全栈站点博客种子内容，主题：全栈偏前端架构。*
-`;
-
-  return intro + body + pitfalls;
+  return intro + architectureBlock + body + outro;
 }

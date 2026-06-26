@@ -1,5 +1,29 @@
 import type { PrismaClient } from '@prisma/client';
 import { generateArticleSeeds } from './articles-seed-data';
+import { stripLaunchChecklistSection } from './articles-seed-content';
+
+/**
+ * 批量移除数据库中仍含「上线前 Checklist」段落的博客正文
+ */
+export async function stripChecklistFromAllArticles(prisma: PrismaClient): Promise<number> {
+  const articles = await prisma.article.findMany({
+    where: { content: { contains: '## 上线前 Checklist' } },
+    select: { id: true, content: true },
+  });
+
+  let updated = 0;
+  for (const article of articles) {
+    const content = stripLaunchChecklistSection(article.content);
+    if (content === article.content) continue;
+    await prisma.article.update({
+      where: { id: article.id },
+      data: { content },
+    });
+    updated += 1;
+  }
+
+  return updated;
+}
 
 /**
  * 写入博客种子数据（按 slug upsert，可重复执行）
@@ -15,12 +39,15 @@ export async function seedArticles(prisma: PrismaClient): Promise<number> {
       update: {
         title: article.title,
         summary: article.summary,
-        content: article.content,
+        content: stripLaunchChecklistSection(article.content),
         category: article.category,
         tags: article.tags,
         publishedAt: article.publishedAt,
       },
-      create: article,
+      create: {
+        ...article,
+        content: stripLaunchChecklistSection(article.content),
+      },
     });
     upserted += 1;
   }

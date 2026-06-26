@@ -1,9 +1,8 @@
-import { AppLink, PageTitle, SubApp } from '@shared/components';
+import { AppLink, ArticleMarkdown, ArticleToc, PageTitle, SubApp } from '@shared/components';
 import { formatDate } from '@shared/utils/format';
+import { extractMarkdownHeadings } from '@shared/utils/markdownHeadings';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import ArticleBodyClient from '@/components/blog/ArticleBodyClient';
-import { renderMarkdownHtml } from '@/lib/markdown';
 import { getArticle } from '@/lib/serverApi';
 
 export const dynamic = 'force-dynamic';
@@ -38,19 +37,22 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     notFound();
   }
 
-  const html = renderMarkdownHtml(article.content);
+  const headings = extractMarkdownHeadings(article.content);
 
   return (
-    <SubApp className="max-w-3xl">
-      <AppLink href="/blog" variant="back" className="mb-4 app-back-link">
-        返回列表
-      </AppLink>
-      <PageTitle className="mb-0">{article.title}</PageTitle>
-      <p className="text-sm text-faint my-2 app-section">
-        {formatDate(article.publishedAt)}
-        {article.category ? ` · ${article.category}` : ''}
-      </p>
-      <ArticleBodyClient className="app-article-body" html={html} />
+    <SubApp className="article-detail-layout">
+      {/* <ArticleToc headings={headings} /> */}
+      <article className="article-detail-layout__main">
+        <AppLink href="/blog" variant="back" className="mb-4 app-back-link">
+          返回列表
+        </AppLink>
+        <PageTitle className="mb-0">{article.title}</PageTitle>
+        <p className="text-sm text-faint my-2 app-section">
+          {formatDate(article.publishedAt)}
+          {article.category ? ` · ${article.category}` : ''}
+        </p>
+        <ArticleMarkdown className="app-article-body" content={article.content} />
+      </article>
     </SubApp>
   );
 }

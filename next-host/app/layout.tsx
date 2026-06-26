@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Providers } from '@/components/Providers';
+import 'prismjs/themes/prism-tomorrow.css';
 import './globals.scss';
 
 export const metadata: Metadata = {

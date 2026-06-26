@@ -5,3 +5,9 @@ export {
   splitStack,
   type DateFormatPreset,
 } from './format';
+export {
+  extractMarkdownHeadings,
+  injectHeadingIdsIntoHtml,
+  slugifyHeading,
+  type MarkdownHeading,
+} from './markdownHeadings';

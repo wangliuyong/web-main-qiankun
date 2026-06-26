@@ -7,7 +7,7 @@ import {
 } from '../src/site/site.types';
 import { seedRbac, ensureAdminSuperRole, syncRbacModules } from './rbac-seed';
 import { seedConvenience } from './convenience-seed';
-import { seedArticles } from './articles-seed';
+import { seedArticles, stripChecklistFromAllArticles } from './articles-seed';
 import { syncReadmeToBlog } from './readme-blog-sync';
 import { syncProjectsSeed } from './projects-seed';
 
@@ -132,7 +132,9 @@ async function main() {
 
   // 博客：近 24 个月 × 每月 8~14 篇（按 slug upsert，不影响已有文章）
   const articleSeeded = await seedArticles(prisma);
+  const checklistStripped = await stripChecklistFromAllArticles(prisma);
   console.log(`Articles seeded/updated: ${articleSeeded}`);
+  console.log(`Launch checklist removed from ${checklistStripped} article(s)`);
 
   // 仓库 README 同步到博客（slug: project-readme）
   const readmeBlog = await syncReadmeToBlog(prisma);
