@@ -214,8 +214,9 @@ ssh_cmd 30 chmod +x "${REMOTE_DIR}/docker/remote-deploy.sh"
 
 sync_convenience_env_to_server
 
-echo "==> 远程构建并启动 Docker（首次约 15–30 分钟，请耐心等待）..."
-ssh_cmd 3600 "${REMOTE_DIR}/docker/remote-deploy.sh"
+echo "==> 远程构建并启动 Docker（轻量机分步构建约 20–40 分钟，日志会逐步输出）..."
+echo "    若超过 20 分钟无新日志，可能是 OOM；Ctrl+C 后重新执行 deploy.sh（已优化为分步构建）"
+ssh_cmd 7200 "${REMOTE_DIR}/docker/remote-deploy.sh"
 
 rm -f "$TAR_FILE" "$ENV_FILE"
 

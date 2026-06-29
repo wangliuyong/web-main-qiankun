@@ -15,6 +15,14 @@ body,
   font-family: var(--obs-font);
 }
 
+/* Qiankun 基座挂载：wrapper 需撑满 #micro-container */
+div[data-name='app-admin'] {
+  display: block;
+  height: 100%;
+  width: 100%;
+  min-height: 100%;
+}
+
 /* 整页固定高度：侧栏 + 顶栏不随内容滚动，仅内容区滚动 */
 .admin-shell-root {
   height: 100vh;

@@ -23,6 +23,17 @@ export function createAdminRouter(menus: AdminMenuNode[]) {
     shouldRevalidate: keepLoaderData,
   }));
 
+  // 确保 dashboard 始终可访问，避免菜单未就绪时 /dashboard 匹配不到任何子路由导致空白
+  const registeredPaths = new Set(adminTabRoutes.map((r) => r.path));
+  const dashboardPage = getPageByPath('dashboard');
+  if (dashboardPage && !registeredPaths.has('dashboard')) {
+    adminTabRoutes.unshift({
+      path: 'dashboard',
+      Component: dashboardPage,
+      shouldRevalidate: keepLoaderData,
+    });
+  }
+
   return createBrowserRouter(
     [
       { path: '/login', Component: LoginRoute },

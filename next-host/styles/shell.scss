@@ -319,4 +319,26 @@ button {
   min-height: 100vh;
   width: 100%;
   background: #f0f2f5;
+
+  /*
+   * Qiankun 注入的 wrapper / #root 默认无高度，子应用内 height:100% 会坍缩为 0，
+   * 导致整页空白。此处从基座侧补全高度链。
+   */
+  #micro-container {
+    height: 100%;
+    min-height: 100%;
+
+    > [data-name='app-admin'] {
+      display: block;
+      height: 100%;
+      width: 100%;
+      min-height: 100%;
+
+      #root {
+        height: 100%;
+        width: 100%;
+        min-height: 100%;
+      }
+    }
+  }
 }

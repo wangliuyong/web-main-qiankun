@@ -21,9 +21,12 @@ COPY nest-server/prisma ./prisma
 COPY nest-server/tsconfig.json nest-server/nest-cli.json ./
 COPY nest-server/src ./src
 
-# 生成 Prisma Client 并编译
+# 生成 Prisma Client 并编译（限制堆内存，避免与 web/nginx 并行 OOM）
+ENV NODE_OPTIONS="--max-old-space-size=512"
 RUN pnpm exec prisma generate
-RUN pnpm exec nest build
+RUN echo "==> nest build 开始..." \
+  && pnpm exec nest build \
+  && echo "==> nest build 完成"
 # 编译 seed 脚本供 remote-deploy 初始化数据
 RUN pnpm exec tsc prisma/seed.ts prisma/rbac-seed.ts prisma/convenience-seed.ts prisma/convenience-seed-data.ts --outDir dist/prisma --esModuleInterop --skipLibCheck --module commonjs --target ES2021
 

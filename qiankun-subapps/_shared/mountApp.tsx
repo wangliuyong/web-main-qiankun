@@ -43,6 +43,18 @@ export function resolveMountElement(props: HostProps): HTMLElement | null {
       el.id = 'root';
       container.appendChild(el);
     }
+
+    /*
+     * Qiankun 基座内补全高度链：wrapper 与 #root 默认无高度，
+     * 子应用 index.scss 中 height:100% 会坍缩为 0 导致整页空白。
+     */
+    const wrapper = container as HTMLElement;
+    wrapper.style.height = '100%';
+    wrapper.style.width = '100%';
+    wrapper.style.minHeight = '100%';
+    el.style.height = '100%';
+    el.style.width = '100%';
+    el.style.minHeight = '100%';
   } else {
     el = document.querySelector('#root') as HTMLElement | null;
   }

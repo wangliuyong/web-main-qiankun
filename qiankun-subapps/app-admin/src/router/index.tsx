@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import PageLoading from '../components/_common/PageLoading';
 import { useAuth } from '../context/AuthContext';
@@ -21,7 +21,9 @@ export default function AdminRouter() {
 
   return (
     <RouteCacheProvider>
-      <RouterProvider router={router} key={profile?.id ?? 'guest'} />
+      <Suspense fallback={<PageLoading />}>
+        <RouterProvider router={router} key={profile?.id ?? 'guest'} />
+      </Suspense>
     </RouteCacheProvider>
   );
 }

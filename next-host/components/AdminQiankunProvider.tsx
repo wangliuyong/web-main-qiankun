@@ -43,7 +43,7 @@ export function AdminQiankunProvider({ children }: AdminQiankunProviderProps) {
       {children}
 
       {!ready && !error && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#f0f2f5] text-gray-500 text-sm">
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#f0f2f5] text-gray-500 text-sm">
           管理后台加载中...
         </div>
       )}
@@ -53,7 +53,10 @@ export function AdminQiankunProvider({ children }: AdminQiankunProviderProps) {
         </div>
       )}
 
-      {/* Qiankun 子应用挂载点：占满视口，滚动由子应用内容区承担 */}
+      {/*
+       * 挂载点与 {children} 分离，且 memo 保证基座 state 变更时不 re-render，
+       * 避免 React 18 将 Qiankun 注入的子节点当作多余 DOM 清掉。
+       */}
       <WebMicroContainer className="h-full w-full overflow-hidden" />
     </div>
   );

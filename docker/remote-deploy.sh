@@ -13,7 +13,10 @@ rm -rf next-host/app/about next-host/app/blog next-host/app/contact \
        next-host/app/links next-host/app/projects
 rm -f next-host/app/page.tsx
 # SSR 改造后路由结构调整，需删除服务器上 tar 不会覆盖的旧 catch-all 目录
-rm -rf 'next-host/app/admin/[[...slug]]' 'next-host/app/(site)/[[...slug]]'
+rm -rf 'next-host/app/(site)/[[...slug]]'
+# 管理后台旧双 page 结构（page.tsx + [...slug]/page.tsx），已合并为 [[...slug]]
+rm -f next-host/app/admin/page.tsx
+rm -rf 'next-host/app/admin/[...slug]'
 # react-markdown 迁移后移除 marked 相关旧文件，否则 Docker 构建仍会因找不到 marked 报错
 rm -f next-host/lib/markdown.ts
 rm -f next-host/components/blog/ArticleBodyClient.tsx
@@ -21,8 +24,53 @@ rm -f next-host/components/blog/ArticleBodyClient.tsx
 echo "==> [remote] 停止旧容器（保留卷 docker_api-data：SQLite + LanceDB 向量库，不使用 down -v）..."
 ${COMPOSE} down 2>/dev/null || true
 
-echo "==> [remote] 构建并启动（可能 15–30 分钟）..."
-${COMPOSE} up -d --build
+# 轻量服务器（2GB 内存）并行跑 Next + Nest + Vite 会 OOM 假死，构建前确保有 swap
+ensure_build_swap() {
+  local mem_mb=0 swap_mb=0
+  if [ -r /proc/meminfo ]; then
+    mem_mb="$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)"
+    swap_mb="$(awk '/SwapTotal/ {print int($2/1024)}' /proc/meminfo)"
+  fi
+  echo "==> [remote] 系统内存 ${mem_mb}MB / Swap ${swap_mb}MB"
+
+  # 物理内存 < 3.5GB 且 swap 不足 1.5GB 时自动补 2G swap
+  if [ "${mem_mb}" -lt 3500 ] && [ "${swap_mb}" -lt 1500 ] && [ ! -f /swapfile ]; then
+    echo "==> [remote] 内存偏小，创建 2G swap 防止 Docker 编译 OOM..."
+    if fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress; then
+      chmod 600 /swapfile
+      mkswap /swapfile >/dev/null
+      swapon /swapfile
+      grep -q '/swapfile' /etc/fstab 2>/dev/null || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+      echo "==> [remote] swap 已启用"
+    else
+      echo "==> [remote] 警告: swap 创建失败，构建可能因 OOM 卡住"
+    fi
+  fi
+}
+ensure_build_swap
+
+# 分步构建：禁止 compose 并行 build，避免 web + api + nginx 同时编译占满内存
+echo "==> [remote] 分步构建镜像（api → web → nginx，单步约 5–15 分钟）..."
+export COMPOSE_PARALLEL_LIMIT=1
+export DOCKER_BUILDKIT=1
+export BUILDKIT_PROGRESS=plain
+
+build_service() {
+  local name="$1"
+  echo ""
+  echo "=========================================="
+  echo "  开始构建: ${name}"
+  echo "=========================================="
+  ${COMPOSE} build --progress=plain "${name}"
+  echo "==> [remote] ${name} 构建完成"
+}
+
+build_service api
+build_service web
+build_service nginx
+
+echo "==> [remote] 启动容器..."
+${COMPOSE} up -d
 
 echo "==> [remote] 等待服务就绪..."
 chmod +x docker/wait-healthy.sh

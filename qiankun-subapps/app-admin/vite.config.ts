@@ -24,5 +24,18 @@ export default defineConfig(({ mode }) => ({
   define: qiankunDevDefine(PORT, mode),
   server: createQiankunDevServer(PORT, isStandaloneDev),
   base: process.env.VITE_BASE || '/',
-  build: { outDir: 'dist', assetsDir: 'static' },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'static',
+    rollupOptions: {
+      output: {
+        // 拆分大依赖，便于并行加载与长期缓存
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-antd': ['antd', '@ant-design/icons'],
+          'vendor-charts': ['echarts', 'echarts-for-react'],
+        },
+      },
+    },
+  },
 }));

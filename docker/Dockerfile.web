@@ -22,7 +22,12 @@ COPY qiankun-subapps/_shared ../qiankun-subapps/_shared
 RUN cd ../qiankun-subapps/_shared && pnpm install --frozen-lockfile 2>/dev/null || pnpm install
 COPY next-host/ ./
 
-RUN pnpm run build
+# 轻量服务器 Docker 编译阶段限制堆内存，避免与 api/nginx 并行 OOM
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=768"
+RUN echo "==> next build 开始..." \
+  && pnpm run build \
+  && echo "==> next build 完成"
 
 # ---------- 生产运行阶段 ----------
 FROM node:20-alpine AS runner

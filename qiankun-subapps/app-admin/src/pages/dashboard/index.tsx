@@ -21,7 +21,7 @@ export default function DashboardPage() {
     <div className="dashboard-page">
       <header className="dashboard-hero">
         <div className="dashboard-hero__copy">
-          <h1 className="dashboard-hero__title">{overview.site.siteName}</h1>
+          <h1 className="dashboard-hero__title">首页</h1>
           <p className="dashboard-hero__subtitle">
             访问、内容概况与服务器状态一屏掌握
           </p>

@@ -60,20 +60,14 @@ async function seedModuleTree(
 }
 
 /**
- * 初始化 RBAC 数据（仅在 AdminModule 表为空时执行，不覆盖已有权限配置）
+ * 确保 super_admin 角色存在且拥有全部权限点。
+ * 用于 seedRbac 与 ensureAdminSuperRole 共用，避免旧库仅有模块无超管角色。
  */
-export async function seedRbac(prisma: PrismaClient, adminUserId: number) {
-  const moduleCount = await prisma.adminModule.count();
-  if (moduleCount > 0) {
-    return;
-  }
-
-  await seedModuleTree(prisma, RBAC_MODULE_TREE);
-
+async function ensureSuperAdminRoleRecord(prisma: PrismaClient) {
   const allPermissions = await prisma.adminPermission.findMany();
   const superRole = await prisma.adminRole.upsert({
     where: { code: 'super_admin' },
-    update: { isSuper: true, status: 1 },
+    update: { isSuper: true, status: 1, name: '超级管理员' },
     create: {
       name: '超级管理员',
       code: 'super_admin',
@@ -93,6 +87,21 @@ export async function seedRbac(prisma: PrismaClient, adminUserId: number) {
     });
   }
 
+  return superRole;
+}
+
+/**
+ * 初始化 RBAC 数据（仅在 AdminModule 表为空时执行，不覆盖已有权限配置）
+ */
+export async function seedRbac(prisma: PrismaClient, adminUserId: number) {
+  const moduleCount = await prisma.adminModule.count();
+  if (moduleCount > 0) {
+    return;
+  }
+
+  await seedModuleTree(prisma, RBAC_MODULE_TREE);
+  const superRole = await ensureSuperAdminRoleRecord(prisma);
+
   await prisma.adminUserRole.upsert({
     where: { userId_roleId: { userId: adminUserId, roleId: superRole.id } },
     update: {},
@@ -100,10 +109,15 @@ export async function seedRbac(prisma: PrismaClient, adminUserId: number) {
   });
 }
 
-/** 确保指定用户绑定超管角色（升级兼容：已有 RBAC 数据时也保证 admin 可登录） */
+/**
+ * 确保 admin 账号绑定超管角色（升级兼容：已有 RBAC 数据时也保证 admin 可登录）。
+ * 若 super_admin 角色缺失、或 admin 用户被误清空角色，部署 seed / 服务启动时会自动修复。
+ */
 export async function ensureAdminSuperRole(prisma: PrismaClient, adminUserId: number) {
-  const superRole = await prisma.adminRole.findUnique({ where: { code: 'super_admin' } });
-  if (!superRole) return;
+  // 先增量同步模块与权限点，再创建/补全超管角色
+  await seedModuleTree(prisma, RBAC_MODULE_TREE);
+  const superRole = await ensureSuperAdminRoleRecord(prisma);
+
   await prisma.adminUserRole.upsert({
     where: { userId_roleId: { userId: adminUserId, roleId: superRole.id } },
     update: {},
