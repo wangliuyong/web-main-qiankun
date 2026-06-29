@@ -14,11 +14,6 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.nginx
-      args:
-        AMAP_KEY_WEB: ${AMAP_KEY_WEB:-}
-        AMAP_SECURITY_CODE: ${AMAP_SECURITY_CODE:-}
-        AMAP_KEY_ANDROID: ${AMAP_KEY_ANDROID:-}
-        AMAP_KEY_IOS: ${AMAP_KEY_IOS:-}
     ports:
       - "${HTTP_PORT:-80}:80"
     depends_on:

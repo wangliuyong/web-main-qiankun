@@ -28,6 +28,8 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     assetsDir: 'static',
     rollupOptions: {
+      // 降低 Rollup 并行度，减少 Vite 编译峰值内存（Docker 轻量机友好）
+      maxParallelFileOps: 2,
       output: {
         // 拆分大依赖，便于并行加载与长期缓存
         manualChunks: {

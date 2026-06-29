@@ -110,7 +110,7 @@
         "title" : "同城便民",
         "router" : {
             "mode" : "hash",
-            "base" : "./"
+            "base" : "/convenience/"
         },
         "sdkConfigs" : {
             "maps" : {

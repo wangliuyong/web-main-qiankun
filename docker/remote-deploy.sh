@@ -67,7 +67,7 @@ build_service() {
 
 build_service api
 build_service web
-build_service nginx
+build_service nginx   # 仅 COPY 预编译静态资源，秒级完成
 
 echo "==> [remote] 启动容器..."
 ${COMPOSE} up -d

@@ -180,6 +180,11 @@ sync_convenience_env_to_server() {
 }
 
 # 打包前先建立 SSH（失败则立即退出，避免浪费时间打包）
+# 子应用在本地预编译，避免轻量服务器 Docker 内 Vite OOM
+echo "==> 本地预编译子应用（app-web / app-admin / 便民 H5）..."
+chmod +x "${SCRIPT_DIR}/prebuild-subapps.sh"
+"${SCRIPT_DIR}/prebuild-subapps.sh"
+
 ssh_open_session
 
 echo "==> 打包项目文件..."
@@ -187,10 +192,11 @@ TAR_FILE="/tmp/personal-site-deploy.tar.gz"
 ENV_FILE="/tmp/personal-site.env"
 cd "$PROJECT_ROOT"
 # macOS 打包时跳过 xattr，避免 Linux 解压时出现大量 LIBARCHIVE 警告
+# 保留 qiankun-subapps/*/dist 与 convenience-client/dist（prebuild 产物），排除其余 dist
 COPYFILE_DISABLE=1 tar czf "$TAR_FILE" \
   --exclude='node_modules' \
   --exclude='.next' \
-  --exclude='dist' \
+  --exclude='nest-server/dist' \
   --exclude='*.db' \
   --exclude='*.db-journal' \
   --exclude='.git' \
@@ -214,8 +220,8 @@ ssh_cmd 30 chmod +x "${REMOTE_DIR}/docker/remote-deploy.sh"
 
 sync_convenience_env_to_server
 
-echo "==> 远程构建并启动 Docker（轻量机分步构建约 20–40 分钟，日志会逐步输出）..."
-echo "    若超过 20 分钟无新日志，可能是 OOM；Ctrl+C 后重新执行 deploy.sh（已优化为分步构建）"
+echo "==> 远程构建并启动 Docker（api/web 在服务器编译，子应用已在本地预编译）..."
+echo "    预计 api 5min + web 15min + nginx 1min；超过 20min 无日志请 Ctrl+C 后重试"
 ssh_cmd 7200 "${REMOTE_DIR}/docker/remote-deploy.sh"
 
 rm -f "$TAR_FILE" "$ENV_FILE"
