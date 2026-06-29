@@ -2,6 +2,7 @@
 export type DashboardSectionId =
   | 'stats'
   | 'charts'
+  | 'topPages'
   | 'visits'
   | 'panels'
   | 'quickLinks'
@@ -11,6 +12,7 @@ export type DashboardSectionId =
 export const SECTION_LABELS: Record<DashboardSectionId, string> = {
   stats: '核心指标',
   charts: '趋势图表',
+  topPages: '本周热门页面',
   visits: '访问记录',
   panels: '互动概览 / 服务器',
   quickLinks: '快捷入口',
@@ -21,6 +23,7 @@ export const SECTION_LABELS: Record<DashboardSectionId, string> = {
 export const DEFAULT_SECTION_ORDER: DashboardSectionId[] = [
   'stats',
   'charts',
+  'topPages',
   // 'visits',
   // 'panels',
   // 'quickLinks',

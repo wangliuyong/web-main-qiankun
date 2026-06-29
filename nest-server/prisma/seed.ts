@@ -10,6 +10,7 @@ import { seedConvenience } from './convenience-seed';
 import { seedArticles, stripChecklistFromAllArticles } from './articles-seed';
 import { syncReadmeToBlog } from './readme-blog-sync';
 import { syncProjectsSeed } from './projects-seed';
+import { seedPageViews } from './page-views-seed';
 
 const prisma = new PrismaClient();
 
@@ -126,6 +127,10 @@ async function main() {
     ],
     });
   }
+
+  // app-web 本周访问 mock（仅库内无 SitePageView 时写入，供管理端热门页面统计演示）
+  const pageViewsSeeded = await seedPageViews(prisma);
+  console.log(`Page views seeded: ${pageViewsSeeded}`);
 
   // 同城便民 C 端演示用户与业务数据（用户与业务数据在 seedConvenience 内统一 upsert）
   await seedConvenience(prisma);

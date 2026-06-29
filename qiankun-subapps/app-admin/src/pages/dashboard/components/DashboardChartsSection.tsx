@@ -1,11 +1,7 @@
 import { TechCard } from '../../../components/tech-ui';
 import type { DashboardOverview } from '../types';
 import DashboardEChart from './charts/DashboardEChart';
-import {
-  buildContentMixOption,
-  buildTopPagesOption,
-  buildVisitTrendOption,
-} from '../utils/chartOptions';
+import { buildContentMixOption, buildVisitTrendOption } from '../utils/chartOptions';
 
 interface DashboardChartsSectionProps {
   charts: DashboardOverview['charts'];
@@ -23,16 +19,6 @@ export default function DashboardChartsSection({ charts }: DashboardChartsSectio
           <DashboardEChart option={buildContentMixOption(charts.contentMix)} height={320} />
         </TechCard>
       </div>
-      <TechCard title="本周热门页面">
-        {charts.topPages.length > 0 ? (
-          <DashboardEChart
-            option={buildTopPagesOption(charts.topPages)}
-            height={Math.max(220, charts.topPages.length * 42)}
-          />
-        ) : (
-          <div className="dashboard-chart__empty">暂无访问记录，浏览前台页面后将自动统计</div>
-        )}
-      </TechCard>
     </section>
   );
 }

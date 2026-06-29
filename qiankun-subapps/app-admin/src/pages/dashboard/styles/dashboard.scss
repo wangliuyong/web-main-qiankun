@@ -157,6 +157,50 @@
   color: var(--obs-text-tertiary);
 }
 
+/* ========== 本周热门页面 ========== */
+.dashboard-top-pages {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.dashboard-top-pages__chart {
+  min-width: 0;
+}
+
+.dashboard-top-pages__table {
+  min-width: 0;
+}
+
+.dashboard-top-pages__page {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dashboard-top-pages__page-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--obs-text);
+}
+
+.dashboard-top-pages__views {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--obs-accent);
+}
+
+.dashboard-top-pages__share {
+  min-width: 120px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-top-pages {
+    grid-template-columns: 1fr;
+  }
+}
+
 .dashboard-panels-row {
   display: grid;
   grid-template-columns: 1.35fr 1fr;

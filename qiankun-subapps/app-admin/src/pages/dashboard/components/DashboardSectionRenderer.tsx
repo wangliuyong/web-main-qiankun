@@ -6,6 +6,7 @@ import DashboardInteractionPanel from './DashboardInteractionPanel';
 import DashboardQuickLinks from './DashboardQuickLinks';
 import DashboardRecentPanel from './DashboardRecentPanel';
 import DashboardServerPanel from './DashboardServerPanel';
+import DashboardTopPagesSection from './DashboardTopPagesSection';
 import DashboardVisitRecordsPanel from './DashboardVisitRecordsPanel';
 
 interface DashboardSectionRendererProps {
@@ -25,6 +26,8 @@ export default function DashboardSectionRenderer({
       return <DashboardContentStats content={overview.content} visit={overview.visit} />;
     case 'charts':
       return <DashboardChartsSection charts={overview.charts} />;
+    case 'topPages':
+      return <DashboardTopPagesSection topPages={overview.charts.topPages} />;
     case 'visits':
       return <DashboardVisitRecordsPanel records={overview.recentPageViews} />;
     case 'panels':
