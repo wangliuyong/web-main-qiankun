@@ -45,9 +45,17 @@ pnpm run dev:kids-drawing
 ### 构建
 
 ```bash
+# 本地开发构建（根路径）
 pnpm run build:kids-drawing:h5
-pnpm run build:kids-drawing:mp
+
+# 生产部署构建（子路径 /kids-drawing/，与 docker/prebuild-subapps.sh 一致）
+cd kids-drawing-client
+VITE_H5_BASE=/kids-drawing/ node scripts/apply-manifest-env.mjs
+NODE_ENV=production pnpm run build:h5
 ```
+
+部署后访问：**`{站点域名}/kids-drawing/`**（Nginx 静态托管，见 `docker/nginx.conf`）。
+作品集「在线预览」链接指向该地址。
 
 ## 页面结构
 

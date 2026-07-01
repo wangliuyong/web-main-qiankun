@@ -36,7 +36,8 @@
   "h5": {
     "title": "小画家启蒙",
     "router": {
-      "mode": "hash"
+      "mode": "hash",
+      "base": ""
     }
   }
 }

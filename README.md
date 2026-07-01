@@ -161,3 +161,10 @@ pnpm run dev:kids-drawing:mp
 ```bash
 ./docker/deploy.sh 47.116.30.137 '你的SSH密码'
 ```
+
+部署完成后可访问：
+
+- 个人站点：`http://<服务器IP>/`
+- 同城便民 H5：`http://<服务器IP>/convenience/`
+- 小画家启蒙 H5：`http://<服务器IP>/kids-drawing/`（作品集「在线预览」链接）
+- 管理后台：`http://<服务器IP>/admin`

@@ -33,6 +33,7 @@ fi
 echo "==> [prebuild] 安装子应用依赖..."
 pnpm run install:subapps
 pnpm run install:convenience
+pnpm run install:kids-drawing
 
 echo "==> [prebuild] 编译 app-web (/micro/web/)..."
 (
@@ -62,7 +63,16 @@ echo "==> [prebuild] 编译便民 H5 (/convenience/)..."
   NODE_ENV=production pnpm run build:h5
 )
 
+echo "==> [prebuild] 编译小画家启蒙 H5 (/kids-drawing/)..."
+(
+  cd kids-drawing-client
+  export VITE_H5_BASE=/kids-drawing/
+  node scripts/apply-manifest-env.mjs
+  NODE_ENV=production pnpm run build:h5
+)
+
 echo "==> [prebuild] 子应用静态资源已就绪："
 echo "    - qiankun-subapps/app-web/dist"
 echo "    - qiankun-subapps/app-admin/dist"
 echo "    - convenience-client/dist/build/h5"
+echo "    - kids-drawing-client/dist/build/h5"

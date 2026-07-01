@@ -43,7 +43,7 @@ export function buildProjectSeedItems(): ProjectSeedItem[] {
       desc:
         '面向 3–8 岁儿童的绘画启蒙 uni-app 应用，支持循序渐进课程、Canvas 绘画工作台、本地进度与作品集，预留后端 API 对接。',
       techStack: 'uni-app, Vue3, TypeScript, Pinia, Canvas',
-      previewUrl: 'http://localhost:5176',
+      previewUrl: `${origin}/kids-drawing/`,
     },
     {
       name: 'XBOM 物料管理系统',

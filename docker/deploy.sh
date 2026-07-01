@@ -181,7 +181,7 @@ sync_convenience_env_to_server() {
 
 # 打包前先建立 SSH（失败则立即退出，避免浪费时间打包）
 # 子应用在本地预编译，避免轻量服务器 Docker 内 Vite OOM
-echo "==> 本地预编译子应用（app-web / app-admin / 便民 H5）..."
+echo "==> 本地预编译子应用（app-web / app-admin / 便民 H5 / 小画家 H5）..."
 chmod +x "${SCRIPT_DIR}/prebuild-subapps.sh"
 "${SCRIPT_DIR}/prebuild-subapps.sh"
 
@@ -231,6 +231,7 @@ echo "=========================================="
 echo "  部署完成！"
 echo "  个人站点:   http://${SERVER_IP}"
 echo "  便民 C 端:  http://${SERVER_IP}/convenience/"
+echo "  小画家启蒙: http://${SERVER_IP}/kids-drawing/"
 echo "  管理后台:   http://${SERVER_IP}/admin"
 echo "  (便民管理:  登录后侧边栏「同城便民」)"
 echo "=========================================="
