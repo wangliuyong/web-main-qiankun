@@ -21,6 +21,7 @@ export class ProjectService {
     techStack?: string;
     githubUrl?: string;
     previewUrl?: string;
+    category?: string;
   }) {
     return this.prisma.project.create({ data });
   }
@@ -33,6 +34,7 @@ export class ProjectService {
       techStack: string;
       githubUrl: string;
       previewUrl: string;
+      category: string;
     }>,
   ) {
     return this.prisma.project.update({ where: { id }, data });

@@ -25,6 +25,8 @@ model Project {
   techStack  String?
   githubUrl  String?
   previewUrl String?
+  /** 项目分类：personal 个人项目 | enterprise 企业项目 */
+  category   String?
 }
 
 model Message {

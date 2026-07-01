@@ -23,6 +23,8 @@ export interface Project {
   techStack: string | null;
   githubUrl: string | null;
   previewUrl: string | null;
+  /** personal 个人项目 | enterprise 企业项目 */
+  category: string | null;
 }
 
 /** 友情链接 */
