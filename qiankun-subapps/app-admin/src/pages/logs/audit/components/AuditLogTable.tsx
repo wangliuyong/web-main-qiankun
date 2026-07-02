@@ -29,7 +29,7 @@ export default function AuditLogTable({
       dataSource={data?.items ?? []}
       size={ADMIN_TABLE_DEFAULTS.size}
       className={ADMIN_TABLE_DEFAULTS.className}
-      scroll={{ x: 900 }}
+      scroll={ADMIN_TABLE_DEFAULTS.scroll}
       pagination={mergeAdminTablePagination({
         current: data?.page ?? 1,
         pageSize: data?.pageSize ?? 20,

@@ -1,7 +1,7 @@
 import { Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { AppLog } from '../../../../api/logs.api';
-import { adminTableActionColumnProps } from '../../../../components/admin-page';
+import { mergeAdminActionColumn } from '../../../../components/admin-page';
 import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { LEVEL_COLORS } from '../constants';
 
@@ -21,21 +21,20 @@ export function createAppLogColumns(handlers: AppLogColumnHandlers): ColumnsType
       ),
     },
     { title: '上下文', dataIndex: 'context', width: 140, ellipsis: true, render: (v) => v || '-' },
-    { title: '消息', dataIndex: 'message', ellipsis: true },
+    { title: '消息', dataIndex: 'message', width: 280, ellipsis: true },
     {
       title: '时间',
       dataIndex: 'createdAt',
       width: 170,
       render: (v: string) => new Date(v).toLocaleString(),
     },
-    {
-      title: '详情',
-      ...adminTableActionColumnProps,
+    mergeAdminActionColumn({
+      title: '操作',
       render: (_, record) => (
         <TechTableActions>
           <TechTableAction onClick={() => handlers.onViewDetail(record)}>查看</TechTableAction>
         </TechTableActions>
       ),
-    },
+    }),
   ];
 }

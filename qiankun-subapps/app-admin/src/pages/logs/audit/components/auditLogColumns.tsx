@@ -1,7 +1,7 @@
 import { Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { AuditLog } from '../../../../api/logs.api';
-import { adminTableActionColumnProps } from '../../../../components/admin-page';
+import { mergeAdminActionColumn } from '../../../../components/admin-page';
 import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { ACTION_COLORS, ACTION_LABELS } from '../constants';
 
@@ -15,7 +15,7 @@ export function createAuditLogColumns(
 ): ColumnsType<AuditLog> {
   return [
     {
-      title: '操作',
+      title: '操作类型',
       dataIndex: 'action',
       width: 90,
       render: (action: string) => (
@@ -34,9 +34,8 @@ export function createAuditLogColumns(
       width: 170,
       render: (v: string) => new Date(v).toLocaleString(),
     },
-    {
-      title: '详情',
-      ...adminTableActionColumnProps,
+    mergeAdminActionColumn({
+      title: '操作',
       render: (_, record) => (
         <TechTableActions>
           <TechTableAction
@@ -47,6 +46,6 @@ export function createAuditLogColumns(
           </TechTableAction>
         </TechTableActions>
       ),
-    },
+    }),
   ];
 }
