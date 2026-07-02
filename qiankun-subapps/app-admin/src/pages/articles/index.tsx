@@ -1,8 +1,9 @@
 import { FileTextOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Table, message } from 'antd';
+import { Button, Table, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
   AdminPageShell,
+  AdminPopconfirm,
   AdminSectionCard,
   ADMIN_TABLE_DEFAULTS,
   adminTableActionColumnProps,
@@ -68,12 +69,11 @@ export default function ArticlesPage() {
           rowKey="id"
           size={ADMIN_TABLE_DEFAULTS.size}
           className={ADMIN_TABLE_DEFAULTS.className}
-          scroll={{ x: 'max-content' }}
+          scroll={ADMIN_TABLE_DEFAULTS.scroll}
           columns={[
             ...ARTICLE_COLUMNS,
             {
               title: '操作',
-              fixed: 'right',
               ...adminTableActionColumnProps,
               render: (_, record) => (
                 <TechTableActions>
@@ -83,12 +83,12 @@ export default function ArticlesPage() {
                     </TechTableAction>
                   </PermissionGuard>
                   <PermissionGuard code={ARTICLE_PERMISSIONS.delete}>
-                    <Popconfirm
+                    <AdminPopconfirm
                       title="确定删除该文章？"
                       onConfirm={() => void handleDelete(record.id)}
                     >
                       <TechTableAction variant="danger">删除</TechTableAction>
-                    </Popconfirm>
+                    </AdminPopconfirm>
                   </PermissionGuard>
                 </TechTableActions>
               ),

@@ -70,8 +70,31 @@
     margin: 14px 16px !important;
   }
 
-  .ant-table-cell-fix-right {
+  /*
+   * 固定操作列层级：表头 z-index 高于表体，避免横向滚动时被其它列遮挡
+   * 背景使用不透明色，防止 hover 时下方滚动内容透出
+   */
+  .ant-table-thead > tr > th.ant-table-cell-fix-right,
+  .ant-table-thead > tr > th.admin-table-actions-col {
+    z-index: 3 !important;
+    background: var(--obs-surface) !important;
+  }
+
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr > td.admin-table-actions-col {
+    z-index: 2 !important;
     background: var(--obs-bg-elevated) !important;
+  }
+
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr:hover > td.admin-table-actions-col {
+    background: var(--obs-bg-elevated) !important;
+  }
+
+  /* 横向滚动时，固定列左侧阴影，与滚动内容区分 */
+  &.ant-table-ping-right .ant-table-cell-fix-right-first::after,
+  &.ant-table-ping-right .ant-table-cell-fix-right-last::after {
+    box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.35);
   }
 
   /*

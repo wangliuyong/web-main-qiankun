@@ -26,6 +26,7 @@ export default function ModuleAdminTable({ treeData, columnHandlers }: ModuleAdm
       dataSource={treeData}
       size={ADMIN_TABLE_DEFAULTS.size}
       className={ADMIN_TABLE_DEFAULTS.className}
+      scroll={ADMIN_TABLE_DEFAULTS.scroll}
       pagination={false}
       expandable={{
         rowExpandable: (row) => Boolean(row.children?.length),

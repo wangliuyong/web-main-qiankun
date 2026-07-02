@@ -27,6 +27,7 @@ export const obsidianAntdTheme: ThemeConfig = {
     fontFamily: t.fontSans,
     borderRadius: t.radius,
     controlHeight: 34,
+    zIndexPopupBase: 1100,
   },
   components: {
     Layout: {
@@ -80,6 +81,9 @@ export const obsidianAntdTheme: ThemeConfig = {
     },
     Pagination: {
       itemBg: t.surface,
+    },
+    Popover: {
+      zIndexPopup: 1100,
     },
     Result: {
       subtitleColor: t.muted,

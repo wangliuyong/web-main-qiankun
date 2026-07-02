@@ -30,7 +30,6 @@ export function createAppLogColumns(handlers: AppLogColumnHandlers): ColumnsType
     },
     {
       title: '详情',
-      fixed: 'right',
       ...adminTableActionColumnProps,
       render: (_, record) => (
         <TechTableActions>

@@ -1,8 +1,8 @@
-import { Popconfirm, Tag, Typography } from 'antd';
+import { Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { AiChatSessionItem } from '../../../../api/ai.api';
 import PermissionGuard from '../../../../components/PermissionGuard';
-import { adminTableActionColumnProps } from '../../../../components/admin-page';
+import { AdminPopconfirm, adminTableActionColumnProps } from '../../../../components/admin-page';
 import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { formatSessionTime, shortSessionId } from '../constants';
 
@@ -58,18 +58,17 @@ export function createQaSessionColumns(
     },
     {
       title: '操作',
-      fixed: 'right',
       ...adminTableActionColumnProps,
       render: (_, record) => (
         <TechTableActions>
           <TechTableAction onClick={() => handlers.onView(record.id)}>查看</TechTableAction>
           <PermissionGuard code="admin:ai-qa:delete">
-            <Popconfirm
+            <AdminPopconfirm
               title="确定删除该会话？删除后不可恢复。"
               onConfirm={() => handlers.onDelete(record.id)}
             >
               <TechTableAction variant="danger">删除</TechTableAction>
-            </Popconfirm>
+            </AdminPopconfirm>
           </PermissionGuard>
         </TechTableActions>
       ),

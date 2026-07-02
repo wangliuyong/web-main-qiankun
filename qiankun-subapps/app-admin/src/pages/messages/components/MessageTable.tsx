@@ -19,6 +19,7 @@ export default function MessageTable({ messages, columnHandlers }: MessageTableP
       dataSource={messages}
       size={ADMIN_TABLE_DEFAULTS.size}
       className={ADMIN_TABLE_DEFAULTS.className}
+      scroll={ADMIN_TABLE_DEFAULTS.scroll}
       pagination={mergeAdminTablePagination({ total: messages.length })}
       locale={{ emptyText: '暂无留言' }}
     />

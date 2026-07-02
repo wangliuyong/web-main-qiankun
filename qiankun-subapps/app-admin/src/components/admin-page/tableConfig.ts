@@ -1,11 +1,17 @@
 import type { TableProps } from 'antd';
 
+/** 列表页横向滚动：配合操作列 fixed: right，否则固定列不生效 */
+export const ADMIN_TABLE_SCROLL: NonNullable<TableProps['scroll']> = {
+  x: 'max-content',
+};
+
 /**
  * 后台列表页 Table 默认配置：统一分页文案、尺寸与样式类名
  */
 export const ADMIN_TABLE_DEFAULTS = {
   size: 'middle',
   className: 'admin-data-table',
+  scroll: ADMIN_TABLE_SCROLL,
   pagination: {
     pageSize: 10,
     showSizeChanger: true,

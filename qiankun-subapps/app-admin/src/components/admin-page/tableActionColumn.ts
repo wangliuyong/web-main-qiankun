@@ -6,9 +6,11 @@ export const ADMIN_TABLE_ACTIONS_CLASS = 'admin-table-actions-col';
 
 /**
  * Ant Design Table 操作列通用配置
- * width: 1 让 antd 按最小列宽分配，实际宽度由单元格内容与 CSS 撑开
+ * - fixed: right 横向滚动时固定在右侧
+ * - width: 1 让 antd 按最小列宽分配，实际宽度由单元格内容与 CSS 撑开
  */
 export const adminTableActionColumnProps = {
+  fixed: 'right' as const,
   width: 1,
   className: ADMIN_TABLE_ACTIONS_CLASS,
   onCell: () => ({ className: ADMIN_TABLE_ACTIONS_CLASS }),

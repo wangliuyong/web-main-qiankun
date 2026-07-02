@@ -139,7 +139,6 @@ export default function AdminCrudPage<T extends { id: number }>({
 
   const actionColumn: ColumnsType<T>[number] = {
     title: '操作',
-    fixed: 'right',
     ...adminTableActionColumnProps,
     render: (_, record) => (
       <TechTableActions>
@@ -177,7 +176,7 @@ export default function AdminCrudPage<T extends { id: number }>({
           dataSource={data}
           size={ADMIN_TABLE_DEFAULTS.size}
           className={ADMIN_TABLE_DEFAULTS.className}
-          scroll={{ x: 'max-content' }}
+          scroll={ADMIN_TABLE_DEFAULTS.scroll}
           pagination={mergeAdminTablePagination({ total: data.length })}
         />
       </AdminSectionCard>

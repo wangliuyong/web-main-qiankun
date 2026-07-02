@@ -1,8 +1,8 @@
-import { Popconfirm, Tag } from 'antd';
+import { Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { KnowledgeChunkItem } from '../../../../api/ai.api';
 import PermissionGuard from '../../../../components/PermissionGuard';
-import { adminTableActionColumnProps } from '../../../../components/admin-page';
+import { AdminPopconfirm, adminTableActionColumnProps } from '../../../../components/admin-page';
 import { TechTableAction, TechTableActions } from '../../../../components/tech-ui';
 import { SOURCE_LABEL } from '../constants';
 
@@ -54,18 +54,17 @@ export function createKnowledgeChunkColumns(
     },
     {
       title: '操作',
-      fixed: 'right',
       ...adminTableActionColumnProps,
       render: (_, record) => (
         <TechTableActions>
           <TechTableAction onClick={() => handlers.onView(record.id)}>查看</TechTableAction>
           <PermissionGuard code="admin:ai-knowledge:delete">
-            <Popconfirm
+            <AdminPopconfirm
               title="确定删除该向量块？删除后需重新同步数据源才能恢复检索。"
               onConfirm={() => handlers.onDelete(record.id)}
             >
               <TechTableAction variant="danger">删除</TechTableAction>
-            </Popconfirm>
+            </AdminPopconfirm>
           </PermissionGuard>
         </TechTableActions>
       ),

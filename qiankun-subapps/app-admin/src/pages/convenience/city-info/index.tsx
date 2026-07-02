@@ -214,7 +214,7 @@ export default function ConvCityInfoPage() {
           dataSource={data?.list ?? []}
           size={ADMIN_TABLE_DEFAULTS.size}
           className={ADMIN_TABLE_DEFAULTS.className}
-          scroll={{ x: 'max-content' }}
+          scroll={ADMIN_TABLE_DEFAULTS.scroll}
           pagination={mergeAdminTablePagination({
             current: filters.page,
             pageSize: filters.pageSize,

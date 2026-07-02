@@ -690,21 +690,28 @@
 
 /* ========== Confirm ========== */
 .tech-confirm {
-  position: relative;
   display: inline-flex;
 }
 
+.tech-confirm__backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+}
+
 .tech-confirm__popover {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  z-index: 50;
   min-width: 196px;
   padding: 12px;
   border: 1px solid var(--obs-border-strong);
   border-radius: var(--obs-radius-sm);
   background: var(--obs-bg-elevated);
   box-shadow: var(--obs-shadow-md);
+}
+
+/* Portal 到 body：fixed 定位，右边缘与触发按钮对齐 */
+.tech-confirm__popover--portal {
+  position: fixed;
+  transform: translateX(-100%);
 }
 
 .tech-confirm__title {
