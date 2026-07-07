@@ -36,6 +36,38 @@ export class ArticleService {
     });
   }
 
+  /** 分页查询文章，用于博客列表时间轴 + 翻页 */
+  async findPaged(query: {
+    category?: string;
+    tag?: string;
+    page?: number;
+    pageSize?: number;
+  }) {
+    const where: Record<string, unknown> = {};
+
+    if (query.category) {
+      where.category = query.category;
+    }
+    if (query.tag) {
+      where.tags = { contains: query.tag };
+    }
+
+    const page = Math.max(1, query.page ?? 1);
+    const pageSize = Math.min(50, Math.max(1, query.pageSize ?? 10));
+
+    const [items, total] = await Promise.all([
+      this.prisma.article.findMany({
+        where,
+        orderBy: { publishedAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.article.count({ where }),
+    ]);
+
+    return { items, total, page, pageSize };
+  }
+
   async findOne(id: number) {
     const article = await this.prisma.article.findUnique({ where: { id } });
     if (!article) {

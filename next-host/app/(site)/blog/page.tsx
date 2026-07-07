@@ -1,9 +1,11 @@
-import { PageTitle, SubApp } from '@shared/components';
+import { AppEmpty, BlogTimelineList, PageTitle, SubApp } from '@shared/components';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import BlogArticleList from '@/components/blog/BlogArticleList';
 import BlogListFilters from '@/components/blog/BlogListFilters';
-import { getArticles } from '@/lib/serverApi';
+import BlogPaginationNav from '@/components/blog/BlogPaginationNav';
+import { BLOG_PAGE_SIZE } from '@shared/constants/blog';
+import { getArticles, getArticlesPaginated } from '@/lib/serverApi';
+import { blogDetailPath } from '@/router';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,18 +15,21 @@ export const metadata: Metadata = {
 };
 
 export interface BlogListPageProps {
-  searchParams: Promise<{ category?: string; tag?: string }>;
+  searchParams: Promise<{ category?: string; tag?: string; page?: string }>;
 }
 
-/** 博客列表 — 服务端渲染文章列表，筛选通过 URL 参数触发重新请求 */
+/** 博客列表：时间轴归档 + URL 分页，筛选通过 searchParams 触发 SSR */
 export default async function BlogListPage({ searchParams }: BlogListPageProps) {
-  const { category, tag } = await searchParams;
+  const { category, tag, page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(pageParam ?? '1', 10) || 1);
 
-  const [allArticles, articles] = await Promise.all([
+  const [allArticles, paged] = await Promise.all([
     getArticles(),
-    getArticles({
+    getArticlesPaginated({
       category: category || undefined,
       tag: tag || undefined,
+      page,
+      pageSize: BLOG_PAGE_SIZE,
     }),
   ]);
 
@@ -34,11 +39,32 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
 
   return (
     <SubApp>
-      <PageTitle className="mb-6">博客</PageTitle>
+      <PageTitle className="mb-2">博客</PageTitle>
+      <p className="text-muted text-sm mb-6">
+        按时间轴浏览技术笔记，共 {paged.total} 篇
+      </p>
+
       <Suspense fallback={null}>
         <BlogListFilters categories={categories} />
       </Suspense>
-      <BlogArticleList articles={articles} />
+
+      {paged.items.length === 0 ? (
+        <AppEmpty>暂无符合条件的文章</AppEmpty>
+      ) : (
+        <>
+          <BlogTimelineList
+            articles={paged.items}
+            resolveHref={(id) => blogDetailPath(id)}
+          />
+          <Suspense fallback={null}>
+            <BlogPaginationNav
+              page={paged.page}
+              pageSize={paged.pageSize}
+              total={paged.total}
+            />
+          </Suspense>
+        </>
+      )}
     </SubApp>
   );
 }

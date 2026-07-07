@@ -1,5 +1,6 @@
 import { apiUrl, fetchJson } from '@shared/api';
-import type { Article, Project } from '@shared/contentTypes';
+import type { Article, PaginatedResult, Project } from '@shared/contentTypes';
+import { BLOG_PAGE_SIZE } from '@shared/constants/blog';
 import { fetchSiteConfig, type SiteConfig } from '@shared/siteConfig';
 import { getServerApiBase } from '@/utils/api';
 
@@ -26,6 +27,35 @@ export async function getArticles(filters?: {
     return await fetchJson<Article[]>(apiUrl(base, `/article/list${qs}`));
   } catch {
     return [];
+  }
+}
+
+/** 服务端分页拉取文章（博客时间轴列表） */
+export async function getArticlesPaginated(filters?: {
+  category?: string;
+  tag?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<PaginatedResult<Article>> {
+  const empty: PaginatedResult<Article> = {
+    items: [],
+    total: 0,
+    page: filters?.page ?? 1,
+    pageSize: filters?.pageSize ?? BLOG_PAGE_SIZE,
+  };
+
+  try {
+    const base = getServerApiBase();
+    const params = new URLSearchParams();
+    if (filters?.category) params.set('category', filters.category);
+    if (filters?.tag) params.set('tag', filters.tag);
+    params.set('page', String(filters?.page ?? 1));
+    params.set('pageSize', String(filters?.pageSize ?? BLOG_PAGE_SIZE));
+    return await fetchJson<PaginatedResult<Article>>(
+      apiUrl(base, `/article/page?${params}`),
+    );
+  } catch {
+    return empty;
   }
 }
 

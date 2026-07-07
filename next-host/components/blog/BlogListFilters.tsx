@@ -38,6 +38,9 @@ export default function BlogListFilters({
       if (tag) params.set('tag', tag);
       else params.delete('tag');
 
+      // 筛选变更时回到第一页
+      params.delete('page');
+
       const qs = params.toString();
       startTransition(() => {
         router.push(qs ? `/blog?${qs}` : '/blog');

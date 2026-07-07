@@ -3,6 +3,14 @@
  * 前后台子应用共用，避免 admin / web 各自维护一份字段定义
  */
 
+/** 通用分页响应（与 NestJS 分页接口对齐） */
+export interface PaginatedResult<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 /** 博客文章 */
 export interface Article {
   id: number;
