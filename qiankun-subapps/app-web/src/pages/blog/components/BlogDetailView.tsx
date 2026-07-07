@@ -1,5 +1,6 @@
 import {
   AppLink,
+  ArticleEngagementPanel,
   ArticleMarkdown,
   ArticleToc,
   PageTitle,
@@ -8,6 +9,7 @@ import {
 import { formatDate } from '../../../../../_shared/utils';
 import { extractMarkdownHeadings } from '../../../../../_shared/utils/markdownHeadings';
 import type { Article } from '../../../../../_shared/contentTypes';
+import { useApiBase } from '../../../context/ApiBaseContext';
 
 export interface BlogDetailViewProps {
   article: Article;
@@ -15,6 +17,7 @@ export interface BlogDetailViewProps {
 
 /** 博客文章详情视图 */
 export default function BlogDetailView({ article }: BlogDetailViewProps) {
+  const apiBase = useApiBase();
   const headings = extractMarkdownHeadings(article.content);
 
   return (
@@ -32,6 +35,12 @@ export default function BlogDetailView({ article }: BlogDetailViewProps) {
           {article.category ? ` · ${article.category}` : ''}
         </p>
         <ArticleMarkdown className="app-article-body" content={article.content} />
+
+        <ArticleEngagementPanel
+          apiBase={apiBase}
+          articleId={article.id}
+          articleTitle={article.title}
+        />
       </article>
     </SubApp>
   );

@@ -1,0 +1,221 @@
+/**
+ * 博客详情互动区样式
+ * 编辑型窄栏：与 Ink & Sand 主题一致，圆角 2px
+ */
+.article-engagement {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ed-line);
+}
+
+.article-engagement__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.article-engagement__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--ed-line);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ed-text);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--ed-accent-border);
+    color: var(--ed-accent);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &--active {
+    border-color: var(--ed-accent-border);
+    background: var(--ed-accent-soft);
+    color: var(--ed-accent);
+  }
+}
+
+.article-engagement__action-count {
+  font-size: 0.78rem;
+  color: var(--ed-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.article-engagement__action--active .article-engagement__action-count {
+  color: var(--ed-accent);
+}
+
+.article-engagement__meta {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--ed-faint);
+}
+
+.article-engagement__tip {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  color: var(--ed-muted);
+
+  &--error {
+    color: var(--ed-accent);
+  }
+}
+
+.article-engagement__comments {
+  margin-top: 2rem;
+}
+
+.article-engagement__comments-title {
+  margin: 0 0 1.25rem;
+  font-family: var(--ed-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ed-text);
+}
+
+.article-engagement__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--ed-line);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ed-surface) 80%, transparent);
+}
+
+.article-engagement__form-row {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: minmax(0, 14rem) 1fr;
+  }
+}
+
+.article-engagement__textarea {
+  min-height: 6rem;
+  line-height: 1.6;
+}
+
+.article-engagement__counter {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--ed-faint);
+  text-align: right;
+
+  &--warn {
+    color: var(--ed-accent);
+  }
+}
+
+.article-engagement__form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.article-engagement__feedback {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+
+  &--error {
+    color: var(--ed-accent);
+  }
+
+  &--success {
+    color: var(--ed-muted);
+  }
+}
+
+.article-engagement__loading,
+.article-engagement__empty {
+  margin: 0;
+  padding: 1.5rem 0;
+  font-size: 0.88rem;
+  color: var(--ed-faint);
+  font-style: italic;
+}
+
+.article-engagement__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.article-engagement__item {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--ed-line);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.article-engagement__item-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.article-engagement__item-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ed-text);
+}
+
+.article-engagement__item-time {
+  font-size: 0.75rem;
+  color: var(--ed-faint);
+}
+
+.article-engagement__item-body {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--ed-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-engagement__action:hover:not(:disabled),
+  .article-engagement__action:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .article-engagement__meta {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}

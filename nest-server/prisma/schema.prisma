@@ -8,14 +8,56 @@ datasource db {
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   title       String
   summary     String?
   content     String
   category    String?
   tags        String?
-  slug        String?  @unique
-  publishedAt DateTime @default(now())
+  slug        String?           @unique
+  publishedAt DateTime          @default(now())
+  likes       ArticleLike[]
+  bookmarks   ArticleBookmark[]
+  comments    ArticleComment[]
+}
+
+/** 文章点赞（匿名访客 visitorId 去重） */
+model ArticleLike {
+  id        Int      @id @default(autoincrement())
+  articleId Int
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  visitorId String
+  createdAt DateTime @default(now())
+
+  @@unique([articleId, visitorId])
+  @@index([articleId])
+}
+
+/** 文章收藏（匿名访客 visitorId 去重） */
+model ArticleBookmark {
+  id        Int      @id @default(autoincrement())
+  articleId Int
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  visitorId String
+  createdAt DateTime @default(now())
+
+  @@unique([articleId, visitorId])
+  @@index([articleId])
+}
+
+/** 文章评论（前台公开，昵称 + 内容） */
+model ArticleComment {
+  id        Int      @id @default(autoincrement())
+  articleId Int
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  nickname  String
+  content   String
+  /** 可选：用于防刷或与点赞收藏同一访客标识 */
+  visitorId String?
+  createdAt DateTime @default(now())
+
+  @@index([articleId])
+  @@index([createdAt])
 }
 
 model Project {

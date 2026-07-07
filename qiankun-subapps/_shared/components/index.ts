@@ -23,8 +23,8 @@ export {
 } from './ui';
 
 export { HomeShell, HomeHero, HomeSection, HomePostList, HomeProjectList } from './home';
-export { BlogTimelineList, BlogPagination } from './blog';
-export type { BlogTimelineListProps, BlogPaginationProps } from './blog';
+export { BlogTimelineList, BlogPagination, ArticleEngagementPanel } from './blog';
+export type { BlogTimelineListProps, BlogPaginationProps, ArticleEngagementPanelProps } from './blog';
 export { ArticleToc, type ArticleTocProps } from './ArticleToc';
 export { ArticleMarkdown, type ArticleMarkdownProps } from './ArticleMarkdown';
 export {

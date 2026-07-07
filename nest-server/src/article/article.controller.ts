@@ -1,9 +1,15 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { ArticleEngagementService } from './article-engagement.service';
 import { ArticleService } from './article.service';
+import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
+import { ToggleEngagementDto } from './dto/toggle-engagement.dto';
 
 @Controller('api/article')
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly articleEngagementService: ArticleEngagementService,
+  ) {}
 
   @Get('list')
   list(
@@ -27,6 +33,45 @@ export class ArticleController {
   @Get('slug/:slug')
   bySlug(@Param('slug') slug: string) {
     return this.articleService.findBySlug(slug);
+  }
+
+  /** 互动统计与当前访客状态 */
+  @Get(':id/engagement')
+  engagement(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('visitorId') visitorId?: string,
+  ) {
+    return this.articleEngagementService.queryEngagement(id, visitorId);
+  }
+
+  /** 文章评论列表 */
+  @Get(':id/comments')
+  comments(@Param('id', ParseIntPipe) id: number) {
+    return this.articleEngagementService.queryComments(id);
+  }
+
+  @Post(':id/like')
+  toggleLike(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: ToggleEngagementDto,
+  ) {
+    return this.articleEngagementService.toggleLike(id, dto.visitorId);
+  }
+
+  @Post(':id/bookmark')
+  toggleBookmark(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: ToggleEngagementDto,
+  ) {
+    return this.articleEngagementService.toggleBookmark(id, dto.visitorId);
+  }
+
+  @Post(':id/comments')
+  createComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateArticleCommentDto,
+  ) {
+    return this.articleEngagementService.createComment(id, dto);
   }
 
   @Get(':id')

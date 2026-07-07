@@ -3,6 +3,7 @@ import { formatDate } from '@shared/utils/format';
 import { extractMarkdownHeadings } from '@shared/utils/markdownHeadings';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { BlogEngagementSection } from '@/components/blog/BlogEngagementSection';
 import { getArticle } from '@/lib/serverApi';
 
 export const dynamic = 'force-dynamic';
@@ -52,6 +53,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
           {article.category ? ` · ${article.category}` : ''}
         </p>
         <ArticleMarkdown className="app-article-body" content={article.content} />
+
+        <BlogEngagementSection articleId={article.id} articleTitle={article.title} />
       </article>
     </SubApp>
   );

@@ -53,3 +53,26 @@ export interface Message {
   content: string;
   createdAt: string;
 }
+
+/** 文章互动统计与当前访客状态 */
+export interface ArticleEngagement {
+  likeCount: number;
+  bookmarkCount: number;
+  commentCount: number;
+  liked: boolean;
+  bookmarked: boolean;
+}
+
+/** 文章评论 */
+export interface ArticleComment {
+  id: number;
+  nickname: string;
+  content: string;
+  createdAt: string;
+}
+
+/** 发表评论接口返回 */
+export interface ArticleCommentCreateResult {
+  comment: ArticleComment;
+  commentCount: number;
+}
