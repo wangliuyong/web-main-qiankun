@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { buildCommentTree, type ArticleCommentNode } from '../../blogEngagement/commentTree';
+import { formatEngagementCount } from '../../blogEngagement/formatCount';
 import { useArticleComments, useArticleEngagement } from '../../blogEngagement/useArticleEngagement';
 import { formatDate } from '../../utils/format';
 import { AppButton, AppField, AppInput } from '../ui';
@@ -16,9 +17,7 @@ export interface ArticleEngagementPanelProps {
 
 /** 格式化互动计数：大数缩写 */
 function formatCount(count: number): string {
-  if (count >= 10000) return `${(count / 10000).toFixed(1)}万`;
-  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
-  return String(count);
+  return formatEngagementCount(count);
 }
 
 interface CommentReplyFormProps {

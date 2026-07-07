@@ -34,17 +34,39 @@ export class ArticleService {
     return where;
   }
 
+  /** 列表项附带点赞 / 收藏 / 评论计数 */
+  private mapArticleWithEngagement<
+    T extends {
+      _count: { likes: number; bookmarks: number; comments: number };
+    },
+  >(article: T) {
+    const { _count, ...rest } = article;
+    return {
+      ...rest,
+      likeCount: _count.likes,
+      bookmarkCount: _count.bookmarks,
+      commentCount: _count.comments,
+    };
+  }
+
   /** 文章列表，支持分类、标签、年月归档筛选 */
-  findAll(query: {
+  async findAll(query: {
     category?: string;
     tag?: string;
     year?: string;
     month?: string;
   }) {
-    return this.prisma.article.findMany({
+    const articles = await this.prisma.article.findMany({
       where: this.buildListWhere(query),
       orderBy: { publishedAt: 'desc' },
+      include: {
+        _count: {
+          select: { likes: true, bookmarks: true, comments: true },
+        },
+      },
     });
+
+    return articles.map((article) => this.mapArticleWithEngagement(article));
   }
 
   /** 分页文章列表；page 从 1 开始，pageSize 默认 10、最大 50 */
@@ -66,11 +88,21 @@ export class ArticleService {
         orderBy: { publishedAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
+        include: {
+          _count: {
+            select: { likes: true, bookmarks: true, comments: true },
+          },
+        },
       }),
       this.prisma.article.count({ where }),
     ]);
 
-    return { list, total, page, pageSize };
+    return {
+      list: list.map((article) => this.mapArticleWithEngagement(article)),
+      total,
+      page,
+      pageSize,
+    };
   }
 
   /** 详情接口返回前清理种子数据页脚等冗余内容 */

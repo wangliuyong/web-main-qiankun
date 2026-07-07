@@ -3,6 +3,7 @@ import type { Article } from '../../contentTypes';
 import { BLOG_LIST_DATE_FORMAT, shouldShowArticleDate } from '../../utils/blogTimeline';
 import { formatDate } from '../../utils/format';
 import { cn } from '../../utils/cn';
+import { ArticleEngagementStats } from './ArticleEngagementStats';
 
 export interface BlogTimelineListProps {
   articles: Article[];
@@ -64,6 +65,11 @@ export function BlogTimelineList({
               <div className="home-post-body">
                 <h2 className="home-post-title">{item.title}</h2>
                 <p className="home-post-summary">{item.summary || '暂无摘要'}</p>
+                <ArticleEngagementStats
+                  likeCount={item.likeCount}
+                  bookmarkCount={item.bookmarkCount}
+                  commentCount={item.commentCount}
+                />
               </div>
             </Link>
           </li>

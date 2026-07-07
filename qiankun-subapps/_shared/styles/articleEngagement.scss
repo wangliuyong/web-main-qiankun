@@ -2,6 +2,35 @@
  * 博客详情互动区样式
  * 编辑型窄栏：与 Ink & Sand 主题一致，圆角 2px
  */
+
+/* 列表项互动数据（点赞 / 收藏 / 评论） */
+.article-engagement-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  margin-top: 0.65rem;
+}
+
+.article-engagement-stats__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.article-engagement-stats__label {
+  color: var(--ed-faint);
+  font-weight: 500;
+}
+
+.article-engagement-stats__value {
+  color: var(--ed-muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
 .article-engagement {
   margin-top: 2.5rem;
   padding-top: 2rem;

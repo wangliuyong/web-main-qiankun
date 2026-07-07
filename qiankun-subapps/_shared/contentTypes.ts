@@ -13,6 +13,12 @@ export interface Article {
   tags: string | null;
   slug: string | null;
   publishedAt: string;
+  /** 列表接口附带：点赞数 */
+  likeCount?: number;
+  /** 列表接口附带：收藏数 */
+  bookmarkCount?: number;
+  /** 列表接口附带：评论数 */
+  commentCount?: number;
 }
 
 /** 博客文章分页结果（/api/article/list?page=1） */
