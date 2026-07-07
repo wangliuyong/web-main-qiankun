@@ -507,6 +507,22 @@ export function stripLaunchChecklistSection(content: string): string {
     .trimEnd();
 }
 
+/**
+ * 从 Markdown 正文末尾移除种子数据标记「*Generated seed article*」
+ * 用于清理历史种子数据及详情接口展示
+ */
+export function stripGeneratedSeedFooter(content: string): string {
+  return content
+    .replace(/(?:\r?\n)?---\r?\n\r?\n\*Generated seed article\*\r?\n?$/i, '')
+    .replace(/(?:\r?\n)?\*Generated seed article\*\r?\n?$/i, '')
+    .trimEnd();
+}
+
+/** 统一清理种子文章正文中的冗余段落与页脚标记 */
+export function sanitizeArticleContent(content: string): string {
+  return stripGeneratedSeedFooter(stripLaunchChecklistSection(content));
+}
+
 /** 收尾：快速参考卡 */
 function buildOutroQuickRef(title: string, theme: string, sections: string[]): string {
   return `## 快速参考
@@ -518,10 +534,6 @@ function buildOutroQuickRef(title: string, theme: string, sections: string[]): s
 | 章节 | ${sections.join(' · ')} |
 
 > 收藏后可在排障时对照目录跳读，比通篇重读更高效。
-
----
-
-*Generated seed article*
 `;
 }
 

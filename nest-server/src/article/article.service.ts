@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { sanitizeArticleContent } from '../../prisma/articles-seed-content';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -72,12 +73,20 @@ export class ArticleService {
     return { list, total, page, pageSize };
   }
 
+  /** 详情接口返回前清理种子数据页脚等冗余内容 */
+  private sanitizeArticle<T extends { content: string }>(article: T): T {
+    return {
+      ...article,
+      content: sanitizeArticleContent(article.content),
+    };
+  }
+
   async findOne(id: number) {
     const article = await this.prisma.article.findUnique({ where: { id } });
     if (!article) {
       throw new NotFoundException('文章不存在');
     }
-    return article;
+    return this.sanitizeArticle(article);
   }
 
   async findBySlug(slug: string) {
@@ -85,7 +94,7 @@ export class ArticleService {
     if (!article) {
       throw new NotFoundException('文章不存在');
     }
-    return article;
+    return this.sanitizeArticle(article);
   }
 
   create(data: {
