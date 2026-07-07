@@ -34,17 +34,16 @@ export class ArticleService {
     return where;
   }
 
-  /** 列表项附带点赞 / 收藏 / 评论计数 */
+  /** 列表项附带点赞 / 评论计数 */
   private mapArticleWithEngagement<
     T extends {
-      _count: { likes: number; bookmarks: number; comments: number };
+      _count: { likes: number; comments: number };
     },
   >(article: T) {
     const { _count, ...rest } = article;
     return {
       ...rest,
       likeCount: _count.likes,
-      bookmarkCount: _count.bookmarks,
       commentCount: _count.comments,
     };
   }
@@ -61,7 +60,7 @@ export class ArticleService {
       orderBy: { publishedAt: 'desc' },
       include: {
         _count: {
-          select: { likes: true, bookmarks: true, comments: true },
+          select: { likes: true, comments: true },
         },
       },
     });
@@ -90,7 +89,7 @@ export class ArticleService {
         take: pageSize,
         include: {
           _count: {
-            select: { likes: true, bookmarks: true, comments: true },
+            select: { likes: true, comments: true },
           },
         },
       }),

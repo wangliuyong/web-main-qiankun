@@ -15,8 +15,6 @@ export interface Article {
   publishedAt: string;
   /** 列表接口附带：点赞数 */
   likeCount?: number;
-  /** 列表接口附带：收藏数 */
-  bookmarkCount?: number;
   /** 列表接口附带：评论数 */
   commentCount?: number;
 }
@@ -63,10 +61,8 @@ export interface Message {
 /** 文章互动统计与当前访客状态 */
 export interface ArticleEngagement {
   likeCount: number;
-  bookmarkCount: number;
   commentCount: number;
   liked: boolean;
-  bookmarked: boolean;
 }
 
 /** 文章评论 */

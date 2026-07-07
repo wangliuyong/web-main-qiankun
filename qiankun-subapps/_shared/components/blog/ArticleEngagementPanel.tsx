@@ -224,7 +224,7 @@ function CommentThreadItem({
 }
 
 /**
- * 博客详情互动区：点赞、收藏、分享与评论。
+ * 博客详情互动区：点赞、分享与评论。
  * 客户端组件，供 app-web 与 next-host 共用。
  */
 export function ArticleEngagementPanel({
@@ -238,7 +238,6 @@ export function ArticleEngagementPanel({
     error: engagementError,
     shareTip,
     toggleLike,
-    toggleBookmark,
     shareArticle,
     reload: reloadEngagement,
   } = useArticleEngagement({ apiBase, articleId });
@@ -286,19 +285,6 @@ export function ArticleEngagementPanel({
           <span className="article-engagement__action-label">点赞</span>
           <span className="article-engagement__action-count">
             {engagementLoading ? '…' : formatCount(engagement?.likeCount ?? 0)}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className={`article-engagement__action${engagement?.bookmarked ? ' article-engagement__action--active' : ''}`}
-          onClick={() => void toggleBookmark()}
-          disabled={engagementLoading || actionLoading}
-          aria-pressed={engagement?.bookmarked ?? false}
-        >
-          <span className="article-engagement__action-label">收藏</span>
-          <span className="article-engagement__action-count">
-            {engagementLoading ? '…' : formatCount(engagement?.bookmarkCount ?? 0)}
           </span>
         </button>
 

@@ -11,7 +11,7 @@ export interface UseArticleEngagementOptions {
   articleId: number;
 }
 
-/** 文章点赞、收藏与分享状态 */
+/** 文章点赞与分享状态 */
 export function useArticleEngagement({
   apiBase,
   articleId,
@@ -76,26 +76,6 @@ export function useArticleEngagement({
     }
   }, [apiBase, articleId]);
 
-  const toggleBookmark = useCallback(async () => {
-    const visitorId = getOrCreateVisitorId();
-    if (!visitorId) return;
-
-    setActionLoading(true);
-    setError('');
-    try {
-      const data = await blogEngagementApi.postToggleBookmark(
-        apiBase,
-        articleId,
-        visitorId,
-      );
-      setEngagement(data);
-    } catch {
-      setError('收藏失败，请稍后重试');
-    } finally {
-      setActionLoading(false);
-    }
-  }, [apiBase, articleId]);
-
   /** 分享：复制当前页链接到剪贴板 */
   const shareArticle = useCallback(async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
@@ -123,7 +103,6 @@ export function useArticleEngagement({
     error,
     shareTip,
     toggleLike,
-    toggleBookmark,
     shareArticle,
     reload: load,
   };

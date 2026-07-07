@@ -2,7 +2,7 @@ const VISITOR_ID_KEY = 'wly_blog_visitor_id';
 
 /**
  * 获取或创建匿名访客标识。
- * 点赞 / 收藏依赖此 ID 去重，存于 localStorage，无需登录。
+ * 点赞依赖此 ID 去重，存于 localStorage，无需登录。
  */
 export function getOrCreateVisitorId(): string {
   if (typeof window === 'undefined') {

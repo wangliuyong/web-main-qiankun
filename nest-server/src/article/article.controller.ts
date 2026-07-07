@@ -58,14 +58,6 @@ export class ArticleController {
     return this.articleEngagementService.toggleLike(id, dto.visitorId);
   }
 
-  @Post(':id/bookmark')
-  toggleBookmark(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: ToggleEngagementDto,
-  ) {
-    return this.articleEngagementService.toggleBookmark(id, dto.visitorId);
-  }
-
   @Post(':id/comments')
   createComment(
     @Param('id', ParseIntPipe) id: number,

@@ -26,33 +26,24 @@ export class ArticleEngagementService {
     }
   }
 
-  /** 查询互动统计与当前访客是否已点赞 / 收藏 */
+  /** 查询互动统计与当前访客是否已点赞 */
   async queryEngagement(articleId: number, visitorId?: string) {
     await this.assertArticleExists(articleId);
 
-    const [likeCount, bookmarkCount, commentCount, liked, bookmarked] =
-      await Promise.all([
-        this.prisma.articleLike.count({ where: { articleId } }),
-        this.prisma.articleBookmark.count({ where: { articleId } }),
-        this.prisma.articleComment.count({ where: { articleId } }),
-        visitorId
-          ? this.prisma.articleLike.findUnique({
-              where: { articleId_visitorId: { articleId, visitorId } },
-            })
-          : null,
-        visitorId
-          ? this.prisma.articleBookmark.findUnique({
-              where: { articleId_visitorId: { articleId, visitorId } },
-            })
-          : null,
-      ]);
+    const [likeCount, commentCount, liked] = await Promise.all([
+      this.prisma.articleLike.count({ where: { articleId } }),
+      this.prisma.articleComment.count({ where: { articleId } }),
+      visitorId
+        ? this.prisma.articleLike.findUnique({
+            where: { articleId_visitorId: { articleId, visitorId } },
+          })
+        : null,
+    ]);
 
     return {
       likeCount,
-      bookmarkCount,
       commentCount,
       liked: Boolean(liked),
-      bookmarked: Boolean(bookmarked),
     };
   }
 
@@ -68,25 +59,6 @@ export class ArticleEngagementService {
       await this.prisma.articleLike.delete({ where: { id: existing.id } });
     } else {
       await this.prisma.articleLike.create({
-        data: { articleId, visitorId },
-      });
-    }
-
-    return this.queryEngagement(articleId, visitorId);
-  }
-
-  /** 切换收藏：已藏则取消，未藏则添加 */
-  async toggleBookmark(articleId: number, visitorId: string) {
-    await this.assertArticleExists(articleId);
-
-    const existing = await this.prisma.articleBookmark.findUnique({
-      where: { articleId_visitorId: { articleId, visitorId } },
-    });
-
-    if (existing) {
-      await this.prisma.articleBookmark.delete({ where: { id: existing.id } });
-    } else {
-      await this.prisma.articleBookmark.create({
         data: { articleId, visitorId },
       });
     }

@@ -67,7 +67,6 @@ export function BlogTimelineList({
                 <p className="home-post-summary">{item.summary || '暂无摘要'}</p>
                 <ArticleEngagementStats
                   likeCount={item.likeCount}
-                  bookmarkCount={item.bookmarkCount}
                   commentCount={item.commentCount}
                 />
               </div>

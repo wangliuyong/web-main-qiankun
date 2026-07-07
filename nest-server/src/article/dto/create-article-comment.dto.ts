@@ -12,7 +12,7 @@ export class CreateArticleCommentDto {
   @MaxLength(1000)
   content!: string;
 
-  /** 与点赞收藏共用的访客标识，便于后续审计 */
+  /** 与点赞共用的访客标识，便于后续审计 */
   @IsOptional()
   @IsString()
   @MaxLength(64)
