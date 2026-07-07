@@ -1,7 +1,10 @@
 import { apiUrl, fetchJson } from '@shared/api';
-import type { Article, Project } from '@shared/contentTypes';
+import type { Article, ArticlePageResult, Project } from '@shared/contentTypes';
 import { fetchSiteConfig, type SiteConfig } from '@shared/siteConfig';
 import { getServerApiBase } from '@/utils/api';
+
+/** 博客列表每页条数 */
+export const BLOG_PAGE_SIZE = 10;
 
 /** 服务端拉取站点配置 */
 export async function getSiteConfig(): Promise<SiteConfig | null> {
@@ -26,6 +29,32 @@ export async function getArticles(filters?: {
     return await fetchJson<Article[]>(apiUrl(base, `/article/list${qs}`));
   } catch {
     return [];
+  }
+}
+
+/** 服务端拉取分页文章列表（失败时返回空分页结构） */
+export async function getArticlesPage(filters?: {
+  category?: string;
+  tag?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<ArticlePageResult> {
+  const page = filters?.page ?? 1;
+  const pageSize = filters?.pageSize ?? BLOG_PAGE_SIZE;
+
+  try {
+    const base = getServerApiBase();
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize),
+    });
+    if (filters?.category) params.set('category', filters.category);
+    if (filters?.tag) params.set('tag', filters.tag);
+    return await fetchJson<ArticlePageResult>(
+      apiUrl(base, `/article/list?${params}`),
+    );
+  } catch {
+    return { list: [], total: 0, page, pageSize };
   }
 }
 

@@ -15,6 +15,14 @@ export interface Article {
   publishedAt: string;
 }
 
+/** 博客文章分页结果（/api/article/list?page=1） */
+export interface ArticlePageResult {
+  list: Article[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 /** 项目展示 */
 export interface Project {
   id: number;

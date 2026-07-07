@@ -9,10 +9,14 @@ export default function BlogPage() {
   const {
     mode,
     articles,
+    total,
+    page,
+    pageSize,
     detail,
     filterCategory,
     setFilterCategory,
     setFilterTag,
+    setPage,
     categories,
     loading,
     error,
@@ -36,10 +40,14 @@ export default function BlogPage() {
   return (
     <BlogListView
       articles={articles}
+      total={total}
+      page={page}
+      pageSize={pageSize}
       filterCategory={filterCategory}
       categories={categories}
       onCategoryChange={setFilterCategory}
       onTagBlur={setFilterTag}
+      onPageChange={setPage}
       onReload={() => void reload()}
     />
   );

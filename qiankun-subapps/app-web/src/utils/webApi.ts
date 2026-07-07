@@ -1,5 +1,8 @@
 import { apiUrl, fetchJson } from '../../../_shared/api';
-import type { Article, LinkItem, Project } from '../../../_shared/contentTypes';
+import type { Article, ArticlePageResult, LinkItem, Project } from '../../../_shared/contentTypes';
+
+/** 博客列表每页条数 */
+export const BLOG_PAGE_SIZE = 10;
 
 /** 前台公开 REST 聚合（无需鉴权） */
 export const webApi = {
@@ -12,6 +15,21 @@ export const webApi = {
     if (filters?.tag) params.set('tag', filters.tag);
     const qs = params.toString() ? `?${params}` : '';
     return fetchJson<Article[]>(apiUrl(apiBase, `/article/list${qs}`));
+  },
+
+  listArticlesPage(
+    apiBase: string,
+    filters?: { category?: string; tag?: string; page?: number; pageSize?: number },
+  ): Promise<ArticlePageResult> {
+    const page = filters?.page ?? 1;
+    const pageSize = filters?.pageSize ?? BLOG_PAGE_SIZE;
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize),
+    });
+    if (filters?.category) params.set('category', filters.category);
+    if (filters?.tag) params.set('tag', filters.tag);
+    return fetchJson<ArticlePageResult>(apiUrl(apiBase, `/article/list?${params}`));
   },
 
   getArticle(apiBase: string, id: string | number): Promise<Article> {

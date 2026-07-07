@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import BlogArticleList from '@/components/blog/BlogArticleList';
 import BlogListFilters from '@/components/blog/BlogListFilters';
-import { getArticles } from '@/lib/serverApi';
+import { getArticles, getArticlesPage } from '@/lib/serverApi';
+import BlogListPagination from '@/components/blog/BlogListPagination';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,18 +14,20 @@ export const metadata: Metadata = {
 };
 
 export interface BlogListPageProps {
-  searchParams: Promise<{ category?: string; tag?: string }>;
+  searchParams: Promise<{ category?: string; tag?: string; page?: string }>;
 }
 
-/** 博客列表 — 服务端渲染文章列表，筛选通过 URL 参数触发重新请求 */
+/** 博客列表 — 服务端渲染文章列表，筛选与分页通过 URL 参数触发重新请求 */
 export default async function BlogListPage({ searchParams }: BlogListPageProps) {
-  const { category, tag } = await searchParams;
+  const { category, tag, page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
 
-  const [allArticles, articles] = await Promise.all([
+  const [allArticles, pageData] = await Promise.all([
     getArticles(),
-    getArticles({
+    getArticlesPage({
       category: category || undefined,
       tag: tag || undefined,
+      page,
     }),
   ]);
 
@@ -38,7 +41,14 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
       <Suspense fallback={null}>
         <BlogListFilters categories={categories} />
       </Suspense>
-      <BlogArticleList articles={articles} />
+      <BlogArticleList articles={pageData.list} />
+      <Suspense fallback={null}>
+        <BlogListPagination
+          page={pageData.page}
+          pageSize={pageData.pageSize}
+          total={pageData.total}
+        />
+      </Suspense>
     </SubApp>
   );
 }
