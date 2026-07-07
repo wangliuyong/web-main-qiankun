@@ -4,21 +4,21 @@ import { BlogPagination } from '@shared/components';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useTransition } from 'react';
 
-export interface BlogPaginationNavProps {
+export interface BlogListPaginationProps {
   page: number;
   pageSize: number;
   total: number;
 }
 
 /**
- * 博客分页（URL searchParams 驱动）
- * 与 BlogListFilters 共用 category / tag，翻页时保留筛选条件。
+ * 博客列表分页（客户端）
+ * 通过 URL searchParams 的 page 驱动，与筛选参数共存
  */
-export default function BlogPaginationNav({
+export default function BlogListPagination({
   page,
   pageSize,
   total,
-}: BlogPaginationNavProps) {
+}: BlogListPaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
@@ -27,8 +27,11 @@ export default function BlogPaginationNav({
     (nextPage: number) => {
       const params = new URLSearchParams(searchParams.toString());
 
-      if (nextPage <= 1) params.delete('page');
-      else params.set('page', String(nextPage));
+      if (nextPage <= 1) {
+        params.delete('page');
+      } else {
+        params.set('page', String(nextPage));
+      }
 
       const qs = params.toString();
       startTransition(() => {

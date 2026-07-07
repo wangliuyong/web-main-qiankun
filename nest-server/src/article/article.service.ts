@@ -5,8 +5,8 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ArticleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** 文章列表，支持分类、标签、年月归档筛选 */
-  findAll(query: {
+  /** 构建文章列表查询条件（分类、标签、年月归档） */
+  private buildListWhere(query: {
     category?: string;
     tag?: string;
     year?: string;
@@ -30,32 +30,36 @@ export class ArticleService {
       where.publishedAt = { gte: start, lte: end };
     }
 
+    return where;
+  }
+
+  /** 文章列表，支持分类、标签、年月归档筛选 */
+  findAll(query: {
+    category?: string;
+    tag?: string;
+    year?: string;
+    month?: string;
+  }) {
     return this.prisma.article.findMany({
-      where,
+      where: this.buildListWhere(query),
       orderBy: { publishedAt: 'desc' },
     });
   }
 
-  /** 分页查询文章，用于博客列表时间轴 + 翻页 */
-  async findPaged(query: {
+  /** 分页文章列表；page 从 1 开始，pageSize 默认 10、最大 50 */
+  async findPage(query: {
     category?: string;
     tag?: string;
-    page?: number;
-    pageSize?: number;
+    year?: string;
+    month?: string;
+    page?: string;
+    pageSize?: string;
   }) {
-    const where: Record<string, unknown> = {};
+    const page = Math.max(1, parseInt(query.page || '1', 10) || 1);
+    const pageSize = Math.min(50, Math.max(1, parseInt(query.pageSize || '10', 10) || 10));
+    const where = this.buildListWhere(query);
 
-    if (query.category) {
-      where.category = query.category;
-    }
-    if (query.tag) {
-      where.tags = { contains: query.tag };
-    }
-
-    const page = Math.max(1, query.page ?? 1);
-    const pageSize = Math.min(50, Math.max(1, query.pageSize ?? 10));
-
-    const [items, total] = await Promise.all([
+    const [list, total] = await Promise.all([
       this.prisma.article.findMany({
         where,
         orderBy: { publishedAt: 'desc' },
@@ -65,7 +69,7 @@ export class ArticleService {
       this.prisma.article.count({ where }),
     ]);
 
-    return { items, total, page, pageSize };
+    return { list, total, page, pageSize };
   }
 
   async findOne(id: number) {

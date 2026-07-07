@@ -1,17 +1,17 @@
+import { buildPaginationPages } from '../../utils/blogPagination';
 import { cn } from '../../utils/cn';
 
 export interface BlogPaginationProps {
   page: number;
   pageSize: number;
   total: number;
-  /** 页码变更回调 */
   onPageChange: (page: number) => void;
   className?: string;
 }
 
 /**
  * 博客分页导航（纯展示 + 回调，不绑定路由）。
- * next-host 通过包装组件将 URL 与 onPageChange 对接。
+ * 总页数 ≤ 1 时不渲染。
  */
 export function BlogPagination({
   page,
@@ -24,7 +24,7 @@ export function BlogPagination({
 
   if (totalPages <= 1) return null;
 
-  const pages = buildPageNumbers(page, totalPages);
+  const pages = buildPaginationPages(page, totalPages);
 
   return (
     <nav
@@ -76,27 +76,4 @@ export function BlogPagination({
       </button>
     </nav>
   );
-}
-
-/** 生成带省略号的页码序列 */
-function buildPageNumbers(current: number, total: number): Array<number | 'ellipsis'> {
-  if (total <= 7) {
-    return Array.from({ length: total }, (_, i) => i + 1);
-  }
-
-  const pages: Array<number | 'ellipsis'> = [1];
-
-  if (current > 3) pages.push('ellipsis');
-
-  const start = Math.max(2, current - 1);
-  const end = Math.min(total - 1, current + 1);
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-
-  if (current < total - 2) pages.push('ellipsis');
-
-  pages.push(total);
-  return pages;
 }

@@ -1,6 +1,8 @@
 import { apiUrl, fetchJson } from '../../../_shared/api';
-import type { Article, LinkItem, PaginatedResult, Project } from '../../../_shared/contentTypes';
-import { BLOG_PAGE_SIZE } from '../../../_shared/constants/blog';
+import type { Article, ArticlePageResult, LinkItem, Project } from '../../../_shared/contentTypes';
+
+/** 博客列表每页条数 */
+export const BLOG_PAGE_SIZE = 10;
 
 /** 前台公开 REST 聚合（无需鉴权） */
 export const webApi = {
@@ -15,17 +17,19 @@ export const webApi = {
     return fetchJson<Article[]>(apiUrl(apiBase, `/article/list${qs}`));
   },
 
-  /** 分页文章列表（博客时间轴） */
-  queryArticlesPage(
+  listArticlesPage(
     apiBase: string,
     filters?: { category?: string; tag?: string; page?: number; pageSize?: number },
-  ): Promise<PaginatedResult<Article>> {
-    const params = new URLSearchParams();
+  ): Promise<ArticlePageResult> {
+    const page = filters?.page ?? 1;
+    const pageSize = filters?.pageSize ?? BLOG_PAGE_SIZE;
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize),
+    });
     if (filters?.category) params.set('category', filters.category);
     if (filters?.tag) params.set('tag', filters.tag);
-    params.set('page', String(filters?.page ?? 1));
-    params.set('pageSize', String(filters?.pageSize ?? BLOG_PAGE_SIZE));
-    return fetchJson<PaginatedResult<Article>>(apiUrl(apiBase, `/article/page?${params}`));
+    return fetchJson<ArticlePageResult>(apiUrl(apiBase, `/article/list?${params}`));
   },
 
   getArticle(apiBase: string, id: string | number): Promise<Article> {

@@ -12,11 +12,11 @@ export default function BlogPage() {
     total,
     page,
     pageSize,
-    setPage,
     detail,
     filterCategory,
     setFilterCategory,
     setFilterTag,
+    setPage,
     categories,
     loading,
     error,
@@ -47,8 +47,8 @@ export default function BlogPage() {
       categories={categories}
       onCategoryChange={setFilterCategory}
       onTagBlur={setFilterTag}
-      onReload={() => void reload()}
       onPageChange={setPage}
+      onReload={() => void reload()}
     />
   );
 }

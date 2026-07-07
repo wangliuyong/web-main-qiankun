@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import type { Article } from '../../contentTypes';
-import { groupArticlesByTimeline } from '../../utils/blogTimeline';
+import { BLOG_LIST_DATE_FORMAT, shouldShowArticleDate } from '../../utils/blogTimeline';
 import { formatDate } from '../../utils/format';
 import { cn } from '../../utils/cn';
 
@@ -8,92 +8,67 @@ export interface BlogTimelineListProps {
   articles: Article[];
   /** 生成详情页路径，如 /blog/1 */
   resolveHref: (id: number) => string;
-  /**
-   * 自定义链接渲染（子应用 SPA 可传入 react-router Link 包装）。
-   * 默认使用原生 <a>，利于 SSR 与 SEO。
-   */
+  /** 自定义链接组件（Next.js Link / React Router Link）；默认使用 <a> */
   renderLink?: (props: {
     href: string;
-    className?: string;
+    className: string;
     children: ReactNode;
   }) => ReactNode;
   className?: string;
 }
 
-/** 博客文章时间轴列表（按年/月分组，左侧竖线节点） */
+/** 默认原生链接，适用于 SSR */
+function DefaultLink({
+  href,
+  className,
+  children,
+  ...props
+}: AnchorHTMLAttributes<HTMLAnchorElement>) {
+  return (
+    <a className={className} href={href} {...props}>
+      {children}
+    </a>
+  );
+}
+
+/**
+ * 博客时间线列表：横排布局，相同发布日期仅首条展示时间。
+ */
 export function BlogTimelineList({
   articles,
   resolveHref,
   renderLink,
   className,
 }: BlogTimelineListProps) {
-  const yearGroups = groupArticlesByTimeline(articles);
-
   const Link = renderLink ?? DefaultLink;
 
+  if (!articles.length) {
+    return <p className="home-empty">暂无文章，稍后再来看看。</p>;
+  }
+
   return (
-    <div className={cn('blog-timeline', className)}>
-      {yearGroups.map((yearGroup) => (
-        <section className="blog-timeline-year" key={yearGroup.year}>
-          <h2 className="blog-timeline-year-label">{yearGroup.yearLabel}</h2>
+    <ul className={cn('home-post-list', className)}>
+      {articles.map((item, index) => {
+        const showDate = shouldShowArticleDate(articles, index);
 
-          <div className="blog-timeline-months">
-            {yearGroup.months.map((monthGroup) => (
-              <div className="blog-timeline-month" key={monthGroup.key}>
-                <div className="blog-timeline-month-marker">
-                  <span className="blog-timeline-dot" aria-hidden />
-                  <time className="blog-timeline-month-label">{monthGroup.monthLabel}</time>
-                </div>
-
-                <ul className="blog-timeline-posts">
-                  {monthGroup.articles.map((article) => (
-                    <li className="blog-timeline-post" key={article.id}>
-                      <Link
-                        href={resolveHref(article.id)}
-                        className="blog-timeline-post-link"
-                      >
-                        <time
-                          className="blog-timeline-post-date"
-                          dateTime={article.publishedAt}
-                        >
-                          {formatDate(article.publishedAt, 'medium')}
-                        </time>
-                        <div className="blog-timeline-post-body">
-                          <h3 className="blog-timeline-post-title">{article.title}</h3>
-                          {article.category && (
-                            <span className="blog-timeline-post-category">
-                              {article.category}
-                            </span>
-                          )}
-                          <p className="blog-timeline-post-summary">
-                            {article.summary || '暂无摘要'}
-                          </p>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+        return (
+          <li className="home-post-item" key={item.id}>
+            <Link className="home-post-link" href={resolveHref(item.id)}>
+              {showDate ? (
+                <time className="home-post-meta" dateTime={item.publishedAt}>
+                  {formatDate(item.publishedAt, BLOG_LIST_DATE_FORMAT)}
+                </time>
+              ) : (
+                <span className="home-post-meta home-post-meta--hidden" aria-hidden="true" />
+              )}
+              <div className="home-post-body">
+                <h2 className="home-post-title">{item.title}</h2>
+                <p className="home-post-summary">{item.summary || '暂无摘要'}</p>
               </div>
-            ))}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
-}
-
-function DefaultLink({
-  href,
-  className,
-  children,
-}: {
-  href: string;
-  className?: string;
-  children: ReactNode;
-}) {
-  return (
-    <a className={className} href={href}>
-      {children}
-    </a>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

@@ -11,24 +11,17 @@ export class ArticleController {
     @Query('tag') tag?: string,
     @Query('year') year?: string,
     @Query('month') month?: string,
-  ) {
-    return this.articleService.findAll({ category, tag, year, month });
-  }
-
-  /** 分页列表：供博客归档页使用，返回 items + total */
-  @Get('page')
-  listPaged(
-    @Query('category') category?: string,
-    @Query('tag') tag?: string,
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
   ) {
-    return this.articleService.findPaged({
-      category,
-      tag,
-      page: page ? parseInt(page, 10) : 1,
-      pageSize: pageSize ? parseInt(pageSize, 10) : 10,
-    });
+    const filters = { category, tag, year, month };
+
+    // 传入 page 时返回分页结构，否则保持数组响应以兼容搜索、首页等调用方
+    if (page != null && page !== '') {
+      return this.articleService.findPage({ ...filters, page, pageSize });
+    }
+
+    return this.articleService.findAll(filters);
   }
 
   @Get('slug/:slug')
