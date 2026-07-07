@@ -63,11 +63,16 @@ export const blogEngagementApi = {
     return res.json() as Promise<ArticleComment[]>;
   },
 
-  /** 发表评论 */
+  /** 发表评论或回复 */
   async postComment(
     apiBase: string,
     articleId: number,
-    payload: { nickname: string; content: string; visitorId?: string },
+    payload: {
+      nickname: string;
+      content: string;
+      visitorId?: string;
+      parentId?: number;
+    },
   ): Promise<ArticleCommentCreateResult> {
     const res = await fetch(apiUrl(apiBase, `/article/${articleId}/comments`), {
       method: 'POST',

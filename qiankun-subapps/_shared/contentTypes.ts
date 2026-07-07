@@ -69,6 +69,10 @@ export interface ArticleComment {
   nickname: string;
   content: string;
   createdAt: string;
+  /** 回复目标评论 ID，顶级评论为 null */
+  parentId: number | null;
+  /** 被回复者昵称，便于展示「回复 @xxx」 */
+  replyToNickname: string | null;
 }
 
 /** 发表评论接口返回 */

@@ -1,9 +1,11 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { buildCommentTree, type ArticleCommentNode } from '../../blogEngagement/commentTree';
+import { useArticleComments, useArticleEngagement } from '../../blogEngagement/useArticleEngagement';
 import { formatDate } from '../../utils/format';
 import { AppButton, AppField, AppInput } from '../ui';
-import { useArticleComments, useArticleEngagement } from '../../blogEngagement/useArticleEngagement';
+import type { ArticleComment } from '../../contentTypes';
 
 export interface ArticleEngagementPanelProps {
   /** Nest API 根路径 */
@@ -19,6 +21,209 @@ function formatCount(count: number): string {
   return String(count);
 }
 
+interface CommentReplyFormProps {
+  nickname: string;
+  setNickname: (value: string) => void;
+  content: string;
+  setContent: (value: string) => void;
+  contentMax: number;
+  submitting: boolean;
+  target: ArticleComment;
+  formError: string;
+  formSuccess: string;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+}
+
+/** 单条评论下的内联回复表单 */
+function CommentReplyForm({
+  nickname,
+  setNickname,
+  content,
+  setContent,
+  contentMax,
+  submitting,
+  target,
+  formError,
+  formSuccess,
+  onSubmit,
+  onCancel,
+}: CommentReplyFormProps) {
+  const contentLength = content.length;
+  const contentNearLimit = contentLength > contentMax * 0.9;
+
+  return (
+    <form onSubmit={onSubmit} className="article-engagement__reply-form" noValidate>
+      {formError && (
+        <p className="article-engagement__feedback article-engagement__feedback--error" role="alert">
+          {formError}
+        </p>
+      )}
+      {formSuccess && (
+        <p className="article-engagement__feedback article-engagement__feedback--success" role="status">
+          {formSuccess}
+        </p>
+      )}
+
+      <p className="article-engagement__reply-hint">
+        回复 <span className="article-engagement__reply-target">@{target.nickname}</span>
+      </p>
+
+      <div className="article-engagement__reply-fields">
+        <AppField label="昵称" required>
+          <AppInput
+            required
+            autoComplete="nickname"
+            placeholder="怎么称呼你"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            disabled={submitting}
+          />
+        </AppField>
+
+        <AppField label="回复" required>
+          <textarea
+            required
+            rows={3}
+            className="app-input article-engagement__textarea resize-y"
+            placeholder={`回复 @${target.nickname}`}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            disabled={submitting}
+            maxLength={contentMax}
+          />
+          <p
+            className={`article-engagement__counter${contentNearLimit ? ' article-engagement__counter--warn' : ''}`}
+          >
+            {contentLength} / {contentMax}
+          </p>
+        </AppField>
+      </div>
+
+      <div className="article-engagement__reply-actions">
+        <AppButton type="submit" disabled={submitting}>
+          {submitting ? '发表中...' : '发表回复'}
+        </AppButton>
+        <button
+          type="button"
+          className="article-engagement__reply-cancel"
+          onClick={onCancel}
+          disabled={submitting}
+        >
+          取消
+        </button>
+      </div>
+    </form>
+  );
+}
+
+interface CommentThreadItemProps {
+  node: ArticleCommentNode;
+  depth?: number;
+  replyingToId: number | null;
+  nickname: string;
+  setNickname: (value: string) => void;
+  content: string;
+  setContent: (value: string) => void;
+  contentMax: number;
+  submitting: boolean;
+  formError: string;
+  formSuccess: string;
+  onReply: (comment: ArticleComment) => void;
+  onCancelReply: () => void;
+  onSubmitReply: (e: React.FormEvent) => void;
+}
+
+/** 单条评论及其子回复（递归渲染） */
+function CommentThreadItem({
+  node,
+  depth = 0,
+  replyingToId,
+  nickname,
+  setNickname,
+  content,
+  setContent,
+  contentMax,
+  submitting,
+  formError,
+  formSuccess,
+  onReply,
+  onCancelReply,
+  onSubmitReply,
+}: CommentThreadItemProps) {
+  const isReplying = replyingToId === node.id;
+
+  return (
+    <li
+      className={`article-engagement__item${depth > 0 ? ' article-engagement__item--nested' : ''}`}
+      style={depth > 0 ? { ['--comment-depth' as string]: depth } : undefined}
+    >
+      <div className="article-engagement__item-head">
+        <span className="article-engagement__item-name">{node.nickname}</span>
+        {node.replyToNickname && (
+          <span className="article-engagement__item-reply-to">
+            回复 @{node.replyToNickname}
+          </span>
+        )}
+        <time className="article-engagement__item-time" dateTime={node.createdAt}>
+          {formatDate(node.createdAt, 'datetimeSeconds')}
+        </time>
+      </div>
+
+      <p className="article-engagement__item-body">{node.content}</p>
+
+      <button
+        type="button"
+        className="article-engagement__reply-btn"
+        onClick={() => onReply(node)}
+        disabled={submitting}
+      >
+        回复
+      </button>
+
+      {isReplying && (
+        <CommentReplyForm
+          nickname={nickname}
+          setNickname={setNickname}
+          content={content}
+          setContent={setContent}
+          contentMax={contentMax}
+          submitting={submitting}
+          target={node}
+          formError={formError}
+          formSuccess={formSuccess}
+          onSubmit={onSubmitReply}
+          onCancel={onCancelReply}
+        />
+      )}
+
+      {node.children.length > 0 && (
+        <ul className="article-engagement__list article-engagement__list--nested">
+          {node.children.map((child) => (
+            <CommentThreadItem
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              replyingToId={replyingToId}
+              nickname={nickname}
+              setNickname={setNickname}
+              content={content}
+              setContent={setContent}
+              contentMax={contentMax}
+              submitting={submitting}
+              formError={formError}
+              formSuccess={formSuccess}
+              onReply={onReply}
+              onCancelReply={onCancelReply}
+              onSubmitReply={onSubmitReply}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
+
 /**
  * 博客详情互动区：点赞、收藏、分享与评论。
  * 客户端组件，供 app-web 与 next-host 共用。
@@ -26,7 +231,6 @@ function formatCount(count: number): string {
 export function ArticleEngagementPanel({
   apiBase,
   articleId,
-  articleTitle,
 }: ArticleEngagementPanelProps) {
   const {
     engagement,
@@ -52,6 +256,9 @@ export function ArticleEngagementPanel({
     setNickname,
     content,
     setContent,
+    replyingTo,
+    startReply,
+    cancelReply,
     contentMax,
     formError,
     formSuccess,
@@ -62,6 +269,7 @@ export function ArticleEngagementPanel({
     onCommentCountChange: handleCommentCountChange,
   });
 
+  const commentTree = useMemo(() => buildCommentTree(comments), [comments]);
   const contentLength = content.length;
   const contentNearLimit = contentLength > contentMax * 0.9;
 
@@ -98,7 +306,7 @@ export function ArticleEngagementPanel({
         <button
           type="button"
           className="article-engagement__action"
-          onClick={() => void shareArticle(articleTitle)}
+          onClick={() => void shareArticle()}
           disabled={engagementLoading}
         >
           <span className="article-engagement__action-label">分享</span>
@@ -113,7 +321,7 @@ export function ArticleEngagementPanel({
 
       {(engagementError || shareTip) && (
         <p
-          className={`article-engagement__tip${engagementError ? ' article-engagement__tip--error' : ''}`}
+          className={`article-engagement__tip${engagementError ? ' article-engagement__tip--error' : ' article-engagement__tip--success'}`}
           role={engagementError ? 'alert' : 'status'}
         >
           {engagementError || shareTip}
@@ -126,13 +334,20 @@ export function ArticleEngagementPanel({
           评论
         </h2>
 
-        <form onSubmit={submitComment} className="article-engagement__form" noValidate>
-          {formError && (
+        <form
+          onSubmit={(e) => {
+            if (replyingTo) return;
+            void submitComment(e);
+          }}
+          className="article-engagement__form"
+          noValidate
+        >
+          {formError && !replyingTo && (
             <p className="article-engagement__feedback article-engagement__feedback--error" role="alert">
               {formError}
             </p>
           )}
-          {formSuccess && (
+          {formSuccess && !replyingTo && (
             <p className="article-engagement__feedback article-engagement__feedback--success" role="status">
               {formSuccess}
             </p>
@@ -159,7 +374,7 @@ export function ArticleEngagementPanel({
               placeholder="写下你的想法"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              disabled={submitting}
+              disabled={submitting || Boolean(replyingTo)}
               maxLength={contentMax}
               aria-describedby="article-comment-hint"
             />
@@ -172,7 +387,7 @@ export function ArticleEngagementPanel({
           </AppField>
 
           <div className="article-engagement__form-actions">
-            <AppButton type="submit" disabled={submitting}>
+            <AppButton type="submit" disabled={submitting || Boolean(replyingTo)}>
               {submitting ? '发表中...' : '发表评论'}
             </AppButton>
           </div>
@@ -180,20 +395,27 @@ export function ArticleEngagementPanel({
 
         {commentsLoading ? (
           <p className="article-engagement__loading">评论加载中...</p>
-        ) : comments.length === 0 ? (
+        ) : commentTree.length === 0 ? (
           <p className="article-engagement__empty">还没有评论，来抢沙发吧。</p>
         ) : (
           <ul className="article-engagement__list app-stagger-sm">
-            {comments.map((comment) => (
-              <li key={comment.id} className="article-engagement__item">
-                <div className="article-engagement__item-head">
-                  <span className="article-engagement__item-name">{comment.nickname}</span>
-                  <time className="article-engagement__item-time" dateTime={comment.createdAt}>
-                    {formatDate(comment.createdAt)}
-                  </time>
-                </div>
-                <p className="article-engagement__item-body">{comment.content}</p>
-              </li>
+            {commentTree.map((node) => (
+              <CommentThreadItem
+                key={node.id}
+                node={node}
+                replyingToId={replyingTo?.id ?? null}
+                nickname={nickname}
+                setNickname={setNickname}
+                content={content}
+                setContent={setContent}
+                contentMax={contentMax}
+                submitting={submitting}
+                formError={formError}
+                formSuccess={formSuccess}
+                onReply={startReply}
+                onCancelReply={cancelReply}
+                onSubmitReply={submitComment}
+              />
             ))}
           </ul>
         )}

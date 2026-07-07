@@ -1,6 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
+
+const commentSelect = {
+  id: true,
+  nickname: true,
+  content: true,
+  parentId: true,
+  replyToNickname: true,
+  createdAt: true,
+} as const;
 
 @Injectable()
 export class ArticleEngagementService {
@@ -85,25 +94,35 @@ export class ArticleEngagementService {
     return this.queryEngagement(articleId, visitorId);
   }
 
-  /** 查询文章评论列表（时间正序） */
+  /** 查询文章评论列表（时间正序，含回复字段） */
   async queryComments(articleId: number) {
     await this.assertArticleExists(articleId);
 
     return this.prisma.articleComment.findMany({
       where: { articleId },
       orderBy: { createdAt: 'asc' },
-      select: {
-        id: true,
-        nickname: true,
-        content: true,
-        createdAt: true,
-      },
+      select: commentSelect,
     });
   }
 
-  /** 发表评论 */
+  /** 发表评论或回复 */
   async createComment(articleId: number, dto: CreateArticleCommentDto) {
     await this.assertArticleExists(articleId);
+
+    let replyToNickname: string | null = null;
+
+    if (dto.parentId != null) {
+      const parent = await this.prisma.articleComment.findFirst({
+        where: { id: dto.parentId, articleId },
+        select: { id: true, nickname: true },
+      });
+
+      if (!parent) {
+        throw new BadRequestException('回复目标不存在');
+      }
+
+      replyToNickname = parent.nickname;
+    }
 
     const comment = await this.prisma.articleComment.create({
       data: {
@@ -111,13 +130,10 @@ export class ArticleEngagementService {
         nickname: dto.nickname.trim(),
         content: dto.content.trim(),
         visitorId: dto.visitorId?.trim() || null,
+        parentId: dto.parentId ?? null,
+        replyToNickname,
       },
-      select: {
-        id: true,
-        nickname: true,
-        content: true,
-        createdAt: true,
-      },
+      select: commentSelect,
     });
 
     const commentCount = await this.prisma.articleComment.count({

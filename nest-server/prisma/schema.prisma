@@ -45,18 +45,25 @@ model ArticleBookmark {
   @@index([articleId])
 }
 
-/** 文章评论（前台公开，昵称 + 内容） */
+/** 文章评论（前台公开，昵称 + 内容，支持回复） */
 model ArticleComment {
-  id        Int      @id @default(autoincrement())
-  articleId Int
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  nickname  String
-  content   String
+  id              Int              @id @default(autoincrement())
+  articleId       Int
+  article         Article          @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  nickname        String
+  content         String
   /** 可选：用于防刷或与点赞收藏同一访客标识 */
-  visitorId String?
-  createdAt DateTime @default(now())
+  visitorId       String?
+  /** 回复目标评论 ID，顶级评论为 null */
+  parentId        Int?
+  parent          ArticleComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies         ArticleComment[] @relation("CommentReplies")
+  /** 被回复者昵称，展示「回复 @xxx」 */
+  replyToNickname String?
+  createdAt       DateTime         @default(now())
 
   @@index([articleId])
+  @@index([parentId])
   @@index([createdAt])
 }
 

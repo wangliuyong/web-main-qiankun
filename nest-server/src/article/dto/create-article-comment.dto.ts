@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 /** 前台文章评论提交 */
 export class CreateArticleCommentDto {
@@ -17,4 +17,9 @@ export class CreateArticleCommentDto {
   @IsString()
   @MaxLength(64)
   visitorId?: string;
+
+  /** 回复目标评论 ID，顶级评论不传 */
+  @IsOptional()
+  @IsInt()
+  parentId?: number;
 }

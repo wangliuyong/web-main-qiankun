@@ -11,6 +11,8 @@ export const DATE_FORMAT_PRESETS = {
   long: 'YYYY年M月D日 dddd',
   /** 日期时间：2024年10月15日 14:30 */
   datetime: 'YYYY年M月D日 HH:mm',
+  /** 日期时间（含秒）：2024年10月15日 14:30:45 */
+  datetimeSeconds: 'YYYY年M月D日 HH:mm:ss',
   /** 仅时间：14:30 */
   time: 'HH:mm',
   /** ISO 日期：2024-10-15 */

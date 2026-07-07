@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { blogEngagementApi } from './api';
 import { getOrCreateVisitorId } from './visitorId';
 import type { ArticleComment, ArticleEngagement } from '../contentTypes';
 
 const COMMENT_MAX = 1000;
+const SHARE_TIP_DURATION_MS = 3000;
 
 export interface UseArticleEngagementOptions {
   apiBase: string;
@@ -20,6 +21,16 @@ export function useArticleEngagement({
   const [actionLoading, setActionLoading] = useState(false);
   const [shareTip, setShareTip] = useState('');
   const [error, setError] = useState('');
+  const shareTipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearShareTipTimer = useCallback(() => {
+    if (shareTipTimerRef.current) {
+      clearTimeout(shareTipTimerRef.current);
+      shareTipTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => () => clearShareTipTimer(), [clearShareTipTimer]);
 
   const load = useCallback(async () => {
     if (!apiBase || !articleId) return;
@@ -85,28 +96,25 @@ export function useArticleEngagement({
     }
   }, [apiBase, articleId]);
 
-  /** 分享：优先系统分享，降级为复制链接 */
-  const shareArticle = useCallback(
-    async (title: string) => {
-      const url = typeof window !== 'undefined' ? window.location.href : '';
+  /** 分享：复制当前页链接到剪贴板 */
+  const shareArticle = useCallback(async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
 
-      setShareTip('');
-      try {
-        if (navigator.share) {
-          await navigator.share({ title, url });
-          setShareTip('已唤起分享');
-          return;
-        }
+    clearShareTipTimer();
+    setShareTip('');
+    setError('');
 
-        await navigator.clipboard.writeText(url);
-        setShareTip('链接已复制');
-      } catch (err) {
-        if ((err as Error).name === 'AbortError') return;
-        setShareTip('分享失败，请手动复制地址栏链接');
-      }
-    },
-    [],
-  );
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareTip('复制链接成功');
+      shareTipTimerRef.current = setTimeout(() => {
+        setShareTip('');
+        shareTipTimerRef.current = null;
+      }, SHARE_TIP_DURATION_MS);
+    } catch {
+      setShareTip('复制失败，请手动复制地址栏链接');
+    }
+  }, [clearShareTipTimer]);
 
   return {
     engagement,
@@ -127,7 +135,7 @@ export interface UseArticleCommentsOptions {
   onCommentCountChange?: (count: number) => void;
 }
 
-/** 文章评论列表与发表 */
+/** 文章评论列表、发表与回复 */
 export function useArticleComments({
   apiBase,
   articleId,
@@ -138,6 +146,7 @@ export function useArticleComments({
   const [submitting, setSubmitting] = useState(false);
   const [nickname, setNickname] = useState('');
   const [content, setContent] = useState('');
+  const [replyingTo, setReplyingTo] = useState<ArticleComment | null>(null);
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
 
@@ -160,6 +169,20 @@ export function useArticleComments({
     void load();
   }, [load]);
 
+  const cancelReply = useCallback(() => {
+    setReplyingTo(null);
+    setContent('');
+    setFormError('');
+    setFormSuccess('');
+  }, []);
+
+  const startReply = useCallback((comment: ArticleComment) => {
+    setReplyingTo(comment);
+    setContent('');
+    setFormError('');
+    setFormSuccess('');
+  }, []);
+
   const submitComment = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -174,11 +197,11 @@ export function useArticleComments({
         return;
       }
       if (!trimmedContent) {
-        setFormError('请填写评论内容');
+        setFormError(replyingTo ? '请填写回复内容' : '请填写评论内容');
         return;
       }
       if (trimmedContent.length > COMMENT_MAX) {
-        setFormError(`评论不超过 ${COMMENT_MAX} 字`);
+        setFormError(`内容不超过 ${COMMENT_MAX} 字`);
         return;
       }
 
@@ -189,11 +212,14 @@ export function useArticleComments({
           nickname: trimmedNickname,
           content: trimmedContent,
           visitorId: visitorId || undefined,
+          parentId: replyingTo?.id,
         });
 
         setComments((prev) => [...prev, result.comment]);
         setContent('');
-        setFormSuccess('评论已发表');
+        const wasReply = Boolean(replyingTo);
+        setReplyingTo(null);
+        setFormSuccess(wasReply ? '回复已发表' : '评论已发表');
         onCommentCountChange?.(result.commentCount);
       } catch {
         setFormError('发表失败，请稍后重试');
@@ -201,7 +227,7 @@ export function useArticleComments({
         setSubmitting(false);
       }
     },
-    [apiBase, articleId, nickname, content, onCommentCountChange],
+    [apiBase, articleId, nickname, content, replyingTo, onCommentCountChange],
   );
 
   return {
@@ -212,6 +238,9 @@ export function useArticleComments({
     setNickname,
     content,
     setContent,
+    replyingTo,
+    startReply,
+    cancelReply,
     contentMax: COMMENT_MAX,
     formError,
     formSuccess,
